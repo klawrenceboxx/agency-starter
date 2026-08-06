@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+
 export const metadata: Metadata = {
   title: "EarnIt Privacy Policy | Box Automations",
   description:

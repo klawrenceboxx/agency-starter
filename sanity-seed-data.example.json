@@ -1,0 +1,144 @@
+{
+  "projectId": "bml84tp5",
+  "sanityToken": "your_read_write_token",
+  "siteSettings": {
+    "companyName": "Boxx Automations",
+    "email": "hello@boxxautomations.space",
+    "tagline": "AI Automation Agency",
+    "heroHeadline": "We Build AI Systems That Close Leads While You Sleep",
+    "heroSubheadline": "From AI-powered lead nurturing to fast web builds — we automate the work that's costing you clients.",
+    "brandPrimaryColor": "#00d4ff",
+    "brandBgColor": "#0a0f1e",
+    "brandSurfaceColor": "#111827",
+    "calendlyUrl": "https://calendly.com/kaleellawrenceboxx/30min",
+    "linkedinUrl": "https://www.linkedin.com/in/klawrenceboxx",
+    "twitterUrl": null,
+    "siteUrl": "https://boxxautomations.space",
+    "n8nLeadWebhookUrl": "https://your-n8n-url/webhook/boxx-lead",
+    "googleBusinessUrl": null,
+    "metaTitle": "Boxx Automations | AI Automation Agency",
+    "metaDescription": "We build AI-powered lead nurturing, CRM integrations, and fast Next.js websites for growing businesses. Book a free discovery call."
+  },
+  "services": [
+    {
+      "title": "AI Automation Builds",
+      "slug": "ai-automation-builds",
+      "description": "Custom AI workflows that handle lead follow-up, qualification, and nurturing automatically — so you can focus on closing, not chasing.",
+      "icon": "🤖",
+      "featured": true
+    },
+    {
+      "title": "CRM & Email Marketing Setup",
+      "slug": "crm-email-marketing",
+      "description": "Full CRM setup with email sequences that run on autopilot. From first contact to close — every step tracked and automated.",
+      "icon": "📧",
+      "featured": true
+    },
+    {
+      "title": "Next.js + Sanity Websites",
+      "slug": "nextjs-sanity-websites",
+      "description": "Fast, SEO-optimized websites with a headless CMS you can actually edit. Deployed in days, not weeks. Includes Google Business setup.",
+      "icon": "⚡",
+      "featured": true
+    }
+  ],
+  "caseStudies": [
+    {
+      "title": "Reduced Lead Response Time from 4 Hours to 4 Minutes",
+      "slug": "lead-response-automation",
+      "client": "Anonymous — E-commerce Brand",
+      "industry": "E-commerce",
+      "challenge": "The client was manually responding to website leads. With 20-40 inquiries per week, leads were going cold for 4+ hours before getting a reply. Their close rate was 15%.",
+      "solution": "Built an n8n + Claude AI workflow that detects new form submissions, generates a personalized reply based on the prospect's message and company, and sends it via Resend within 90 seconds.",
+      "results": [
+        { "metric": "Lead response time", "value": "4hr → 4min" },
+        { "metric": "Close rate increase", "value": "+40%" },
+        { "metric": "Manual follow-up emails", "value": "0/week" }
+      ],
+      "tags": ["AI Automation", "n8n", "Lead Nurturing"],
+      "featured": true,
+      "publishedAt": "2026-02-15"
+    },
+    {
+      "title": "Launched Full Website in 3 Days with Automated Lead Capture",
+      "slug": "fast-website-with-lead-capture",
+      "client": "Anonymous — Local Service Business",
+      "industry": "Home Services",
+      "challenge": "The client had no web presence and was losing jobs to competitors with a Google presence. They needed a fast, professional site that could rank locally.",
+      "solution": "Built a Next.js + Sanity site with Google Business setup, SEO, and an n8n-powered lead form that notifies the owner instantly and sends the prospect a personalized follow-up.",
+      "results": [
+        { "metric": "Time to live site", "value": "3 days" },
+        { "metric": "Leads in month 1", "value": "12" },
+        { "metric": "Google Business reviews", "value": "8 in 30 days" }
+      ],
+      "tags": ["Website", "SEO", "Google Business", "Lead Capture"],
+      "featured": true,
+      "publishedAt": "2026-01-20"
+    }
+  ],
+  "processSteps": [
+    {
+      "stepNumber": 1,
+      "title": "Discovery Call",
+      "description": "30-minute call to map out your biggest bottleneck — what's costing you time, leads, or revenue. No sales pitch, just clarity.",
+      "icon": "📞"
+    },
+    {
+      "stepNumber": 2,
+      "title": "Build & Test",
+      "description": "We scope, build, and test your system in a focused sprint. You see progress fast — most builds are live within 1–2 weeks.",
+      "icon": "🔧"
+    },
+    {
+      "stepNumber": 3,
+      "title": "Hand Off + Train",
+      "description": "You get the live system, a walkthrough video, and documentation. We stick around for 30 days to make sure everything runs.",
+      "icon": "🚀"
+    }
+  ],
+  "teamMembers": [
+    {
+      "name": "Kaleel",
+      "role": "Founder & Automation Engineer",
+      "bio": "Solo operator building AI systems and web infrastructure for growing businesses. 3+ years in Shopify and automation development.",
+      "linkedinUrl": "https://www.linkedin.com/in/klawrenceboxx",
+      "order": 1
+    }
+  ],
+  "aboutPage": {
+    "headline": "Built for businesses that want more — without working more",
+    "missionStatement": "We exist to take the repetitive, time-consuming work off your plate and replace it with systems that scale.",
+    "founderBio": [
+      {
+        "_type": "block",
+        "_key": "bio0",
+        "style": "normal",
+        "children": [{ "_type": "span", "_key": "span0", "text": "Boxx Automations was started by Kaleel — a solo developer and automation builder who got tired of watching businesses lose leads to slow follow-up and outdated websites. The idea is simple: you should not need a full team to run like one." }],
+        "markDefs": []
+      },
+      {
+        "_type": "block",
+        "_key": "bio1",
+        "style": "normal",
+        "children": [{ "_type": "span", "_key": "span1", "text": "Every build at Boxx is practical. No bloated agency overhead, no six-month timelines. We scope tightly, build fast, and make sure everything actually works before handing it off." }],
+        "markDefs": []
+      }
+    ],
+    "trustSignals": [
+      "100+ Automations Built",
+      "Shopify Partner",
+      "Anthropic Claude API",
+      "Remote-first, async-friendly"
+    ]
+  },
+  "homePage": {
+    "ctaHeadline": "Let's Build Something That Works While You Sleep",
+    "ctaSubheadline": "Book a free 30-minute discovery call. We'll map out exactly what to automate and what it'll cost.",
+    "stats": [
+      { "value": "3 days", "label": "Avg. site launch time" },
+      { "value": "90 sec", "label": "AI lead response time" },
+      { "value": "100%", "label": "Clients who get results" },
+      { "value": "$0", "label": "Cost to explore options" }
+    ]
+  }
+}

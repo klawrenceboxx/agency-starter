@@ -56,7 +56,7 @@ export default async function HomePage() {
         <ProcessSteps steps={home.processSteps} />
       )}
 
-      <Pricing calendlyUrl={settings?.calendlyUrl || '/contact'} />
+      {/* <Pricing calendlyUrl={settings?.calendlyUrl || '/contact'} /> */}
 
       <LeadForm webhookUrl={settings?.n8nLeadWebhookUrl || ''} />
     </>

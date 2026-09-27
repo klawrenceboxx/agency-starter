@@ -1,37 +1,24 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import { client } from '@/sanity/client'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 import JsonLd from '@/components/JsonLd'
+import SiteChrome from '@/components/SiteChrome'
 import './globals.css'
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  weight: ['400', '500', '600', '700', '800', '900'],
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 type SiteSettings = {
   companyName?: string
   email?: string
-  tagline?: string
-  brandPrimaryColor?: string
-  brandBgColor?: string
-  brandSurfaceColor?: string
-  calendlyUrl?: string
   linkedinUrl?: string
-  twitterUrl?: string
   siteUrl?: string
-  googleBusinessUrl?: string
   metaTitle?: string
   metaDescription?: string
+  n8nLeadWebhookUrl?: string
 }
 
 async function getSettings(): Promise<SiteSettings> {
@@ -46,13 +33,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings()
   return {
     title: {
-      default: settings?.metaTitle || settings?.companyName || 'AI Automation Agency',
-      template: `%s | ${settings?.companyName || 'Agency'}`,
+      default: settings?.metaTitle || 'Boxx Automations — Websites and automated emails that convert',
+      template: `%s | Boxx Automations`,
     },
-    description: settings?.metaDescription || 'AI automation and web development for growing businesses.',
+    description:
+      settings?.metaDescription ||
+      'Boxx Automations fixes the leaks between getting a lead and turning them into a customer, with conversion-focused websites and automated follow-up. Get a free audit.',
     openGraph: {
       type: 'website',
-      siteName: settings?.companyName,
+      siteName: settings?.companyName || 'Boxx Automations',
       url: settings?.siteUrl,
     },
     robots: { index: true, follow: true },
@@ -61,41 +50,20 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings()
-  const primary = settings?.brandPrimaryColor || '#a855f7'
-  const primary2 = '#7c3aed'
-  const bg = settings?.brandBgColor || '#0a0f1e'
-  const surface = settings?.brandSurfaceColor || '#111827'
 
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <head>
-        <style>{`
-          :root {
-            --color-primary: ${primary};
-            --color-primary-2: ${primary2};
-            --color-accent: ${primary};
-            --color-bg: ${bg};
-            --color-surface: ${surface};
-            --navy: ${bg};
-            --surface: ${surface};
-            --purple: ${primary};
-            --purple2: ${primary2};
-          }
-        `}</style>
-      </head>
+    <html lang="en" className={inter.variable}>
       <body>
         <JsonLd
           type="Organization"
           data={{
-            name: settings?.companyName,
+            name: settings?.companyName || 'Boxx Automations',
             url: settings?.siteUrl,
             email: settings?.email,
-            sameAs: [settings?.linkedinUrl, settings?.twitterUrl].filter(Boolean),
+            sameAs: [settings?.linkedinUrl].filter(Boolean),
           }}
         />
-        <Header settings={settings} />
-        <main style={{ paddingTop: '96px' }}>{children}</main>
-        <Footer settings={settings} />
+        <SiteChrome webhookUrl={settings?.n8nLeadWebhookUrl || ''}>{children}</SiteChrome>
       </body>
     </html>
   )

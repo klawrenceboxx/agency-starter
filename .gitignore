@@ -5,3 +5,4 @@ sanity-seed-data.json
 out/
 .vercel/
 .vercel
+*.tsbuildinfo

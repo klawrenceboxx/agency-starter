@@ -1,64 +1,25 @@
-import { client } from '@/sanity/client'
-import Hero from '@/components/Hero'
-import TrustSignals from '@/components/TrustSignals'
-import ServicesGrid from '@/components/ServicesGrid'
-import Philosophy from '@/components/Philosophy'
-import ProcessSteps from '@/components/ProcessSteps'
-import Pricing from '@/components/Pricing'
-import LeadForm from '@/components/LeadForm'
+import HomeHero from '@/components/home/HomeHero'
+import AuthorityStrip from '@/components/home/AuthorityStrip'
+import ProblemSection from '@/components/home/ProblemSection'
+import ServicesCore from '@/components/ServicesCore'
+import FaqGuarantee from '@/components/home/FaqGuarantee'
+import ProcessStepsHome from '@/components/home/ProcessStepsHome'
+import FinalCta from '@/components/home/FinalCta'
 
-type ProcessStep = { stepNumber: number; title: string; description: string; icon: string }
-type Stat = { value: string; label: string }
-
-type HomeData = {
-  processSteps?: ProcessStep[]
-  stats?: Stat[]
-}
-
-type SiteSettings = {
-  heroSubheadline?: string
-  tagline?: string
-  companyName?: string
-  calendlyUrl?: string
-  n8nLeadWebhookUrl?: string
-}
-
-export default async function HomePage() {
-  const [home, settings]: [HomeData, SiteSettings] = await Promise.all([
-    client.fetch(`*[_type == "homePage"][0]{
-      "processSteps": processSteps[]->{
-        stepNumber, title, description, icon
-      } | order(stepNumber asc),
-      stats
-    }`),
-    client.fetch(`*[_type == "siteSettings"][0]{
-      heroSubheadline, tagline, companyName, calendlyUrl, n8nLeadWebhookUrl
-    }`),
-  ])
-
+export default function HomePage() {
   return (
     <>
-      <Hero
-        subheadline={settings?.heroSubheadline || 'We build AI workflows that capture leads, qualify prospects, and fill your pipeline — while you sleep.'}
-        tagline={settings?.tagline || 'AI Automation Agency'}
-        calendlyUrl={settings?.calendlyUrl || '/contact'}
-      />
-
-      {home?.stats && home.stats.length > 0 && (
-        <TrustSignals stats={home.stats} />
-      )}
-
-      <ServicesGrid />
-
-      <Philosophy />
-
-      {home?.processSteps && home.processSteps.length > 0 && (
-        <ProcessSteps steps={home.processSteps} />
-      )}
-
-      {/* <Pricing calendlyUrl={settings?.calendlyUrl || '/contact'} /> */}
-
-      <LeadForm webhookUrl={settings?.n8nLeadWebhookUrl || ''} />
+      <HomeHero />
+      <AuthorityStrip />
+      <ProblemSection />
+      <section className="tinted">
+        <div className="wrap">
+          <ServicesCore showHeader />
+        </div>
+      </section>
+      <FaqGuarantee />
+      <ProcessStepsHome />
+      <FinalCta />
     </>
   )
 }

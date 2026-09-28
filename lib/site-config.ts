@@ -25,5 +25,5 @@ export const PHASES: [string, string, string][] = [
   ['Phase 10', 'Measurement & optimization', "Analytics plan: what gets tracked after launch and how it's improved."],
 ]
 
-export const CALENDLY_URL = 'https://calendly.com/kaleellawrenceboxx/30min'
+export const CALENDLY_URL = 'https://calendly.com/kaleellawrenceboxx/discovery-call'
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/klawrenceboxx'

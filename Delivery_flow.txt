@@ -1,0 +1,8 @@
+1. Pop-up - They enter site fill out form
+2. Email, PDF - receive auto email
+3. Email, Powerpoint - I send personal Loom video in email w/ powerpoint, & Calendly link
+4. Email - They get immediate email with confirmation link of date
+5. Email - Automatic email one day before meeting
+6. Email - Automatic email same day of meeting
+they agree to move forward
+7. Email, PDFx3 - Get email with Proposal, Access Checklist, Invoice

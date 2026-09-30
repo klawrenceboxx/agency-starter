@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuditModal } from '@/components/audit/AuditModalContext'
 
 export default function HomeHero() {
@@ -8,6 +8,16 @@ export default function HomeHero() {
   const heroRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [muted, setMuted] = useState(true)
+
+  function toggleSound() {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = !v.muted
+    setMuted(v.muted)
+    if (v.paused) v.play().catch(() => {})
+  }
 
   // interactive node network background
   useEffect(() => {
@@ -95,6 +105,14 @@ export default function HomeHero() {
     }
   }, [])
 
+  // React doesn't reliably set the muted attribute, which makes browsers block autoplay
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = true
+    v.play().catch(() => {})
+  }, [])
+
   // magnetic CTA
   useEffect(() => {
     const btn = btnRef.current
@@ -146,7 +164,14 @@ export default function HomeHero() {
           </div>
         </div>
         <div className="founder photo">
-          <button className="play" aria-label="Play intro video" onClick={openModal} />
+          <video ref={videoRef} className="founder-video" src="/cleaned_v6.mp4" poster="/founder.jpg" autoPlay muted loop playsInline preload="auto" aria-label="Kaleel introducing Boxx Automations" />
+          <button type="button" className="sound-btn" onClick={toggleSound} aria-pressed={!muted} aria-label={muted ? 'Turn sound on' : 'Turn sound off'}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9v6h4l5 4V5L8 9z" />
+              {muted ? <path d="M17 9l5 6M22 9l-5 6" /> : <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" />}
+            </svg>
+            <span>{muted ? 'Tap for sound' : 'Sound on'}</span>
+          </button>
           <div className="cap"><strong>Kaleel Lawrence-Boxx</strong><span>Founder, Boxx Automations. Vaughan, Ontario.</span></div>
         </div>
       </div>

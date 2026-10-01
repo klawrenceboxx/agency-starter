@@ -1,4 +1,5 @@
 import HomeHero from '@/components/home/HomeHero'
+import ProjectShowcase from '@/components/home/ProjectShowcase'
 import AuthorityStrip from '@/components/home/AuthorityStrip'
 import ProblemSection from '@/components/home/ProblemSection'
 import ServicesCore from '@/components/ServicesCore'
@@ -10,6 +11,7 @@ export default function HomePage() {
   return (
     <>
       <HomeHero />
+      <ProjectShowcase />
       <AuthorityStrip />
       <ProblemSection />
       <section className="tinted">

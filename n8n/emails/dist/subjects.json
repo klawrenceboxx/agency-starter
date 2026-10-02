@@ -1,0 +1,34 @@
+{
+  "1": {
+    "file": "email-1-deliver",
+    "subject": "Your BOXX Website Conversion Framework"
+  },
+  "2": {
+    "file": "email-2-teach",
+    "subject": "Every page should ask for one thing"
+  },
+  "3": {
+    "file": "email-3-demonstrate",
+    "subject": "What fixing a homepage looks like"
+  },
+  "4": {
+    "file": "email-4-prove",
+    "subject": "The proof I can show you right now"
+  },
+  "5": {
+    "file": "email-5-ask",
+    "subject": "Straight answers before you decide"
+  },
+  "booking-confirm": {
+    "file": "booking-confirm",
+    "subject": "You are booked: your BOXX call"
+  },
+  "booking-reminder-24h": {
+    "file": "booking-reminder-24h",
+    "subject": "Reminder: your BOXX call is tomorrow"
+  },
+  "booking-reminder-day": {
+    "file": "booking-reminder-day",
+    "subject": "Your BOXX call is today"
+  }
+}

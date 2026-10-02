@@ -1,0 +1,1235 @@
+{
+  "name": "BOXX - Booking Exit",
+  "nodes": [
+    {
+      "id": "7c7a3b21-3a56-4169-a0cb-698563ef4ac9",
+      "position": [
+        0,
+        200
+      ],
+      "name": "Calendly booking event",
+      "type": "n8n-nodes-base.calendlyTrigger",
+      "typeVersion": 1,
+      "webhookId": "41603c82-e5ea-4020-b1a5-b7b348674e30",
+      "credentials": {
+        "calendlyApi": {
+          "id": "REPLACE_ME",
+          "name": "Calendly account"
+        }
+      },
+      "parameters": {
+        "events": [
+          "invitee.created",
+          "invitee.canceled"
+        ]
+      }
+    },
+    {
+      "id": "57592c09-3f92-43ec-a407-f893b38f6105",
+      "position": [
+        260,
+        200
+      ],
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: 'REPLACE_WITH_GOOGLE_SHEET_ID',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'REPLACE_VERIFIED_SENDER@yourdomain.com',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'REPLACE_REPLY_TO@yourdomain.com',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',\n  asmGroupId: 0, // SendGrid unsubscribe group ID (number)\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+      }
+    },
+    {
+      "id": "b58b2468-39f7-418c-9208-229a4f0b28aa",
+      "position": [
+        520,
+        200
+      ],
+      "name": "Parse Calendly event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const j = $('Calendly booking event').first().json\nconst pl = j.payload || (j.body && j.body.payload) || {}\nconst ev = j.event || (j.body && j.body.event) || ''\nconst se = pl.scheduled_event || {}\nreturn [{ json: {\n  type: ev === 'invitee.created' ? 'created' : ev === 'invitee.canceled' ? 'canceled' : 'ignore',\n  email: String(pl.email || '').toLowerCase().trim(), name: pl.name || '',\n  eventUri: se.uri || pl.event || '', startTime: se.start_time || '',\n} }]"
+      }
+    },
+    {
+      "id": "35fa0813-7730-4c80-9a82-27ffc08ec7f0",
+      "position": [
+        780,
+        200
+      ],
+      "name": "Find lead by email",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $('Parse Calendly event').first().json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f3cb13c7-fdcf-4898-b2a3-847c37e65902",
+      "position": [
+        1040,
+        200
+      ],
+      "name": "Decide booking",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const p = $('Parse Calendly event').first().json\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === p.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst iso = new Date().toISOString()\nif (p.type === 'ignore' || !p.email) return [{ json: { action: 'ignore' } }]\nif (!ex) return [{ json: { action: 'unmatched', p } }]\nconst isClient = String(ex.client_status || '').toUpperCase() === 'ACTIVE'\nif (p.type === 'created') {\n  if (ex.calendly_event_id === p.eventUri && T(ex.calendly_booked)) return [{ json: { action: 'duplicate' } }]\n  const row = { email: ex.email, calendly_booked: 'TRUE', calendly_event_id: p.eventUri, call_date: p.startTime,\n    nurture_status: 'STOPPED', stop_reason: 'booked', client_status: isClient ? 'ACTIVE' : 'CALL_BOOKED',\n    reminder_24h_sent: 'FALSE', reminder_day_sent: 'FALSE', updated_at: iso }\n  return [{ json: { action: 'booked', row, lead_id: ex.lead_id, email: ex.email, first_name: String(ex.name || p.name || '').split(' ')[0], startTime: p.startTime } }]\n}\nif (ex.calendly_event_id && ex.calendly_event_id !== p.eventUri) return [{ json: { action: 'stale_cancel' } }]\nconst row = { email: ex.email, calendly_booked: 'FALSE', calendly_event_id: '', call_date: '', client_status: isClient ? 'ACTIVE' : 'CALL_CANCELLED', updated_at: iso }\nreturn [{ json: { action: 'canceled', row } }]"
+      }
+    },
+    {
+      "id": "b38f3025-eafa-416a-8ee2-417117bccea0",
+      "position": [
+        1300,
+        200
+      ],
+      "name": "Route booking action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "90bab830-bf80-4391-acf0-af8ff67d73e1",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "booked",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "booked"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "bac30bee-229a-4132-bd7f-f2d12de87f8b",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "canceled",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "canceled"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "eeb3ace7-3bc4-4bf7-9f9a-60554335ce49",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "unmatched",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "unmatched"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f7d5c4ff-3fd8-460e-8c25-c5fbe74a88ff",
+      "position": [
+        1560,
+        0
+      ],
+      "name": "Row only (booked)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{ json: $input.first().json.row }]"
+      }
+    },
+    {
+      "id": "b59b5cbc-3f32-4358-8c2a-8593375232b3",
+      "position": [
+        1820,
+        0
+      ],
+      "name": "Save booking (stops nurture)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "10a8c29e-fda2-4dd1-8761-48eda717a175",
+      "position": [
+        2080,
+        0
+      ],
+      "name": "Build confirmation email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config').first().json\nconst d = $('Decide booking').first().json\nconst callTime = new Date(d.startTime).toLocaleString('en-CA', { timeZone: 'America/Toronto', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: d.email }], subject: cfg.bookingSubjects.confirm,\n    dynamic_template_data: Object.assign(baseData(cfg), { first_name: d.first_name, call_time: callTime, subject: cfg.bookingSubjects.confirm }) }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  template_id: cfg.templates.confirm, asm: { group_id: cfg.asmGroupId },\n  categories: ['boxx-booking', 'confirmation'], custom_args: { lead_id: d.lead_id, email_type: 'booking-confirmation' },\n}, meta: { lead_id: d.lead_id, email: d.email, email_type: 'booking-confirmation' } } }]"
+      }
+    },
+    {
+      "id": "31afe99c-38a9-413d-b16e-d541a7993648",
+      "position": [
+        2340,
+        0
+      ],
+      "name": "Send confirmation (SendGrid)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ME",
+          "name": "SendGrid API key"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "f0d777fe-092d-4d0d-8948-c0101bc7b8ad",
+      "position": [
+        2600,
+        0
+      ],
+      "name": "Row: confirmation event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build confirmation email').item.json\nreturn { json: {\n  event_id: 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  lead_id: src.meta.lead_id, email: src.meta.email, email_type: src.meta.email_type,\n  template_id: src.sgBody.template_id, sent_at: new Date().toISOString(),\n  message_id: (res.headers || {})['x-message-id'] || '', status: 'sent',\n} }"
+      }
+    },
+    {
+      "id": "99237385-bdf3-4569-bb8c-4f447bc3ef1c",
+      "position": [
+        2860,
+        0
+      ],
+      "name": "Log confirmation event",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Email Events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9440f6c6-522c-4f51-8524-2a513de5cca0",
+      "position": [
+        2600,
+        200
+      ],
+      "name": "Row: confirmation error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build confirmation email').item.json\nreturn { json: {\n  error_id: 'err_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  timestamp: new Date().toISOString(),\n  workflow: 'BOXX - Booking Exit',\n  email: src.meta.email,\n  error_message: String((res.error && res.error.message) || res.message || 'SendGrid send failed').slice(0, 500),\n  payload: JSON.stringify(src.meta),\n} }"
+      }
+    },
+    {
+      "id": "8ba59dc7-1b2f-4f16-8021-406e7b187599",
+      "position": [
+        2860,
+        200
+      ],
+      "name": "Log confirmation failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "578612b0-b0cf-44e2-8043-7394ce5304d6",
+      "position": [
+        1560,
+        400
+      ],
+      "name": "Row only (canceled)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{ json: $input.first().json.row }]"
+      }
+    },
+    {
+      "id": "359ab32c-4ee2-454d-abd9-44ec1de7ae8a",
+      "position": [
+        1820,
+        400
+      ],
+      "name": "Save cancellation (nurture stays stopped)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "540fe492-b692-4547-8a86-0dca7af46d6e",
+      "position": [
+        1560,
+        600
+      ],
+      "name": "Row: unmatched booking",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const p = $input.first().json.p\nreturn [{ json: { error_id: 'err_' + Date.now().toString(36), timestamp: new Date().toISOString(), workflow: 'BOXX - Booking Exit',\n  email: p.email, error_message: 'calendly_booking_no_matching_lead (booker may have used a different email)', payload: JSON.stringify(p) } }]"
+      }
+    },
+    {
+      "id": "9dc647ce-ccc0-43af-a5a7-da6a27bb739f",
+      "position": [
+        1820,
+        600
+      ],
+      "name": "Log unmatched booking",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5eccebdd-ce35-449f-99b5-cd66231699e6",
+      "position": [
+        0,
+        1200
+      ],
+      "name": "Every 15 minutes (reminders)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ac013856-1ece-4d4b-8816-b6f0a4015ca9",
+      "position": [
+        260,
+        1200
+      ],
+      "name": "Config (reminders)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: 'REPLACE_WITH_GOOGLE_SHEET_ID',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'REPLACE_VERIFIED_SENDER@yourdomain.com',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'REPLACE_REPLY_TO@yourdomain.com',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',\n  asmGroupId: 0, // SendGrid unsubscribe group ID (number)\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+      }
+    },
+    {
+      "id": "54cb8120-6d69-4af1-94e4-acf19057aba3",
+      "position": [
+        520,
+        1200
+      ],
+      "name": "Get booked leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config (reminders)').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "calendly_booked",
+              "lookupValue": "TRUE"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "115a2703-7cf4-435a-b546-0497f66bbfb5",
+      "position": [
+        780,
+        1200
+      ],
+      "name": "Plan reminders",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg = $('Config (reminders)').first().json\nconst now = new Date()\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst out = []\nfor (const { json: r } of $input.all()) {\n  if (!r.email || !T(r.calendly_booked)) continue\n  const call = new Date(r.call_date)\n  if (isNaN(call)) continue\n  const h = (call - now) / 36e5\n  const base = { email: r.email, lead_id: r.lead_id, first_name: String(r.name || '').split(' ')[0],\n    call_time: call.toLocaleString('en-CA', { timeZone: 'America/Toronto', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' }) }\n  if (h <= 0) {\n    if (h < -cfg.completedAfterHours && String(r.client_status).toUpperCase() === 'CALL_BOOKED') out.push({ json: Object.assign({ action: 'completed' }, base) })\n    continue\n  }\n  if (h <= cfg.sameDayHours) { if (!T(r.reminder_day_sent)) out.push({ json: Object.assign({ action: 'remindDay' }, base) }) }\n  else if (h <= cfg.dayBeforeHours) { if (!T(r.reminder_24h_sent)) out.push({ json: Object.assign({ action: 'remind24' }, base) }) }\n}\nreturn out"
+      }
+    },
+    {
+      "id": "3e077d74-e486-4dcd-b507-a6b99f9dba75",
+      "position": [
+        1040,
+        1200
+      ],
+      "name": "Call already happened?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.action }}",
+              "value2": "completed"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "eeb48672-0564-4362-9496-778d4d6959ee",
+      "position": [
+        1300,
+        1000
+      ],
+      "name": "Row: call completed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: { email: $input.item.json.email, client_status: 'CALL_COMPLETED', updated_at: new Date().toISOString() } }"
+      }
+    },
+    {
+      "id": "c0018ab6-3409-4f9c-bfc8-01ad474a6273",
+      "position": [
+        1560,
+        1000
+      ],
+      "name": "Mark call completed",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config (reminders)').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7458d9a0-eb39-4ef9-bbaa-5774ba6881ba",
+      "position": [
+        1300,
+        1400
+      ],
+      "name": "Build reminder email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config (reminders)').first().json\nreturn $input.all().map(({ json: it }) => {\n  const day = it.action === 'remindDay'\n  const tpl = day ? cfg.templates.reminderDay : cfg.templates.reminder24\n  const subj = day ? cfg.bookingSubjects.reminderDay : cfg.bookingSubjects.reminder24\n  const type = day ? 'reminder-sameday' : 'reminder-24h'\n  return { json: { sgBody: {\n    personalizations: [{ to: [{ email: it.email }], subject: subj,\n      dynamic_template_data: Object.assign(baseData(cfg), { first_name: it.first_name, call_time: it.call_time, subject: subj }) }],\n    from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n    template_id: tpl, asm: { group_id: cfg.asmGroupId },\n    categories: ['boxx-booking', type], custom_args: { lead_id: it.lead_id, email_type: type },\n  }, meta: { lead_id: it.lead_id, email: it.email, email_type: type, day } } }\n})"
+      }
+    },
+    {
+      "id": "0984689f-7002-4c2a-b0a2-301d26268871",
+      "position": [
+        1560,
+        1400
+      ],
+      "name": "Send reminder (SendGrid)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ME",
+          "name": "SendGrid API key"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "4f3ee7ca-d9a1-4a59-a1a0-36f1f2fe7684",
+      "position": [
+        1820,
+        1320
+      ],
+      "name": "Row: reminder sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const m = $('Build reminder email').item.json.meta\nconst row = { email: m.email, reminder_24h_sent: 'TRUE', updated_at: new Date().toISOString() }\nif (m.day) row.reminder_day_sent = 'TRUE'\nreturn { json: row }"
+      }
+    },
+    {
+      "id": "87422e20-bcf7-4345-9fed-ecbb2f0e232d",
+      "position": [
+        2080,
+        1320
+      ],
+      "name": "Mark reminder sent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config (reminders)').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1e87bbcb-ab7c-472d-98d2-c63d1ed375c8",
+      "position": [
+        1820,
+        1520
+      ],
+      "name": "Row: reminder event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build reminder email').item.json\nreturn { json: {\n  event_id: 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  lead_id: src.meta.lead_id, email: src.meta.email, email_type: src.meta.email_type,\n  template_id: src.sgBody.template_id, sent_at: new Date().toISOString(),\n  message_id: (res.headers || {})['x-message-id'] || '', status: 'sent',\n} }"
+      }
+    },
+    {
+      "id": "81409137-2910-4760-8f8b-5b2ff9c5e2ee",
+      "position": [
+        2080,
+        1520
+      ],
+      "name": "Log reminder event",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config (reminders)').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Email Events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "50810a98-2061-4e8b-92f6-adc822b89b29",
+      "position": [
+        1820,
+        1720
+      ],
+      "name": "Row: reminder error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build reminder email').item.json\nreturn { json: {\n  error_id: 'err_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  timestamp: new Date().toISOString(),\n  workflow: 'BOXX - Booking Exit',\n  email: src.meta.email,\n  error_message: String((res.error && res.error.message) || res.message || 'SendGrid send failed').slice(0, 500),\n  payload: JSON.stringify(src.meta),\n} }"
+      }
+    },
+    {
+      "id": "a129b0e2-81ed-4d64-820f-45544325f627",
+      "position": [
+        2080,
+        1720
+      ],
+      "name": "Log reminder failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config (reminders)').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "82e530e7-3df3-4db9-b81b-f40a137148e3",
+      "position": [
+        0,
+        -400
+      ],
+      "name": "Setup notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "parameters": {
+        "content": "## BOXX - Booking Exit\n**Top:** Calendly trigger. On a booking the lead gets calendly_booked = TRUE, nurture_status = STOPPED, client_status = CALL_BOOKED, and a branded confirmation is sent. Cancel/reschedule never restarts nurture (a stale cancel from a reschedule is ignored). A booker whose email matches no lead is logged to Error Log.\n\n**Bottom:** every 15 min sends the 24h and same-day reminders, and flips client_status to CALL_COMPLETED once the call time has passed. Proposal / access checklist / invoice stay manual.\n\nCalendly webhooks need a paid Calendly plan.",
+        "width": 470,
+        "height": 330
+      }
+    }
+  ],
+  "connections": {
+    "Calendly booking event": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Parse Calendly event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Calendly event": {
+      "main": [
+        [
+          {
+            "node": "Find lead by email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find lead by email": {
+      "main": [
+        [
+          {
+            "node": "Decide booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide booking": {
+      "main": [
+        [
+          {
+            "node": "Route booking action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route booking action": {
+      "main": [
+        [
+          {
+            "node": "Row only (booked)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row only (canceled)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row: unmatched booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row only (booked)": {
+      "main": [
+        [
+          {
+            "node": "Save booking (stops nurture)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save booking (stops nurture)": {
+      "main": [
+        [
+          {
+            "node": "Build confirmation email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build confirmation email": {
+      "main": [
+        [
+          {
+            "node": "Send confirmation (SendGrid)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send confirmation (SendGrid)": {
+      "main": [
+        [
+          {
+            "node": "Row: confirmation event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row: confirmation error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: confirmation event": {
+      "main": [
+        [
+          {
+            "node": "Log confirmation event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: confirmation error": {
+      "main": [
+        [
+          {
+            "node": "Log confirmation failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row only (canceled)": {
+      "main": [
+        [
+          {
+            "node": "Save cancellation (nurture stays stopped)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: unmatched booking": {
+      "main": [
+        [
+          {
+            "node": "Log unmatched booking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 15 minutes (reminders)": {
+      "main": [
+        [
+          {
+            "node": "Config (reminders)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config (reminders)": {
+      "main": [
+        [
+          {
+            "node": "Get booked leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get booked leads": {
+      "main": [
+        [
+          {
+            "node": "Plan reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan reminders": {
+      "main": [
+        [
+          {
+            "node": "Call already happened?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call already happened?": {
+      "main": [
+        [
+          {
+            "node": "Row: call completed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build reminder email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: call completed": {
+      "main": [
+        [
+          {
+            "node": "Mark call completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build reminder email": {
+      "main": [
+        [
+          {
+            "node": "Send reminder (SendGrid)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send reminder (SendGrid)": {
+      "main": [
+        [
+          {
+            "node": "Row: reminder sent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Row: reminder event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row: reminder error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: reminder sent": {
+      "main": [
+        [
+          {
+            "node": "Mark reminder sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: reminder event": {
+      "main": [
+        [
+          {
+            "node": "Log reminder event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: reminder error": {
+      "main": [
+        [
+          {
+            "node": "Log reminder failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

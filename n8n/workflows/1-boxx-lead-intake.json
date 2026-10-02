@@ -1,0 +1,820 @@
+{
+  "name": "BOXX - Lead Intake",
+  "nodes": [
+    {
+      "id": "8039b444-3bf7-4821-9048-83a814331806",
+      "position": [
+        0,
+        200
+      ],
+      "name": "Audit form webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "9590b89e-46ab-4712-843c-1990bfbeacf8",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "boxx-lead",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://boxxautomations.space"
+        }
+      }
+    },
+    {
+      "id": "de0cddbe-91dc-469d-95da-fb520c19a0f5",
+      "position": [
+        260,
+        200
+      ],
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: 'REPLACE_WITH_GOOGLE_SHEET_ID',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'REPLACE_VERIFIED_SENDER@yourdomain.com',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'REPLACE_REPLY_TO@yourdomain.com',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',\n  asmGroupId: 0, // SendGrid unsubscribe group ID (number)\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+      }
+    },
+    {
+      "id": "8ac5a80a-5c22-46f4-8925-8ab6ee916f86",
+      "position": [
+        520,
+        200
+      ],
+      "name": "Validate & normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const b = $('Audit form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst name = clean(b.name).slice(0, 100)\nif (name.length < 2) errors.push('missing_name')\nconst website = clean(b.website).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/+$/, '').slice(0, 200)\nif (!/^[^\\s.\\/]+(\\.[^\\s.\\/]+)+(\\/\\S*)?$/.test(website)) errors.push('invalid_website')\nconst svc = (Array.isArray(b.services) ? b.services : []).map(s => clean(s).toLowerCase())\nconst hasW = svc.includes('website'), hasE = svc.includes('emails')\nif (!hasW && !hasE) errors.push('unknown_interest')\nconst budgets = ['under-1000', '1000-2500', '2500-plus']\nconst lead = {\n  email, name, first_name: name.split(' ')[0], website,\n  phone: clean(b.phone).slice(0, 30),\n  interest: hasW && hasE ? 'both' : hasE ? 'emails' : 'website',\n  nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',\n  budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',\n  source: clean(b.source).slice(0, 300),\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
+      }
+    },
+    {
+      "id": "c3457d9d-f7aa-4bfd-bb2c-3a451a37412b",
+      "position": [
+        780,
+        200
+      ],
+      "name": "Valid submission?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.ok }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "6965114d-aa9f-42f9-8da0-876d4874ba13",
+      "position": [
+        1040,
+        0
+      ],
+      "name": "Error row: invalid submission",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const v = $input.first().json\nreturn [{ json: { error_id: 'err_' + Date.now().toString(36), timestamp: new Date().toISOString(),\n  workflow: 'BOXX - Lead Intake', email: v.lead.email, error_message: 'invalid_submission: ' + v.errors.join(','), payload: v.raw } }]"
+      }
+    },
+    {
+      "id": "9f9669e8-da7b-41fe-9515-4d4b5f00898c",
+      "position": [
+        1300,
+        0
+      ],
+      "name": "Log invalid submission",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "45cc4ba9-104e-4fc4-8508-e9e53ea15ca8",
+      "position": [
+        1560,
+        0
+      ],
+      "name": "Respond 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, errors: $('Validate & normalize').first().json.errors }) }}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://boxxautomations.space"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "884ca94d-1eda-4e80-bb1d-f21e3cea9819",
+      "position": [
+        1040,
+        400
+      ],
+      "name": "Find existing lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $('Validate & normalize').first().json.lead.email }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9bef48e8-e52d-443b-8213-36bb64773b83",
+      "position": [
+        1300,
+        400
+      ],
+      "name": "Decide",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg = $('Config').first().json\nconst v = $('Validate & normalize').first().json\nconst L = v.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\nconst contact = { email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }\nconst fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,\n  nurture_status: 'ACTIVE', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '', stop_reason: '' }\nlet row, sendEmail1 = false, reason, isNew = false\nif (!ex) {\n  isNew = true; sendEmail1 = true; reason = 'new_lead'\n  row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,\n    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING' }, contact, fresh)\n} else {\n  const blocked = T(ex.unsubscribe_status) || T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'\n  const start = new Date(ex.framework_delivered_at || ex.created_at)\n  const ageDays = isNaN(start) ? 0 : (now - start) / 864e5\n  if (!blocked && ageDays > cfg.resendAfterDays) {\n    sendEmail1 = true; reason = 'resend_after_' + cfg.resendAfterDays + '_days'; row = Object.assign({}, contact, fresh)\n  } else {\n    reason = blocked ? 'existing_lead_blocked' : 'duplicate_within_window'; row = contact\n  }\n}\nconst lead = Object.assign({}, L, { lead_id: ex ? ex.lead_id : row.lead_id })\nreturn [{ json: { sendEmail1, reason, isNew, row, lead } }]"
+      }
+    },
+    {
+      "id": "f77523a8-c157-47bf-8962-50006960b434",
+      "position": [
+        1560,
+        400
+      ],
+      "name": "Row only",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{ json: $input.first().json.row }]"
+      }
+    },
+    {
+      "id": "a12f26e4-b5b3-4727-bdf8-7116925b1117",
+      "position": [
+        1820,
+        400
+      ],
+      "name": "Save lead (upsert by email)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "8b35af26-c75e-4511-9ab3-564227275dd1",
+      "position": [
+        2080,
+        400
+      ],
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://boxxautomations.space"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "9a3ce252-68d1-4dc6-8f48-de0889a3e77f",
+      "position": [
+        2340,
+        400
+      ],
+      "name": "Build notify email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg = $('Config').first().json\nconst d = $('Decide').first().json, L = d.lead\nconst lines = ['Name: ' + L.name, 'Email: ' + L.email, 'Phone: ' + (L.phone || '-'), 'Website: ' + L.website,\n  'Interest: ' + L.interest + ' (path ' + L.nurture_path + ')', 'Budget: ' + (L.budget || '-'), 'Source: ' + (L.source || '-'), '', 'System action: ' + d.reason]\nconst subject = (d.isNew ? 'New audit request: ' : 'Repeat audit request: ') + L.name + ' (' + L.website + ')'\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: cfg.notifyEmail }], subject }],\n  from: { email: cfg.fromEmail, name: 'BOXX system' },\n  content: [{ type: 'text/plain', value: lines.join('\\n') }],\n}, meta: { email: L.email } } }]"
+      }
+    },
+    {
+      "id": "cb2168de-56b3-43f0-814e-5f056d23ffd6",
+      "position": [
+        2600,
+        400
+      ],
+      "name": "Notify Kaleel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ME",
+          "name": "SendGrid API key"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "042c0940-d094-467e-904b-70b2bba41a7c",
+      "position": [
+        2860,
+        400
+      ],
+      "name": "Send Email 1?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $('Decide').first().json.sendEmail1 }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "41cb43b7-4643-4387-9b92-45531a278165",
+      "position": [
+        3120,
+        200
+      ],
+      "name": "Build Email 1 request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject: cfg.subjects[0],\n    dynamic_template_data: Object.assign(baseData(cfg), { first_name: L.first_name, website: L.website, subject: cfg.subjects[0] }) }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  template_id: cfg.templates[L.nurture_path][0],\n  asm: { group_id: cfg.asmGroupId },\n  categories: ['boxx-nurture', 'email-1'], custom_args: { lead_id: L.lead_id, email_type: 'nurture-1' },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'nurture-1' } } }]"
+      }
+    },
+    {
+      "id": "f78c0774-e20c-46d2-bcc9-9830d5e89614",
+      "position": [
+        3380,
+        200
+      ],
+      "name": "Send Email 1 (SendGrid)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_ME",
+          "name": "SendGrid API key"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "5ef0453f-d18b-4109-88d2-3bca364c9c08",
+      "position": [
+        3640,
+        0
+      ],
+      "name": "Row: Email 1 sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const cfg = $('Config').first().json\nconst m = $('Build Email 1 request').first().json.meta\nconst now = new Date()\nreturn [{ json: { email: m.email, framework_delivered: 'TRUE', framework_delivered_at: now.toISOString(), current_email: 1,\n  last_email_sent_at: now.toISOString(), next_email_due_at: new Date(now.getTime() + cfg.cadenceDays[0] * 864e5).toISOString(),\n  nurture_status: 'ACTIVE', updated_at: now.toISOString() } }]"
+      }
+    },
+    {
+      "id": "900bf5a4-3d8b-4b01-ba12-eb43fb96ab0c",
+      "position": [
+        3900,
+        0
+      ],
+      "name": "Mark Email 1 sent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f588ba34-3964-46d7-83e6-015713dd7ad2",
+      "position": [
+        3640,
+        200
+      ],
+      "name": "Row: Email 1 event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build Email 1 request').item.json\nreturn { json: {\n  event_id: 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  lead_id: src.meta.lead_id, email: src.meta.email, email_type: src.meta.email_type,\n  template_id: src.sgBody.template_id, sent_at: new Date().toISOString(),\n  message_id: (res.headers || {})['x-message-id'] || '', status: 'sent',\n} }"
+      }
+    },
+    {
+      "id": "19943c8a-a57f-4df2-8e15-6d655b2850d9",
+      "position": [
+        3900,
+        200
+      ],
+      "name": "Log Email 1 event",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Email Events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d862f94a-cc11-4a5e-b2da-c34251d7f1b3",
+      "position": [
+        3640,
+        600
+      ],
+      "name": "Row: Email 1 error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build Email 1 request').item.json\nreturn { json: {\n  error_id: 'err_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  timestamp: new Date().toISOString(),\n  workflow: 'BOXX - Lead Intake',\n  email: src.meta.email,\n  error_message: String((res.error && res.error.message) || res.message || 'SendGrid send failed').slice(0, 500),\n  payload: JSON.stringify(src.meta),\n} }"
+      }
+    },
+    {
+      "id": "07597d5e-0e26-4826-9084-7300513b1f9b",
+      "position": [
+        3900,
+        600
+      ],
+      "name": "Log Email 1 failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b69c5662-5360-404d-8781-f875e23e7d3f",
+      "position": [
+        0,
+        -400
+      ],
+      "name": "Setup notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "parameters": {
+        "content": "## BOXX - Lead Intake\nWebhook for the site audit form (Sanity siteSettings.n8nLeadWebhookUrl = the PRODUCTION URL of this node).\n\n1. Edit the **Config** node (placeholders).\n2. Assign credentials: Google Sheets, SendGrid (Header Auth: Authorization = Bearer <key>).\n3. Test URL for testing, then publish and use the Production URL.\n\nDedupes by lowercased email. Re-sends Email 1 only after `resendAfterDays`. If SendGrid fails 3x it is logged to Error Log and the scheduler retries Email 1 for up to 48h.",
+        "width": 420,
+        "height": 260
+      }
+    }
+  ],
+  "connections": {
+    "Audit form webhook": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Validate & normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & normalize": {
+      "main": [
+        [
+          {
+            "node": "Valid submission?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid submission?": {
+      "main": [
+        [
+          {
+            "node": "Find existing lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error row: invalid submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error row: invalid submission": {
+      "main": [
+        [
+          {
+            "node": "Log invalid submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log invalid submission": {
+      "main": [
+        [
+          {
+            "node": "Respond 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find existing lead": {
+      "main": [
+        [
+          {
+            "node": "Decide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide": {
+      "main": [
+        [
+          {
+            "node": "Row only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row only": {
+      "main": [
+        [
+          {
+            "node": "Save lead (upsert by email)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save lead (upsert by email)": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 200": {
+      "main": [
+        [
+          {
+            "node": "Build notify email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build notify email": {
+      "main": [
+        [
+          {
+            "node": "Notify Kaleel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Kaleel": {
+      "main": [
+        [
+          {
+            "node": "Send Email 1?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 1?": {
+      "main": [
+        [
+          {
+            "node": "Build Email 1 request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Email 1 request": {
+      "main": [
+        [
+          {
+            "node": "Send Email 1 (SendGrid)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 1 (SendGrid)": {
+      "main": [
+        [
+          {
+            "node": "Row: Email 1 sent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Row: Email 1 event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row: Email 1 error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: Email 1 sent": {
+      "main": [
+        [
+          {
+            "node": "Mark Email 1 sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: Email 1 event": {
+      "main": [
+        [
+          {
+            "node": "Log Email 1 event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: Email 1 error": {
+      "main": [
+        [
+          {
+            "node": "Log Email 1 failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

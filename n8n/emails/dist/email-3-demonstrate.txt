@@ -1,0 +1,37 @@
+IDEA 2 OF 4
+
+What fixing a homepage looks like
+=================================
+
+Here is a made-up example, so you can see the kind of change I mean. It is not a client and these are not results.
+
+[Before]
+Headline: "Welcome to our website. We offer quality dog services."
+Buttons: Call Us &middot; Get a Quote &middot; Subscribe &middot; Follow Us
+
+[After]
+Headline: "Dog walking in Vaughan. Book your first walk in 60 seconds."
+Button: Book a Walk (everything else is quieter)
+
+
+WHAT CHANGED
+
+- The headline says who it is for and what they get.
+- There is one clear action instead of four.
+- A visitor can tell what happens after they click.
+
+This is the kind of fix I put in your recommendations: plain words, one goal, clear next step.
+
+See how I work: {{site_url}}/how-it-works
+
+Not ready yet? Keep the emails. Two more are coming.
+
+
+Kaleel Lawrence-Boxx
+Founder, BOXX Automations
+
+--
+BOXX Automations. High-converting websites. Automated emails.
+You are getting this because you asked for a free audit at {{site_url}}.
+Unsubscribe: <%asm_group_unsubscribe_raw_url%>
+{{mailing_address}}

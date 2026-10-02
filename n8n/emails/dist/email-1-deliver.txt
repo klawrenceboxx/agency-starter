@@ -1,0 +1,36 @@
+YOUR FREE AUDIT STARTS HERE
+
+Your Website Conversion Framework is ready
+==========================================
+
+Hi {{first_name}}, thanks for asking. This is the same checklist I use when I audit or build a site.
+
+Download the Framework (PDF): {{framework_url}}
+
+Opens a PDF. No sign-up needed.
+
+
+WHAT IS INSIDE
+
+- 11 phases, from strategy to measuring results.
+- 77 checklist items. Each has a question to check your site and an action to fix it.
+- You can start on {{website}} today.
+
+
+WHAT HAPPENS NEXT
+
+1. Today: Download it and skim the phase titles.
+2. Soon: I will look at {{website}} myself and send you my recommendations: what I would fix first.
+3. Over 10 days: A few short emails with ideas you can use even if you never work with me.
+
+Nothing else to do right now. Just keep an eye on your inbox.
+
+
+Kaleel Lawrence-Boxx
+Founder, BOXX Automations
+
+--
+BOXX Automations. High-converting websites. Automated emails.
+You are getting this because you asked for a free audit at {{site_url}}.
+Unsubscribe: <%asm_group_unsubscribe_raw_url%>
+{{mailing_address}}

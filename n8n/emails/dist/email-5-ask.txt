@@ -1,0 +1,42 @@
+IDEA 4 OF 4
+
+Straight answers before you decide
+==================================
+
+Here are the questions I hear most.
+
+
+"WHAT DOES IT COST?"
+
+Your audit is free. If we work together, I price it after a call, based on what you need. It is a startup fee plus a fee tied to new customers I help you win. I will explain it on the call.
+
+
+"HOW LONG DOES IT TAKE?"
+
+A standard project is about 5 weeks from kickoff to launch.
+
+
+"CAN I JUST DO IT MYSELF?"
+
+Yes. The framework is yours. Many people use it on their own. If you get stuck, I am here.
+
+
+"WHAT IF I AM NOT HAPPY?"
+
+See the guarantee in my last email. Full refund, or I keep working until you are happy.
+
+[If you want to talk]
+Book a short call. We will look at your audit together and you can ask anything.
+Book a 15-Minute Call: {{calendly_url}}
+
+Not ready yet? That is okay. This is the last email in this series. You can reply any time.
+
+
+Kaleel Lawrence-Boxx
+Founder, BOXX Automations
+
+--
+BOXX Automations. High-converting websites. Automated emails.
+You are getting this because you asked for a free audit at {{site_url}}.
+Unsubscribe: <%asm_group_unsubscribe_raw_url%>
+{{mailing_address}}

@@ -1,0 +1,23 @@
+CALL CONFIRMED
+
+You are booked, {{first_name}}
+==============================
+
+Your call is set for {{call_time}} (Eastern time).
+
+[Before the call]
+- Nothing to prepare.
+- If you have a goal or a question in mind, jot it down.
+- Need a different time? Use the reschedule link in your Calendly confirmation email.
+
+Talk soon.
+
+
+Kaleel Lawrence-Boxx
+Founder, BOXX Automations
+
+--
+BOXX Automations. High-converting websites. Automated emails.
+You are getting this because you asked for a free audit at {{site_url}}.
+Unsubscribe: <%asm_group_unsubscribe_raw_url%>
+{{mailing_address}}

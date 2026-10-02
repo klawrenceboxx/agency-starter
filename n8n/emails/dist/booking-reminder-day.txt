@@ -1,0 +1,16 @@
+TODAY
+
+Your call is today
+==================
+
+Hi {{first_name}}, we are talking at {{call_time}} (Eastern time). Check your Calendly confirmation email for the meeting link.
+
+
+Kaleel Lawrence-Boxx
+Founder, BOXX Automations
+
+--
+BOXX Automations. High-converting websites. Automated emails.
+You are getting this because you asked for a free audit at {{site_url}}.
+Unsubscribe: <%asm_group_unsubscribe_raw_url%>
+{{mailing_address}}

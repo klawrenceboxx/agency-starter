@@ -1,0 +1,34 @@
+IDEA 3 OF 4
+
+The proof I can show you right now
+==================================
+
+I do not have a client portfolio yet, and I will not invent results or quotes. Here is what I can show: the page you filled in and the emails you are reading were built with the same framework I sent you.
+
+[Check it yourself]
+- The site asks for one thing: your free audit.
+- You got what I promised right away.
+- Every email has one job.
+- I told you what happens next before I asked for anything.
+
+[My guarantee]
+Not happy with the website within 30 days of launch, or the email system within 90 days? You pick: a full refund, or I keep working at no extra cost until you are happy.
+
+
+WHO IS BEHIND THIS
+
+I am Kaleel. I have a mechanical engineering degree from Toronto Metropolitan University, about 7 years of coding, and I run a small business myself.
+
+About me: {{site_url}}/about
+
+Not ready yet? Keep the emails. One more idea is coming.
+
+
+Kaleel Lawrence-Boxx
+Founder, BOXX Automations
+
+--
+BOXX Automations. High-converting websites. Automated emails.
+You are getting this because you asked for a free audit at {{site_url}}.
+Unsubscribe: <%asm_group_unsubscribe_raw_url%>
+{{mailing_address}}

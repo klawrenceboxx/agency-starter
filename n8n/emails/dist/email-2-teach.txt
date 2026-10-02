@@ -1,0 +1,28 @@
+IDEA 1 OF 4
+
+Every page should ask for one thing
+===================================
+
+Most sites ask visitors to do five things at once: call, book, subscribe, follow, read the blog. When a page asks for everything, people do nothing.
+
+[Try this in 5 minutes]
+1. Open your homepage.
+2. Count every button and link that asks the visitor to act.
+3. Pick the one action that matters most to your business.
+4. Make that button the biggest and brightest. Quiet the rest.
+
+This is Phase 7 of the framework (Conversion Mechanics). Do it before you change anything else. It costs nothing.
+
+Hit reply and tell me which action you picked. I read every reply.
+
+Not ready to change anything yet? That is fine. Keep the emails. The next one shows what this looks like.
+
+
+Kaleel Lawrence-Boxx
+Founder, BOXX Automations
+
+--
+BOXX Automations. High-converting websites. Automated emails.
+You are getting this because you asked for a free audit at {{site_url}}.
+Unsubscribe: <%asm_group_unsubscribe_raw_url%>
+{{mailing_address}}

@@ -26,6 +26,18 @@ Edit the generators, not the JSON, then re-run `node n8n/build-workflows.js` / `
 6. **Framework PDF.** Put it at `public/BOXX-Website-Conversion-Framework.pdf` (not in the repo yet) or change `frameworkUrl` in Config.
 7. **Test:** run the form with your own email, check the `Leads` row, the inbox, then book a test call and confirm nurture stops.
 
+## Calendly PAT authentication and connection-test 404
+
+The existing version-1 `Calendly booking event` trigger explicitly uses `authentication: 'apiKey'` (the UI's Personal Access Token option), `scope: 'user'`, and the native `calendlyApi` credential. Assign the saved PAT credential in the live node; OAuth2 is not required for this version. Do not upgrade the trigger to version 2 as part of import: newer n8n's version-2 trigger requires OAuth2.
+
+Some older n8n releases (verified in n8n 1.100.1 source) test `Calendly API` credentials at `https://calendly.com/api/v1/users/me`. Their trigger uses the v2 API when the credential is recognized as a PAT. A 404 in that legacy credential test does not prove that the PAT is invalid. The installed instance version and the actual saved PAT have not yet been verified.
+
+Validate without exposing the token: create a temporary HTTP Request node in n8n, set GET `https://api.calendly.com/users/me`, choose Authentication -> Predefined Credential Type -> Calendly API, and select the existing saved PAT credential. Execute the node. HTTP 200 verifies the credential can authenticate; it does not yet prove webhook permissions. Next, test the existing Calendly trigger's webhook registration and a test booking/cancellation. An older credential implementation may misclassify a non-JWT token as a legacy API key; if the GET fails, inspect the status/error and installed n8n version before replacing the PAT or adopting OAuth2.
+
+Calendly's current API scopes for this integration include `users:read`, `webhooks:read`, and `webhooks:write`; the booking/cancellation subscriptions also require the relevant event-read scope. Paid webhook access is a separate requirement. Keep all token values in n8n Credentials.
+
+Primary references: [n8n credential source, 1.100.1](https://github.com/n8n-io/n8n/blob/n8n%401.100.1/packages/nodes-base/credentials/CalendlyApi.credentials.ts), [Calendly current-user endpoint](https://developer.calendly.com/api-docs/calendly-api/users/get-current-user), [Calendly webhook subscriptions](https://developer.calendly.com/api-docs/calendly-api/webhooks/create-webhook-subscription).
+
 ## Rules it enforces
 
 - One 5-email sequence per lead. Path (WEBSITE / EMAIL / BOTH) is derived from `services` server-side; browser-sent `path`/state is ignored.

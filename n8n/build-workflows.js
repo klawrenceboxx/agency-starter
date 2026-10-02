@@ -381,7 +381,7 @@ function booking() {
 
   // ---- Branch A: Calendly events
   A({ name: 'Calendly booking event', type: 'n8n-nodes-base.calendlyTrigger', typeVersion: 1, webhookId: uuid(), credentials: CRED_CAL,
-    parameters: { events: ['invitee.created', 'invitee.canceled'] } }, 0, 1)
+    parameters: { authentication: 'apiKey', scope: 'user', events: ['invitee.created', 'invitee.canceled'] } }, 0, 1)
   A(code('Config', CONFIG_JS), 1, 1)
   A(code('Parse Calendly event', String.raw`const j = $('Calendly booking event').first().json
 const pl = j.payload || (j.body && j.body.payload) || {}

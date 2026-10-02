@@ -21,7 +21,9 @@
         "events": [
           "invitee.created",
           "invitee.canceled"
-        ]
+        ],
+        "authentication": "apiKey",
+        "scope": "user"
       }
     },
     {

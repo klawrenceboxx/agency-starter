@@ -29,6 +29,15 @@ function workflow(name) {
 const code = (name, js, mode = 'runOnceForAllItems') => ({
   name, type: 'n8n-nodes-base.code', typeVersion: 2, parameters: { mode, jsCode: js },
 })
+// IF v2 uses the filter schema; the legacy boolean/string collections belong to IF v1.
+const ifEquals = (leftValue, rightValue, type) => ({
+  conditions: {
+    options: { caseSensitive: true, leftValue: '', typeValidation: 'strict', version: 1 },
+    conditions: [{ id: uuid(), leftValue, rightValue, operator: { type, operation: 'equals' } }],
+    combinator: 'and',
+  },
+  options: {},
+})
 const sheetDoc = cfgNode => ({ __rl: true, mode: 'id', value: `={{ $('${cfgNode}').first().json.sheetId }}` })
 const sheetTab = t => ({ __rl: true, mode: 'name', value: t })
 const sheetsRead = (name, cfgNode, tab, col, valueExpr) => ({
@@ -162,7 +171,7 @@ const lead = {
 return [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]`), 2, 1)
 
   A({ name: 'Valid submission?', type: 'n8n-nodes-base.if', typeVersion: 2,
-    parameters: { conditions: { boolean: [{ value1: '={{ $json.ok }}', value2: true }] } } }, 3, 1)
+    parameters: ifEquals('={{ $json.ok }}', true, 'boolean') }, 3, 1)
 
   // invalid path
   A(code('Error row: invalid submission', String.raw`const v = $input.first().json
@@ -221,7 +230,7 @@ return [{ json: { sgBody: {
   A(sendgrid('Notify Kaleel'), 10, 2)
 
   A({ name: 'Send Email 1?', type: 'n8n-nodes-base.if', typeVersion: 2,
-    parameters: { conditions: { boolean: [{ value1: "={{ $('Decide').first().json.sendEmail1 }}", value2: true }] } } }, 11, 2)
+    parameters: ifEquals("={{ $('Decide').first().json.sendEmail1 }}", true, 'boolean') }, 11, 2)
 
   A(code('Build Email 1 request', SG_COMMON + String.raw`
 const cfg = $('Config').first().json
@@ -313,7 +322,7 @@ for (const { json: r } of $input.all()) {
 }
 return out`), 3, 1)
   A({ name: 'Send due email?', type: 'n8n-nodes-base.if', typeVersion: 2,
-    parameters: { conditions: { string: [{ value1: '={{ $json.action }}', value2: 'send' }] } } }, 4, 1)
+    parameters: ifEquals('={{ $json.action }}', 'send', 'string') }, 4, 1)
 
   A(code('Row: stop lead', String.raw`const it = $input.item.json
 return { json: { email: it.email, nurture_status: it.action === 'complete' ? 'COMPLETED' : 'STOPPED', stop_reason: it.reason, updated_at: new Date().toISOString() } }`, 'runOnceForEachItem'), 5, 3)
@@ -457,7 +466,7 @@ for (const { json: r } of $input.all()) {
 }
 return out`), 3, 6)
   A({ name: 'Call already happened?', type: 'n8n-nodes-base.if', typeVersion: 2,
-    parameters: { conditions: { string: [{ value1: '={{ $json.action }}', value2: 'completed' }] } } }, 4, 6)
+    parameters: ifEquals('={{ $json.action }}', 'completed', 'string') }, 4, 6)
   A(code('Row: call completed', String.raw`return { json: { email: $input.item.json.email, client_status: 'CALL_COMPLETED', updated_at: new Date().toISOString() } }`, 'runOnceForEachItem'), 5, 5)
   A(sheetsWrite('Mark call completed', 'Config (reminders)', 'Leads', 'appendOrUpdate', 'email'), 6, 5)
 

@@ -59,13 +59,26 @@
       "typeVersion": 2,
       "parameters": {
         "conditions": {
-          "boolean": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.ok }}",
-              "value2": true
+              "id": "a6372270-3dba-4185-bd41-c2ce74a8fc3e",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       }
     },
     {
@@ -343,13 +356,26 @@
       "typeVersion": 2,
       "parameters": {
         "conditions": {
-          "boolean": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
             {
-              "value1": "={{ $('Decide').first().json.sendEmail1 }}",
-              "value2": true
+              "id": "7dc889ff-6399-4f94-b8dd-0cbffee360e4",
+              "leftValue": "={{ $('Decide').first().json.sendEmail1 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       }
     },
     {

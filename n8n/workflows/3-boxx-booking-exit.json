@@ -615,13 +615,26 @@
       "typeVersion": 2,
       "parameters": {
         "conditions": {
-          "string": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.action }}",
-              "value2": "completed"
+              "id": "178e443a-f55c-4a55-95ad-25656e36ba78",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       }
     },
     {

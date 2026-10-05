@@ -20,7 +20,7 @@ Updated 2026-10-05 UTC, continuing `cce2b9c` on `main`. No system redesign.
 ## Remaining work before production activation
 
 - Apply the revision to existing live workflow IDs, retaining saved credentials; do not create duplicate production workflows.
-- Obtain the owner's physical mailing address. Eight email template IDs and mailing address remain placeholders; outbound email is not ready until they are configured.
+- Physical mailing address supplied and configured: **54 Cannes Ave, Vaughan, ON, Canada**. Eight email template IDs remain placeholders; outbound email is not ready until they are configured.
 - Create/verify eight SendGrid Dynamic Templates and assign their IDs to all four Config nodes.
 - Verify the same PAT can list event types, scheduled events and invitees; validate pagination, loop handling and static-data persistence in the installed n8n version.
 - Connect Sanity `siteSettings.n8nLeadWebhookUrl` when intake is ready, enable controlled testing, and let the owner submit their own information through the live website.

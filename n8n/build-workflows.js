@@ -85,7 +85,7 @@ return [{ json: {
   fromName: 'BOXX Automations',
   replyTo: 'hello@boxxautomations.space',
   notifyEmail: 'kaleellawrenceboxx@gmail.com',
-  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',
+  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',
   asmGroupId: 42909, // SendGrid unsubscribe group ID (number)
   calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.
   // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.

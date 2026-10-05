@@ -5,7 +5,7 @@ const path = require('path')
 const wf = f => require(path.join(__dirname, 'workflows', f + '.json'))
 const W = { intake: wf('1-boxx-lead-intake'), sched: wf('2-boxx-nurture-scheduler'), book: wf('3-boxx-booking-exit') }
 
-function run(w, nodeName, { input = [], nodes = {}, itemIndex = 0 } = {}) {
+function run(w, nodeName, { input = [], nodes = {}, itemIndex = 0, staticData = {} } = {}) {
   const node = w.nodes.find(n => n.name === nodeName)
   if (!node) throw new Error('no node ' + nodeName)
   const wrap = arr => arr.map(json => ({ json }))
@@ -15,7 +15,7 @@ function run(w, nodeName, { input = [], nodes = {}, itemIndex = 0 } = {}) {
     if (!arr) throw new Error('test missing upstream node: ' + name)
     return { first: () => wrap(arr)[0], all: () => wrap(arr), item: wrap(arr)[itemIndex] }
   }
-  const res = new Function('$input', '$', node.parameters.jsCode)($input, $)
+  const res = new Function('$input', '$', '$getWorkflowStaticData', node.parameters.jsCode)($input, $, () => staticData)
   return Array.isArray(res) ? res.map(r => r.json) : res.json
 }
 
@@ -101,7 +101,7 @@ ok('Email 5 sent -> nurture COMPLETED', advance(5).nurture_status === 'COMPLETED
 ok('Email 2 sent -> still ACTIVE', advance(2).nurture_status === 'ACTIVE')
 
 // ---- booking
-const parse = (event, over = {}) => run(W.book, 'Parse Calendly event', { nodes: { 'Calendly booking event': [{ event, payload: { email: 'A@B.com', name: 'Alice Smith', scheduled_event: { uri: 'ev1', start_time: new Date(Date.now() + 3 * DAY).toISOString() }, ...over } }] } })[0]
+const parse = (event, over = {}) => run(W.book, 'Parse Calendly event', { input: [{ event, payload: { email: 'A@B.com', name: 'Alice Smith', scheduled_event: { uri: 'ev1', start_time: new Date(Date.now() + 3 * DAY).toISOString() }, ...over } }] })[0]
 const bdecide = (event, ex) => run(W.book, 'Decide booking', { input: ex ? [ex] : [{}], nodes: { 'Parse Calendly event': [parse(event)] } })[0]
 const exb = (over = {}) => ({ lead_id: 'ld_1', email: 'a@b.com', name: 'Alice Smith', nurture_status: 'ACTIVE', calendly_booked: 'FALSE', calendly_event_id: '', client_status: 'PROSPECT', ...over })
 let b = bdecide('invitee.created', exb())
@@ -117,6 +117,52 @@ b = bdecide('invitee.created', null)
 ok('Booker with no matching lead is logged, not dropped', b.action === 'unmatched')
 b = bdecide('invitee.created', exb({ client_status: 'ACTIVE' }))
 ok('Active client booking not downgraded', b.row.client_status === 'ACTIVE')
+b = bdecide('invitee.canceled', exb({ nurture_status: 'STOPPED', client_status: 'CALL_CANCELLED' }))
+ok('Repeated cancellation after clearing booking is a no-op', b.action === 'stale_cancel')
+b = bdecide('invitee.canceled', exb())
+ok('Historical cancellation cannot cancel a never-booked lead', b.action === 'stale_cancel')
+
+// ---- polling transport: paginated snapshots -> existing event envelope
+const eventTypeUri = 'https://api.calendly.com/event_types/boxx'
+const pollEvent = (uri, status = 'active', over = {}) => ({ uri, event_type: eventTypeUri, status, start_time: new Date(Date.now() + DAY).toISOString(), created_at: ago(1), updated_at: ago(0.5), ...over })
+const typeMatch = run(W.book, 'Select BOXX event type', { input: [{ collection: [{ uri: 'other', scheduling_url: 'https://calendly.com/other' }] }, { collection: [{ uri: eventTypeUri, scheduling_url: cfg.calendlyUrl + '/' }] }], nodes: { Config: [cfg] } })[0]
+ok('Event type is resolved across paginated responses by scheduling URL', typeMatch.eventTypeUri === eventTypeUri)
+let missingTypeThrows = false
+try { run(W.book, 'Select BOXX event type', { input: [{ collection: [] }], nodes: { Config: [cfg] } }) } catch { missingTypeThrows = true }
+ok('Missing discovery-call type fails closed', missingTypeThrows)
+const events = [pollEvent('ev1', 'canceled'), pollEvent('evNEW'), pollEvent('other', 'active', { event_type: 'unrelated' })]
+const expanded = run(W.book, 'Expand scheduled events', { input: [{ collection: [events[0], events[2]] }, { collection: [events[1], events[1]] }], nodes: { 'Select BOXX event type': [typeMatch] } })
+ok('Only BOXX events pass, all pages collected and duplicate URIs removed', expanded.length === 2 && expanded.every(e => e.event_type === eventTypeUri))
+const emptyEvents = run(W.book, 'Expand scheduled events', { input: [{ collection: [] }], nodes: { 'Select BOXX event type': [typeMatch] } })
+ok('Empty scheduled-event scan emits sentinel so reminders still run', emptyEvents[0].noEvents === true)
+const inv = (uri, event, status, over = {}) => ({ uri, event, email: 'A@B.com', name: 'Alice', status, created_at: ago(0.3), updated_at: ago(0.1), ...over })
+const pages = [{ collection: [inv('invitee-new', 'evNEW', 'active')] }, { collection: [inv('invitee-old', 'ev1', 'canceled')] }]
+const pollState = {}
+const normalize = (input = pages) => run(W.book, 'Normalize Calendly poll', { input, nodes: { 'Expand scheduled events': expanded }, staticData: pollState })
+let observations = normalize()
+ok('Snapshot cancellation precedes rescheduled booking regardless of API page order', observations[0].event === 'invitee.canceled' && observations[1].event === 'invitee.created')
+ok('Polling adapter preserves existing parse payload and event URI', run(W.book, 'Parse Calendly event', { input: [observations[1]] })[0].eventUri === 'evNEW')
+ok('Observations are not checkpointed before downstream writes', !pollState.calendlyPollSeen)
+for (const observation of observations) run(W.book, 'Mark poll observation', { input: [{}], nodes: { 'Process one booking': [observation] }, staticData: pollState })
+observations = normalize()
+ok('Unchanged invitee states are skipped across subsequent polls', observations.length === 1 && observations[0].event === 'ignore')
+const changed = [{ collection: [inv('invitee-new', 'evNEW', 'canceled', { updated_at: new Date().toISOString() })] }]
+observations = normalize(changed)
+ok('Changed invitee state is detected after prior active booking checkpoint', observations[0].event === 'invitee.canceled')
+let malformedThrows = false
+try { normalize([{}]) } catch { malformedThrows = true }
+ok('Malformed response does not silently become an empty successful scan', malformedThrows)
+const pollSchedule = W.book.nodes.find(n => n.name === 'Every 15 minutes (Calendly poll)')
+ok('Polling schedule is exactly 15 minutes and there is no Calendly webhook trigger', pollSchedule.parameters.rule.interval[0].minutesInterval === 15 && !W.book.nodes.some(n => n.type === 'n8n-nodes-base.calendlyTrigger'))
+ok('Every Calendly HTTP node reuses native PAT credentials', W.book.nodes.filter(n => n.name.startsWith('Calendly ') && n.type.endsWith('.httpRequest')).every(n => n.parameters.nodeCredentialType === 'calendlyApi' && n.credentials.calendlyApi.name === 'Calendly account'))
+ok('List requests paginate until next_page is empty without dropping canceled records', ['Calendly event types', 'Calendly scheduled events', 'Calendly event invitees'].every(name => {
+  const n = W.book.nodes.find(node => node.name === name)
+  return n.parameters.options.pagination.pagination.paginationCompleteWhen === 'other' && !n.parameters.queryParameters.parameters.some(q => q.name === 'status')
+}))
+ok('Reminders run after sequential booking loop is done', W.book.connections['Process one booking'].main[0][0].node === 'Config (reminders)')
+ok('No-op and duplicate routes advance the loop', W.book.nodes.find(n => n.name === 'Route booking action').parameters.options.fallbackOutput === 'extra' && W.book.connections['Route booking action'].main[3][0].node === 'Mark poll observation')
+ok('All generated workflows are inactive and have no dangling connections', Object.values(W).every(w => !w.active && Object.entries(w.connections).every(([source, outputs]) => w.nodes.some(n => n.name === source) && outputs.main.flat().every(c => w.nodes.some(n => n.name === c.node)))))
+ok('Sender and unsubscribe group match owner values', cfg.fromEmail === 'hello@boxxautomations.space' && cfg.replyTo === cfg.fromEmail && cfg.fromName === 'BOXX Automations' && cfg.asmGroupId === 42909)
 
 // ---- reminders
 const remind = rows => run(W.book, 'Plan reminders', { input: rows, nodes: { 'Config (reminders)': [cfg] } })

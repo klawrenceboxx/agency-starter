@@ -16,27 +16,28 @@ Built for BOXX first; to reuse for a client, copy the Google Sheet, edit the **C
 
 Edit the generators, not the JSON, then re-run `node n8n/build-workflows.js` / `node n8n/emails/build.js`.
 
-## Setup (in order)
+## Continue the existing deployment
 
-1. **Google Sheet.** Create tabs `Leads`, `Email Events`, `Error Log`. Paste each CSV's header row into row 1 (same column names, same order is fine).
-2. **SendGrid.** Verify your sender/domain. Create an unsubscribe group (note its numeric ID). Create 8 Dynamic Templates and paste in `emails/dist/*.html` (plain text from the matching `.txt`). Subjects are in `dist/subjects.json`. Create an API key (Mail Send).
-3. **n8n credentials:** Google Sheets OAuth2; Header Auth named `SendGrid API key` (`Authorization` = `Bearer SG...`); Calendly.
-4. **Import the 3 workflows.** In each one, open the **Config** node and replace every `REPLACE...` value (sheet ID, sender, reply-to, mailing address, ASM group ID, 8 template IDs). The same Config is in all three workflows, keep them identical. Assign credentials on the Sheets / HTTP / Calendly nodes.
-5. **Webhook URL.** In Workflow 1 copy the **Production** URL (`https://<your-n8n>/webhook/boxx-lead`) and paste it into Sanity Studio -> Site Settings -> `n8nLeadWebhookUrl`. No site code change needed. Activate all three workflows.
-6. **Framework PDF.** Put it at `public/BOXX-Website-Conversion-Framework.pdf` (not in the repo yet) or change `frameworkUrl` in Config.
-7. **Test:** run the form with your own email, check the `Leads` row, the inbox, then book a test call and confirm nurture stops.
+The three workflows are already saved in n8n. Update those workflows in place; keep their existing IDs and credential assignments. Generated JSON remains inactive and uses credential-ID placeholders; importing it must not replace working credentials with placeholders.
 
-## Calendly PAT authentication and connection-test 404
+- CRM Sheet: `16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g`, with `Leads`, `Email Events`, and `Error Log` tabs.
+- Credentials: existing Google Sheets OAuth2, native SendGrid API, and native Calendly PAT named **Calendly account**. Do not switch Calendly to OAuth.
+- Sender: **BOXX Automations <hello@boxxautomations.space>**; Reply-To: `hello@boxxautomations.space`; unsubscribe group: **42909**. These values are set in the generator's four Config nodes.
+- Email assets: eight existing Dynamic Templates (five nurture, three booking), using `emails/dist/*.html`, corresponding plain text and `subjects.json`. Set all eight real template IDs in every Config node. The physical mailing address remains a required owner-supplied value; never invent it.
+- The framework PDF is already in `public/BOXX-Website-Conversion-Framework.pdf`; verify its live URL before the owner's test.
+- When intake is configured, enable intake for the controlled owner test and copy its production webhook URL into Sanity `siteSettings.n8nLeadWebhookUrl`. Test the live website submission, Sheet row, Email 1 delivery, and day 2/4/7/10 due dates before broad production activation.
+- Test polling, booking exit, cancellation and reminders with the owner's Calendly booking. Scheduled workflows should be enabled only as needed for the controlled test, then approved by successful end-to-end results for production use.
+- Pending Cloudflare forwarding does not block outbound SendGrid testing.
 
-The existing version-1 `Calendly booking event` trigger explicitly uses `authentication: 'apiKey'` (the UI's Personal Access Token option), `scope: 'user'`, and the native `calendlyApi` credential. Assign the saved PAT credential in the live node; OAuth2 is not required for this version. Do not upgrade the trigger to version 2 as part of import: newer n8n's version-2 trigger requires OAuth2.
+## Calendly PAT polling
 
-Some older n8n releases (verified in n8n 1.100.1 source) test `Calendly API` credentials at `https://calendly.com/api/v1/users/me`. Their trigger uses the v2 API when the credential is recognized as a PAT. A 404 in that legacy credential test does not prove that the PAT is invalid. The installed instance version and the actual saved PAT have not yet been verified.
+Booking Exit now polls every 15 minutes using the saved **Calendly account** credential. It calls `GET /users/me`, resolves the configured discovery-call event type via `/event_types`, lists `/scheduled_events`, then fetches `/scheduled_events/{uuid}/invitees`. List calls paginate and include active and canceled records. No Calendly webhook registration or paid webhook upgrade is required by this implementation.
 
-Validate without exposing the token: create a temporary HTTP Request node in n8n, set GET `https://api.calendly.com/users/me`, choose Authentication -> Predefined Credential Type -> Calendly API, and select the existing saved PAT credential. Execute the node. HTTP 200 verifies the credential can authenticate; it does not yet prove webhook permissions. Next, test the existing Calendly trigger's webhook registration and a test booking/cancellation. An older credential implementation may misclassify a non-JWT token as a legacy API key; if the GET fails, inspect the status/error and installed n8n version before replacing the PAT or adopting OAuth2.
+The scan covers events starting within the last 30 days and all future events, filtered to `Config.calendlyUrl`. Cancellations are processed before replacement bookings. A sequential loop feeds the existing booking/cancellation decisions and then runs existing reminders. Repeated invitee snapshots are checkpointed after downstream handling in workflow static data; Sheets booking state provides the existing second deduplication layer. Static data is persisted by successful active executions, not manual executions. Validate persistence during the controlled scheduled test.
 
-Calendly's current API scopes for this integration include `users:read`, `webhooks:read`, and `webhooks:write`; the booking/cancellation subscriptions also require the relevant event-read scope. Paid webhook access is a separate requirement. Keep all token values in n8n Credentials.
+`GET /users/me` has already authenticated with the PAT. Event-type, scheduled-event and invitee access still require a live test with that same PAT; a successful current-user call alone does not verify those endpoints. Keep the token in n8n Credentials. An old credential-test 404 is not grounds to replace a PAT that authenticates against the v2 API.
 
-Primary references: [n8n credential source, 1.100.1](https://github.com/n8n-io/n8n/blob/n8n%401.100.1/packages/nodes-base/credentials/CalendlyApi.credentials.ts), [Calendly current-user endpoint](https://developer.calendly.com/api-docs/calendly-api/users/get-current-user), [Calendly webhook subscriptions](https://developer.calendly.com/api-docs/calendly-api/webhooks/create-webhook-subscription).
+Primary references: [Calendly list scheduled events](https://developer.calendly.com/api-docs/calendly-api/scheduled-events/list-scheduled-events), [Calendly list event invitees](https://developer.calendly.com/api-docs/calendly-api/scheduled-events/list-event-invitees), [Calendly scopes](https://developer.calendly.com/docs/authentication/scopes).
 
 ## Rules it enforces
 
@@ -50,15 +51,15 @@ Primary references: [n8n credential source, 1.100.1](https://github.com/n8n-io/n
 
 ## Verified vs not verified
 
-- Verified: all decision logic in the Code nodes (45 checks in `test-logic.js`): routing, dedupe, 30-day resend, cadence, stop conditions, Email 5 completion, booking/cancel/duplicate/stale events, reminders. Workflow JSON is structurally valid (no broken links).
-- **Not verified:** the workflows were never imported into a live n8n, and nothing was sent through SendGrid, Sheets or Calendly. Expect to fix small node-parameter differences on first import (n8n version differences in the Google Sheets / Calendly nodes). Test with your own email first.
+- Verified: all decision logic in the Code nodes (64 checks in `test-logic.js`): routing, dedupe, 30-day resend, cadence, stop conditions, Email 5 completion, booking/cancel/duplicate/stale events, reminders. Workflow JSON is structurally valid (no broken links).
+- **Not verified:** the polling revision has not been applied to live n8n. The three earlier workflows were imported and saved, but provider integration and live website end-to-end testing remain outstanding. Check HTTP pagination, sequential loop item selection, credentials, and static-data persistence on the installed n8n version.
 
 ## Known limits / follow-ups
 
 - No SendGrid event webhook yet (bounces/spam complaints/unsubscribes). SendGrid still suppresses those addresses itself, but the sheet will not show it and the scheduler keeps advancing them. Next step: a 4th small workflow that sets `unsubscribe_status=TRUE`.
 - SendGrid has no idempotency key: if a send succeeds but the sheet write then fails, the next run can resend. Failures land in `Error Log`.
 - Google Sheets is not transactional; two near-simultaneous submissions from one email could create two rows.
-- Calendly webhooks require a paid Calendly plan. The email says "15-Minute Call": make sure the Calendly event length matches.
+- Polling can take up to 15 minutes plus execution time to detect a booking. A booking between polls can race a due nurture email. The 30-day historical scan does not discover changes to older calls. Confirm the discovery-call length matches the email copy.
 - Capacity counter (spots open) is still hand-set in `lib/site-config.ts`; not wired to the sheet.
 - Email 4 has no client proof by design. Real `[CLIENT RESULT]`, `[CLIENT QUOTE]`, `[CASE STUDY]` go in `emails/build.js` only once they exist.
 - Post-call proposal / access checklist / invoice stay manual (only status auto-updates to CALL_COMPLETED).

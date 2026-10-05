@@ -1,29 +1,34 @@
 # BOXX deployment status
 
-Source reviewed: `2d19802` on `main` (2026-10-02 UTC).
+Updated 2026-10-05 UTC, continuing `cce2b9c` on `main`. No system redesign.
 
-## Completed
+## Existing live state
 
-- Read the setup guide, generators, workflows, email assets, Sheet templates, and website form integration.
-- Existing 45 decision-logic checks pass.
-- Fixed four IF v2 nodes that used the legacy IF v1 conditions format. Generator and JSON agree; business decisions are unchanged.
-- Created and verified the native Google Sheets workbook **BOXX Automation CRM**:
-  https://docs.google.com/spreadsheets/d/16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g/edit
-- Exact CSV headers verified in `Leads`, `Email Events`, and `Error Log`; no lead data added.
-- Added the existing 11-phase, 77-item framework PDF at `public/BOXX-Website-Conversion-Framework.pdf`.
+- All three BOXX workflows are imported and saved in n8n, inactive at inspection.
+- Google Sheets and native SendGrid credentials are connected (owner-provided state).
+- Native Calendly PAT **Calendly account** authenticated against `GET /users/me`; preserve it and do not switch to OAuth.
+- CRM workbook: https://docs.google.com/spreadsheets/d/16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g/edit
+- SendGrid domain authentication is verified (owner-provided state). Unsubscribe group is **42909**.
 
-## Still required before activation
+## Repository changes completed
 
-- Import all three corrected workflows and set `sheetId` to `16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g` in all four Config nodes.
-- Connect Google Sheets OAuth2, SendGrid Header Auth, and Calendly credentials. None existed in the live credential list at inspection.
-- Verify sender, create the eight existing email templates and an unsubscribe group, then fill sender/reply-to/address/group/template placeholders.
-- Confirm the Calendly plan supports the trigger and the event is 15 minutes.
-- Verify the PDF is served by the production site after deployment.
-- Test intake, email delivery, nurture, booking exit, cancellation and reminders with the owner's address before activating production schedules and connecting Sanity.
-- Set Sanity `n8nLeadWebhookUrl` only when the intake workflow is ready; production URL should be copied from the live node.
+- Replaced Calendly webhook transport with 15-minute PAT polling, paginated event-type/event/invitee reads, canceled-event handling, sequential booking processing and persisted snapshot deduplication.
+- Preserved booking exit, cancellation, nurture stop, confirmation and reminder decisions. Repeated/historical cancellation cannot clear an unrelated booking.
+- Set the CRM Sheet ID, native SendGrid credential type, sender **BOXX Automations <hello@boxxautomations.space>**, Reply-To `hello@boxxautomations.space`, and unsubscribe group **42909** in generated Config nodes.
+- Regenerated all workflow JSON, inactive. All **64** logic/structure checks pass. These are local checks, not live provider verification.
 
-## Environment blocker
+## Remaining work before production activation
 
-n8n sign-in succeeded and the workflow/credential lists were readable. The cloud browser's native credential protection blocked the file chooser and subsequently prevented the runtime from resuming. No BOXX workflow was imported or activated, no Sanity settings were changed, and no email was sent.
+- Apply the revision to existing live workflow IDs, retaining saved credentials; do not create duplicate production workflows.
+- Obtain the owner's physical mailing address. Eight email template IDs and mailing address remain placeholders; outbound email is not ready until they are configured.
+- Create/verify eight SendGrid Dynamic Templates and assign their IDs to all four Config nodes.
+- Verify the same PAT can list event types, scheduled events and invitees; validate pagination, loop handling and static-data persistence in the installed n8n version.
+- Connect Sanity `siteSettings.n8nLeadWebhookUrl` when intake is ready, enable controlled testing, and let the owner submit their own information through the live website.
+- Verify n8n execution, correct Sheet row, immediate Email 1, and Emails 2–5 due dates. Then verify a real Calendly test booking is detected within the poll interval, stops nurture and sends confirmation/reminders; test cancellation too.
+- Activate appropriate production workflows after successful end-to-end tests. Cloudflare email forwarding must not block outbound testing.
 
-The known limits listed in README remain in effect. In particular, the checks above cover Code-node decisions, not live provider integration.
+## Current access blocker
+
+Secure n8n sign-in succeeded and the workflow list/editor were readable, but Work browser native credential protection subsequently blocked observation and prevented the runtime from safely resuming. This session did not change live workflows, SendGrid templates, or Sanity, activate anything, or send email. A fresh authorized Work browser session is needed to complete live configuration.
+
+Known limits in README remain. The framework PDF already exists in the repo; confirm its production URL during testing.

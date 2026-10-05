@@ -2,7 +2,7 @@
   "name": "BOXX - Nurture Scheduler",
   "nodes": [
     {
-      "id": "796f8340-9bee-4ddc-a33a-9120c2c4eee8",
+      "id": "a9972eb6-d0c9-409c-9444-82d402124983",
       "position": [
         0,
         200
@@ -22,7 +22,7 @@
       }
     },
     {
-      "id": "dd4e4d6c-12b1-4ed8-b243-fec8edea213c",
+      "id": "46bb3e07-9f01-4b54-9919-ee3e4ebca94b",
       "position": [
         260,
         200
@@ -32,11 +32,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: 'REPLACE_WITH_GOOGLE_SHEET_ID',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'REPLACE_VERIFIED_SENDER@yourdomain.com',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'REPLACE_REPLY_TO@yourdomain.com',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',\n  asmGroupId: 0, // SendGrid unsubscribe group ID (number)\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
       }
     },
     {
-      "id": "3974fb87-3c73-40fb-9963-87db31b78352",
+      "id": "f3676649-791f-44d4-978c-4f109ce9b3fa",
       "position": [
         520,
         200
@@ -76,7 +76,7 @@
       }
     },
     {
-      "id": "01858832-7ca8-4d63-af50-6829a57b8f3c",
+      "id": "77c99040-3cb9-47b8-ac72-63954b777180",
       "position": [
         780,
         200
@@ -90,7 +90,7 @@
       }
     },
     {
-      "id": "ade5d436-5dac-4723-b39e-03ea051115a8",
+      "id": "894eca8b-b135-4228-956b-310aa1d2cd69",
       "position": [
         1040,
         200
@@ -108,7 +108,7 @@
           },
           "conditions": [
             {
-              "id": "4f198a9e-3128-44ad-a53a-7154ad342a81",
+              "id": "371c8945-fad6-4074-bdfd-692d463b4d35",
               "leftValue": "={{ $json.action }}",
               "rightValue": "send",
               "operator": {
@@ -123,7 +123,7 @@
       }
     },
     {
-      "id": "e816b89a-c768-4dc4-8248-2d963f324178",
+      "id": "fcf09561-976c-40b7-a7e8-cacd9fe32e62",
       "position": [
         1300,
         600
@@ -137,7 +137,7 @@
       }
     },
     {
-      "id": "faa998fa-0065-4e74-aa17-b35baab288f4",
+      "id": "bfca46e3-4deb-40f1-b166-ddef061f3fa8",
       "position": [
         1560,
         600
@@ -179,7 +179,7 @@
       }
     },
     {
-      "id": "cdfff53a-b86e-4b2b-a3c0-9ebbe596f52f",
+      "id": "b0a8fc17-cf58-4a36-b0cd-faa3473369b1",
       "position": [
         1300,
         0
@@ -193,7 +193,7 @@
       }
     },
     {
-      "id": "99cf1614-f704-4fc7-9915-1757d56455a6",
+      "id": "7718d300-6536-4572-9a7b-eff4560518d9",
       "position": [
         1560,
         0
@@ -202,9 +202,9 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "credentials": {
-        "httpHeaderAuth": {
+        "sendGridApi": {
           "id": "REPLACE_ME",
-          "name": "SendGrid API key"
+          "name": "SendGrid account"
         }
       },
       "retryOnFail": true,
@@ -214,8 +214,8 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.sendgrid.com/v3/mail/send",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sendGridApi",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
@@ -229,7 +229,7 @@
       }
     },
     {
-      "id": "1c2a95c4-18f0-49c1-aeaf-e513e3363dd6",
+      "id": "772fac54-6bb5-4317-8414-792d93e927a8",
       "position": [
         1820,
         -60
@@ -243,7 +243,7 @@
       }
     },
     {
-      "id": "21a9f5f2-f6d2-4268-84ef-d92c6edcb081",
+      "id": "646794d8-ba4b-4835-bab9-e3dec4ddba7d",
       "position": [
         2080,
         -60
@@ -285,7 +285,7 @@
       }
     },
     {
-      "id": "f6069f9d-497a-4b75-86c9-0017fc1779f2",
+      "id": "d7c14374-df7d-430c-915b-6edcdd39fd59",
       "position": [
         1820,
         140
@@ -299,7 +299,7 @@
       }
     },
     {
-      "id": "cb6f1d55-d8a0-4b6e-bcd8-3ee955ad9100",
+      "id": "a2dbeee4-50b2-4cef-b71a-0e4adc34b845",
       "position": [
         2080,
         140
@@ -339,7 +339,7 @@
       }
     },
     {
-      "id": "29211a9b-27d5-4a9d-9b96-9a28398308be",
+      "id": "0b2ad97e-ac1e-4331-a4d4-f0c39b43cc72",
       "position": [
         1820,
         340
@@ -353,7 +353,7 @@
       }
     },
     {
-      "id": "525c6ebd-d6dc-4038-aa4b-9a63a7c62c42",
+      "id": "df0ed4d1-161f-4c4c-80da-9e5b656eed1a",
       "position": [
         2080,
         340
@@ -393,7 +393,7 @@
       }
     },
     {
-      "id": "8465f4d4-8f9c-4e18-8077-5c85989d989b",
+      "id": "7e7b669c-0cca-4c5c-a063-fbd1c2237796",
       "position": [
         0,
         -400

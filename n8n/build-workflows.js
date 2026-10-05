@@ -3,11 +3,12 @@
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
+const { addPolling } = require('./calendly-polling')
 
 // ---------------------------------------------------------------- helpers
 const uuid = () => crypto.randomUUID()
 const CRED_SHEETS = { googleSheetsOAuth2Api: { id: 'REPLACE_ME', name: 'Google Sheets account' } }
-const CRED_SG = { httpHeaderAuth: { id: 'REPLACE_ME', name: 'SendGrid API key' } }
+const CRED_SG = { sendGridApi: { id: 'REPLACE_ME', name: 'SendGrid account' } }
 const CRED_CAL = { calendlyApi: { id: 'REPLACE_ME', name: 'Calendly account' } }
 
 function workflow(name) {
@@ -62,7 +63,7 @@ const sendgrid = (name, { errorOutput = false } = {}) => ({
   ...(errorOutput ? { onError: 'continueErrorOutput' } : { onError: 'continueRegularOutput' }),
   parameters: {
     method: 'POST', url: 'https://api.sendgrid.com/v3/mail/send',
-    authentication: 'genericCredentialType', genericAuthType: 'httpHeaderAuth',
+    authentication: 'predefinedCredentialType', nodeCredentialType: 'sendGridApi',
     sendBody: true, specifyBody: 'json', jsonBody: '={{ JSON.stringify($json.sgBody) }}',
     options: { response: { response: { fullResponse: true } } },
   },
@@ -76,16 +77,17 @@ const CONFIG_JS = String.raw`// ====== EDIT THESE (placeholders only. Secrets li
 // Keep the same values in all three BOXX workflows.
 const fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']
 return [{ json: {
-  sheetId: 'REPLACE_WITH_GOOGLE_SHEET_ID',
+  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',
   siteUrl: 'https://boxxautomations.space',
   frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',
   calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',
-  fromEmail: 'REPLACE_VERIFIED_SENDER@yourdomain.com',
-  fromName: 'Kaleel at BOXX',
-  replyTo: 'REPLACE_REPLY_TO@yourdomain.com',
+  fromEmail: 'hello@boxxautomations.space',
+  fromName: 'BOXX Automations',
+  replyTo: 'hello@boxxautomations.space',
   notifyEmail: 'kaleellawrenceboxx@gmail.com',
   mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',
-  asmGroupId: 0, // SendGrid unsubscribe group ID (number)
+  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)
+  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.
   // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.
   cadenceDays: [2, 4, 7, 10],
   resendAfterDays: 30,
@@ -379,11 +381,9 @@ function booking() {
     renameOutput: true, outputKey: out,
   })
 
-  // ---- Branch A: Calendly events
-  A({ name: 'Calendly booking event', type: 'n8n-nodes-base.calendlyTrigger', typeVersion: 1, webhookId: uuid(), credentials: CRED_CAL,
-    parameters: { authentication: 'apiKey', scope: 'user', events: ['invitee.created', 'invitee.canceled'] } }, 0, 1)
-  A(code('Config', CONFIG_JS), 1, 1)
-  A(code('Parse Calendly event', String.raw`const j = $('Calendly booking event').first().json
+  // ---- Branch A: Calendly events via PAT polling (no webhook subscription)
+  A(code('Config', CONFIG_JS), -5, 1)
+  A(code('Parse Calendly event', String.raw`const j = $input.first().json
 const pl = j.payload || (j.body && j.body.payload) || {}
 const ev = j.event || (j.body && j.body.event) || ''
 const se = pl.scheduled_event || {}
@@ -408,11 +408,12 @@ if (p.type === 'created') {
     reminder_24h_sent: 'FALSE', reminder_day_sent: 'FALSE', updated_at: iso }
   return [{ json: { action: 'booked', row, lead_id: ex.lead_id, email: ex.email, first_name: String(ex.name || p.name || '').split(' ')[0], startTime: p.startTime } }]
 }
-if (ex.calendly_event_id && ex.calendly_event_id !== p.eventUri) return [{ json: { action: 'stale_cancel' } }]
+// Repeated polling of an already-cleared/old cancellation is a no-op.
+if (!T(ex.calendly_booked) || ex.calendly_event_id !== p.eventUri) return [{ json: { action: 'stale_cancel' } }]
 const row = { email: ex.email, calendly_booked: 'FALSE', calendly_event_id: '', call_date: '', client_status: isClient ? 'ACTIVE' : 'CALL_CANCELLED', updated_at: iso }
 return [{ json: { action: 'canceled', row } }]`), 4, 1)
   A({ name: 'Route booking action', type: 'n8n-nodes-base.switch', typeVersion: 3,
-    parameters: { rules: { values: [eq('booked', 'booked'), eq('canceled', 'canceled'), eq('unmatched', 'unmatched')] }, options: {} } }, 5, 1)
+    parameters: { rules: { values: [eq('booked', 'booked'), eq('canceled', 'canceled'), eq('unmatched', 'unmatched')] }, options: { fallbackOutput: 'extra' } } }, 5, 1)
 
   A(code('Row only (booked)', String.raw`return [{ json: $input.first().json.row }]`), 6, 0)
   A(sheetsWrite('Save booking (stops nurture)', 'Config', 'Leads', 'appendOrUpdate', 'email'), 7, 0)
@@ -442,8 +443,7 @@ return [{ json: { error_id: 'err_' + Date.now().toString(36), timestamp: new Dat
   A(sheetsWrite('Log unmatched booking', 'Config', 'Error Log', 'append'), 7, 3)
 
   // ---- Branch B: reminders + call-completed status
-  A({ name: 'Every 15 minutes (reminders)', type: 'n8n-nodes-base.scheduleTrigger', typeVersion: 1.2,
-    parameters: { rule: { interval: [{ field: 'minutes', minutesInterval: 15 }] } } }, 0, 6)
+  // Reminders run after polling finishes, so cancellations are applied first.
   A(code('Config (reminders)', CONFIG_JS), 1, 6)
   A(sheetsRead('Get booked leads', 'Config (reminders)', 'Leads', 'calendly_booked', 'TRUE'), 2, 6)
   A(code('Plan reminders', String.raw`const cfg = $('Config (reminders)').first().json
@@ -496,9 +496,9 @@ return { json: row }`, 'runOnceForEachItem'), 7, 6.6)
   A(code('Row: reminder error', errorRow('BOXX - Booking Exit', 'Build reminder email'), 'runOnceForEachItem'), 7, 8.6)
   A(sheetsWrite('Log reminder failure', 'Config (reminders)', 'Error Log', 'append'), 8, 8.6)
 
-  A(sticky('## BOXX - Booking Exit\n**Top:** Calendly trigger. On a booking the lead gets calendly_booked = TRUE, nurture_status = STOPPED, client_status = CALL_BOOKED, and a branded confirmation is sent. Cancel/reschedule never restarts nurture (a stale cancel from a reschedule is ignored). A booker whose email matches no lead is logged to Error Log.\n\n**Bottom:** every 15 min sends the 24h and same-day reminders, and flips client_status to CALL_COMPLETED once the call time has passed. Proposal / access checklist / invoice stay manual.\n\nCalendly webhooks need a paid Calendly plan.', 470, 330), 0, -2)
+  A(sticky('## BOXX - Booking Exit\nEvery 15 minutes: read Calendly using the existing PAT, filter to the discovery-call event type, and process bookings/cancellations one at a time. Pagination is enabled. The last 30 days and all future events are scanned.\n\nBookings stop nurture; cancellations never restart it. Seen invitee states are checkpointed after processing. Reminders run after polling, including when there are no new events.\n\nNo Calendly webhook or OAuth required. Verify API access on the actual plan before activation. Proposal / access checklist / invoice stay manual.', 470, 330), -6, -3)
 
-  W.chain('Calendly booking event', 'Config', 'Parse Calendly event', 'Find lead by email', 'Decide booking', 'Route booking action')
+  W.chain('Parse Calendly event', 'Find lead by email', 'Decide booking', 'Route booking action')
   W.link('Route booking action', 'Row only (booked)', 0)
   W.link('Route booking action', 'Row only (canceled)', 1)
   W.link('Route booking action', 'Row: unmatched booking', 2)
@@ -510,7 +510,7 @@ return { json: row }`, 'runOnceForEachItem'), 7, 6.6)
   W.chain('Row only (canceled)', 'Save cancellation (nurture stays stopped)')
   W.chain('Row: unmatched booking', 'Log unmatched booking')
 
-  W.chain('Every 15 minutes (reminders)', 'Config (reminders)', 'Get booked leads', 'Plan reminders', 'Call already happened?')
+  W.chain('Config (reminders)', 'Get booked leads', 'Plan reminders', 'Call already happened?')
   W.link('Call already happened?', 'Row: call completed', 0)
   W.link('Call already happened?', 'Build reminder email', 1)
   W.chain('Row: call completed', 'Mark call completed')
@@ -521,6 +521,7 @@ return { json: row }`, 'runOnceForEachItem'), 7, 6.6)
   W.chain('Row: reminder sent', 'Mark reminder sent')
   W.chain('Row: reminder event', 'Log reminder event')
   W.chain('Row: reminder error', 'Log reminder failure')
+  addPolling(W, code, CRED_CAL)
   return W
 }
 

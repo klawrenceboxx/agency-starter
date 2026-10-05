@@ -2,7 +2,7 @@
   "name": "BOXX - Lead Intake",
   "nodes": [
     {
-      "id": "8039b444-3bf7-4821-9048-83a814331806",
+      "id": "8465277f-62c7-4604-9ba8-df1da887b3b6",
       "position": [
         0,
         200
@@ -10,7 +10,7 @@
       "name": "Audit form webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "webhookId": "9590b89e-46ab-4712-843c-1990bfbeacf8",
+      "webhookId": "dd3cfe06-315e-4671-8e92-50bbcdc5ffce",
       "parameters": {
         "httpMethod": "POST",
         "path": "boxx-lead",
@@ -21,7 +21,7 @@
       }
     },
     {
-      "id": "de0cddbe-91dc-469d-95da-fb520c19a0f5",
+      "id": "6d160466-f723-4342-88dc-d497df3c31b6",
       "position": [
         260,
         200
@@ -31,11 +31,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: 'REPLACE_WITH_GOOGLE_SHEET_ID',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'REPLACE_VERIFIED_SENDER@yourdomain.com',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'REPLACE_REPLY_TO@yourdomain.com',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',\n  asmGroupId: 0, // SendGrid unsubscribe group ID (number)\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: 'REPLACE: BOXX Automations, street address, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
       }
     },
     {
-      "id": "8ac5a80a-5c22-46f4-8925-8ab6ee916f86",
+      "id": "342af387-ef5c-4d81-a6bd-42a13d27f8ba",
       "position": [
         520,
         200
@@ -49,7 +49,7 @@
       }
     },
     {
-      "id": "c3457d9d-f7aa-4bfd-bb2c-3a451a37412b",
+      "id": "c52b9eed-73d3-4036-8e7a-5e45f9c9cde2",
       "position": [
         780,
         200
@@ -67,7 +67,7 @@
           },
           "conditions": [
             {
-              "id": "a6372270-3dba-4185-bd41-c2ce74a8fc3e",
+              "id": "4d8ab471-ceee-4dab-8787-d60e99c21e29",
               "leftValue": "={{ $json.ok }}",
               "rightValue": true,
               "operator": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "6965114d-aa9f-42f9-8da0-876d4874ba13",
+      "id": "4f7834dd-2946-4181-92f3-61d79ca7d69b",
       "position": [
         1040,
         0
@@ -96,7 +96,7 @@
       }
     },
     {
-      "id": "9f9669e8-da7b-41fe-9515-4d4b5f00898c",
+      "id": "df3d8ba1-faaa-408e-92e7-1d8ee9b2e531",
       "position": [
         1300,
         0
@@ -136,7 +136,7 @@
       }
     },
     {
-      "id": "45cc4ba9-104e-4fc4-8508-e9e53ea15ca8",
+      "id": "644a5dbf-38da-464e-97bd-7af8eaba25ed",
       "position": [
         1560,
         0
@@ -161,7 +161,7 @@
       }
     },
     {
-      "id": "884ca94d-1eda-4e80-bb1d-f21e3cea9819",
+      "id": "a7490435-1554-45c3-9e92-fbfe985169f9",
       "position": [
         1040,
         400
@@ -201,7 +201,7 @@
       }
     },
     {
-      "id": "9bef48e8-e52d-443b-8213-36bb64773b83",
+      "id": "5243adc2-8b0d-4d14-9f5e-2676c653fa63",
       "position": [
         1300,
         400
@@ -215,7 +215,7 @@
       }
     },
     {
-      "id": "f77523a8-c157-47bf-8962-50006960b434",
+      "id": "d386ccd6-ebd4-4989-9d77-147493dc8009",
       "position": [
         1560,
         400
@@ -229,7 +229,7 @@
       }
     },
     {
-      "id": "a12f26e4-b5b3-4727-bdf8-7116925b1117",
+      "id": "4723d32b-e378-4d79-9ff6-4dde138bad35",
       "position": [
         1820,
         400
@@ -271,7 +271,7 @@
       }
     },
     {
-      "id": "8b35af26-c75e-4511-9ab3-564227275dd1",
+      "id": "37fdad19-d844-4532-ba61-fd9275bec391",
       "position": [
         2080,
         400
@@ -296,7 +296,7 @@
       }
     },
     {
-      "id": "9a3ce252-68d1-4dc6-8f48-de0889a3e77f",
+      "id": "e9d1ddab-4f97-4946-b43d-56421bec4cd0",
       "position": [
         2340,
         400
@@ -310,7 +310,7 @@
       }
     },
     {
-      "id": "cb2168de-56b3-43f0-814e-5f056d23ffd6",
+      "id": "56787f65-75f2-4959-a47e-b7fcaa742f05",
       "position": [
         2600,
         400
@@ -319,9 +319,9 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "credentials": {
-        "httpHeaderAuth": {
+        "sendGridApi": {
           "id": "REPLACE_ME",
-          "name": "SendGrid API key"
+          "name": "SendGrid account"
         }
       },
       "retryOnFail": true,
@@ -331,8 +331,8 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.sendgrid.com/v3/mail/send",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sendGridApi",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
@@ -346,7 +346,7 @@
       }
     },
     {
-      "id": "042c0940-d094-467e-904b-70b2bba41a7c",
+      "id": "e33b361f-4171-4a74-b916-d2cf833e1dd9",
       "position": [
         2860,
         400
@@ -364,7 +364,7 @@
           },
           "conditions": [
             {
-              "id": "7dc889ff-6399-4f94-b8dd-0cbffee360e4",
+              "id": "3e025ca4-c8c1-4fa0-b0a8-3c5636c3fff7",
               "leftValue": "={{ $('Decide').first().json.sendEmail1 }}",
               "rightValue": true,
               "operator": {
@@ -379,7 +379,7 @@
       }
     },
     {
-      "id": "41cb43b7-4643-4387-9b92-45531a278165",
+      "id": "e6ec8f7c-80e9-4a86-bf41-045c62958c2a",
       "position": [
         3120,
         200
@@ -393,7 +393,7 @@
       }
     },
     {
-      "id": "f78c0774-e20c-46d2-bcc9-9830d5e89614",
+      "id": "cdfee95e-4f75-4b8b-b6c7-5054e2de4319",
       "position": [
         3380,
         200
@@ -402,9 +402,9 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "credentials": {
-        "httpHeaderAuth": {
+        "sendGridApi": {
           "id": "REPLACE_ME",
-          "name": "SendGrid API key"
+          "name": "SendGrid account"
         }
       },
       "retryOnFail": true,
@@ -414,8 +414,8 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.sendgrid.com/v3/mail/send",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sendGridApi",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
@@ -429,7 +429,7 @@
       }
     },
     {
-      "id": "5ef0453f-d18b-4109-88d2-3bca364c9c08",
+      "id": "d07d56dd-17b4-4586-a617-ece4dd9b931c",
       "position": [
         3640,
         0
@@ -443,7 +443,7 @@
       }
     },
     {
-      "id": "900bf5a4-3d8b-4b01-ba12-eb43fb96ab0c",
+      "id": "cc30fbdd-01a2-4311-9b4b-2d2e778171cd",
       "position": [
         3900,
         0
@@ -485,7 +485,7 @@
       }
     },
     {
-      "id": "f588ba34-3964-46d7-83e6-015713dd7ad2",
+      "id": "0a7f10b9-4c43-4bae-8d93-c8a3a8ae9ff0",
       "position": [
         3640,
         200
@@ -499,7 +499,7 @@
       }
     },
     {
-      "id": "19943c8a-a57f-4df2-8e15-6d655b2850d9",
+      "id": "9ce1d91e-fd73-43d9-ac80-49ed71d181fb",
       "position": [
         3900,
         200
@@ -539,7 +539,7 @@
       }
     },
     {
-      "id": "d862f94a-cc11-4a5e-b2da-c34251d7f1b3",
+      "id": "02e0eb15-126e-442d-8c53-5c31910bf75a",
       "position": [
         3640,
         600
@@ -553,7 +553,7 @@
       }
     },
     {
-      "id": "07597d5e-0e26-4826-9084-7300513b1f9b",
+      "id": "af08e882-63b8-445e-959c-d04f3592e2cd",
       "position": [
         3900,
         600
@@ -593,7 +593,7 @@
       }
     },
     {
-      "id": "b69c5662-5360-404d-8781-f875e23e7d3f",
+      "id": "1cdea694-def6-47bd-bd0f-1d00b96ab58c",
       "position": [
         0,
         -400

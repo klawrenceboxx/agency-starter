@@ -31,7 +31,7 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Credentials belong to n8n's Twilio credential, not this public configuration.\n  smsEnabled: false,\n  twilioAccountSid: '',\n  twilioMessagingServiceSid: '',\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
       }
     },
     {
@@ -45,7 +45,7 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const b = $('Audit form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst name = clean(b.name).slice(0, 100)\nif (name.length < 2) errors.push('missing_name')\nconst website = clean(b.website).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/+$/, '').slice(0, 200)\nif (!/^[^\\s.\\/]+(\\.[^\\s.\\/]+)+(\\/\\S*)?$/.test(website)) errors.push('invalid_website')\nconst svc = (Array.isArray(b.services) ? b.services : []).map(s => clean(s).toLowerCase())\nconst hasW = svc.includes('website'), hasE = svc.includes('emails')\nif (!hasW && !hasE) errors.push('unknown_interest')\nconst budgets = ['under-1000', '1000-2500', '2500-plus']\nconst lead = {\n  email, name, first_name: name.split(' ')[0], website,\n  phone: clean(b.phone).slice(0, 30),\n  interest: hasW && hasE ? 'both' : hasE ? 'emails' : 'website',\n  nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',\n  budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',\n  source: clean(b.source).slice(0, 300),\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
+        "jsCode": "const b = $('Audit form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst name = clean(b.name).slice(0, 100)\nif (name.length < 2) errors.push('missing_name')\nconst website = clean(b.website).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/+$/, '').slice(0, 200)\nif (!/^[^\\s.\\/]+(\\.[^\\s.\\/]+)+(\\/\\S*)?$/.test(website)) errors.push('invalid_website')\nconst svc = (Array.isArray(b.services) ? b.services : []).map(s => clean(s).toLowerCase())\nconst hasW = svc.includes('website'), hasE = svc.includes('emails')\nif (!hasW && !hasE) errors.push('unknown_interest')\nconst budgets = ['under-1000', '1000-2500', '2500-plus']\nconst networking = b.source === 'networking' && b.consent_version === 'networking-consent-v1'\nif (b.consent_version && !networking) errors.push('invalid_consent_profile')\nconst digits = clean(b.phone).replace(/\\D/g, '')\nlet phone = clean(b.phone).slice(0,30)\nif (networking) {\n  if (!/^[+\\d\\s().-]+$/.test(phone) || !(/^[2-9]\\d{2}[2-9]\\d{6}$/.test(digits) || /^1[2-9]\\d{2}[2-9]\\d{6}$/.test(digits))) errors.push('invalid_phone')\n  else phone = '+' + (digits.length === 10 ? '1' : '') + digits\n  for (const key of ['email_marketing_consent','sms_marketing_consent']) if(typeof b[key] !== 'boolean') errors.push('invalid_' + key)\n}\nconst recorded = new Date().toISOString()\nconst consent = networking ? {\n  consent_profile:'networking-consent-v1', email_marketing_consent:b.email_marketing_consent===true?'TRUE':'FALSE',\n  sms_marketing_consent:b.sms_marketing_consent===true?'TRUE':'FALSE',\n  email_consent_at:b.email_marketing_consent===true?recorded:'', sms_consent_at:b.sms_marketing_consent===true?recorded:'',\n  consent_recorded_at:recorded,consent_source:'https://boxxautomations.space/audit',consent_version:'networking-consent-v1'\n} : {}\nconst lead = { ...consent,\n  email, name, first_name: name.split(' ')[0], website,\n  phone,\n  interest: hasW && hasE ? 'both' : hasE ? 'emails' : 'website',\n  nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',\n  budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',\n  source: clean(b.source).slice(0, 300),\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
       }
     },
     {
@@ -211,7 +211,7 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst v = $('Validate & normalize').first().json\nconst L = v.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\nconst contact = { email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }\nconst fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,\n  nurture_status: 'ACTIVE', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '', stop_reason: '' }\nlet row, sendEmail1 = false, reason, isNew = false\nif (!ex) {\n  isNew = true; sendEmail1 = true; reason = 'new_lead'\n  row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,\n    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING' }, contact, fresh)\n} else {\n  const blocked = T(ex.unsubscribe_status) || T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'\n  const start = new Date(ex.framework_delivered_at || ex.created_at)\n  const ageDays = isNaN(start) ? 0 : (now - start) / 864e5\n  if (!blocked && ageDays > cfg.resendAfterDays) {\n    sendEmail1 = true; reason = 'resend_after_' + cfg.resendAfterDays + '_days'; row = Object.assign({}, contact, fresh)\n  } else {\n    reason = blocked ? 'existing_lead_blocked' : 'duplicate_within_window'; row = contact\n  }\n}\nconst lead = Object.assign({}, L, { lead_id: ex ? ex.lead_id : row.lead_id })\nreturn [{ json: { sendEmail1, reason, isNew, row, lead } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst v = $('Validate & normalize').first().json\nconst L = v.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\nconst contact = { email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }\nconst fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,\n  nurture_status: 'ACTIVE', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '', stop_reason: '' }\nlet row, sendEmail1 = false, reason, isNew = false\nif (!ex) {\n  isNew = true; sendEmail1 = true; reason = 'new_lead'\n  row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,\n    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING' }, contact, fresh)\n} else {\n  const blocked = T(ex.unsubscribe_status) || T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'\n  const start = new Date(ex.framework_delivered_at || ex.created_at)\n  const ageDays = isNaN(start) ? 0 : (now - start) / 864e5\n  if (!blocked && ageDays > cfg.resendAfterDays) {\n    sendEmail1 = true; reason = 'resend_after_' + cfg.resendAfterDays + '_days'; row = Object.assign({}, contact, fresh)\n  } else {\n    reason = blocked ? 'existing_lead_blocked' : 'duplicate_within_window'; row = contact\n  }\n}\nconst profile = L.consent_profile === 'networking-consent-v1' || (ex && ex.consent_profile === 'networking-consent-v1')\nconst consent = L.consent_profile === 'networking-consent-v1' ? Object.fromEntries([\"consent_profile\",\"email_marketing_consent\",\"sms_marketing_consent\",\"email_consent_at\",\"sms_consent_at\",\"consent_recorded_at\",\"consent_source\",\"consent_version\"].map(k=>[k,L[k]])) : (profile ? Object.fromEntries([\"consent_profile\",\"email_marketing_consent\",\"sms_marketing_consent\",\"email_consent_at\",\"sms_consent_at\",\"consent_recorded_at\",\"consent_source\",\"consent_version\"].map(k=>[k,ex[k]])) : {})\nif (profile) {\n  Object.assign(row, consent)\n  if(L.consent_profile === 'networking-consent-v1') row.source='networking'\n  if (ex && T(ex.framework_delivered) && !sendEmail1 && !T(consent.email_marketing_consent) && !T(ex.unsubscribe_status) && !T(ex.calendly_booked) && String(ex.client_status).toUpperCase()!=='ACTIVE') {\n    row.nurture_status='STOPPED'; row.stop_reason='no_email_marketing_consent'; row.next_email_due_at=''\n  }\n  if (ex && ex.stop_reason==='no_email_marketing_consent' && T(consent.email_marketing_consent) && !T(ex.unsubscribe_status) && !T(ex.calendly_booked) && String(ex.client_status).toUpperCase()!=='ACTIVE') { row.nurture_status='ACTIVE';row.stop_reason='' }\n}\nconst sendSms = L.consent_profile==='networking-consent-v1' && T(L.sms_marketing_consent) && !(ex && T(ex.sms_opt_out)) && !(ex && ['PENDING','QUEUED','SENT','DELIVERED'].includes(String(ex.sms_confirmation_status).toUpperCase()))\nif(sendSms) row.sms_confirmation_status='PENDING'\nconst lead = Object.assign({}, L, consent, { lead_id: ex ? ex.lead_id : row.lead_id })\nreturn [{ json: { sendEmail1, sendSms, reason, isNew, row, lead } }]"
       }
     },
     {
@@ -389,7 +389,7 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject: cfg.subjects[0],\n    dynamic_template_data: Object.assign(baseData(cfg), { first_name: L.first_name, website: L.website, subject: cfg.subjects[0] }) }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  template_id: cfg.templates[L.nurture_path][0],\n  asm: { group_id: cfg.asmGroupId },\n  categories: ['boxx-nurture', 'email-1'], custom_args: { lead_id: L.lead_id, email_type: 'nurture-1' },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'nurture-1' } } }]"
+        "jsCode": "const result = (()=>{const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject: cfg.subjects[0],\n    dynamic_template_data: Object.assign(baseData(cfg), { first_name: L.first_name, website: L.website, subject: cfg.subjects[0] }) }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  template_id: cfg.templates[L.nurture_path][0],\n  asm: { group_id: cfg.asmGroupId },\n  categories: ['boxx-nurture', 'email-1'], custom_args: { lead_id: L.lead_id, email_type: 'nurture-1' },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'nurture-1' } } }]\n})()\nconst leads=[$('Decide').first().json.lead]\nfor(let i=0;i<result.length;i++) {\n const L=leads[i]\n const first=true\n if(first && L.consent_profile==='networking-consent-v1' && String(L.email_marketing_consent).toUpperCase()!=='TRUE') {\n  result[i].json.meta.auditOnly=true\n  const body=result[i].json.sgBody\n  delete body.template_id\n  for(const p of body.personalizations) delete p.dynamic_template_data\n  body.content=[{type:'text/plain',value:'Hi '+(L.first_name||String(L.name||'').split(' ')[0])+', thanks for requesting your free audit.\\n\\nDownload your free BOXX Website Conversion Framework: '+$('Config').first().json.frameworkUrl+'\\n\\nKaleel will review your website and email your audit recommendations. You have not signed up for promotional follow-up emails.\\n\\nBOXX Automations\\n'+$('Config').first().json.mailingAddress+'\\nhello@boxxautomations.space'}]\n }\n}\nreturn result"
       }
     },
     {
@@ -439,7 +439,7 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst m = $('Build Email 1 request').first().json.meta\nconst now = new Date()\nreturn [{ json: { email: m.email, framework_delivered: 'TRUE', framework_delivered_at: now.toISOString(), current_email: 1,\n  last_email_sent_at: now.toISOString(), next_email_due_at: new Date(now.getTime() + cfg.cadenceDays[0] * 864e5).toISOString(),\n  nurture_status: 'ACTIVE', updated_at: now.toISOString() } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst m = $('Build Email 1 request').first().json.meta\nconst L = $('Decide').first().json.lead\nconst auditOnly = L.consent_profile==='networking-consent-v1' && String(L.email_marketing_consent).toUpperCase()!=='TRUE'\nconst now = new Date()\nreturn [{ json: { email: m.email, framework_delivered: 'TRUE', framework_delivered_at: now.toISOString(), current_email: 1,\n  last_email_sent_at: now.toISOString(), next_email_due_at: auditOnly ? '' : new Date(now.getTime() + cfg.cadenceDays[0] * 864e5).toISOString(),\n  nurture_status: auditOnly ? 'STOPPED' : 'ACTIVE', stop_reason: auditOnly ? 'no_email_marketing_consent' : '', updated_at: now.toISOString() } }]"
       }
     },
     {
@@ -606,6 +606,284 @@
         "width": 420,
         "height": 260
       }
+    },
+    {
+      "id": "4b1d661e-0a0a-4636-a496-62c8314d78a1",
+      "name": "Networking consent event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        900
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const d=$('Decide').first().json\nconst L=$('Validate & normalize').first().json.lead\nif(L.consent_profile!=='networking-consent-v1') return []\nreturn [{json:{event_id:'consent_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8),lead_id:d.lead.lead_id,email:L.email,phone:L.phone,email_marketing_consent:L.email_marketing_consent,sms_marketing_consent:L.sms_marketing_consent,recorded_at:L.consent_recorded_at,source:L.consent_source,version:L.consent_version,email_wording:\"Yes, send me BOXX Automations tips, offers and follow-up emails. I can unsubscribe anytime.\",sms_wording:\"Yes, text me an audit confirmation and BOXX Automations tips, offers and follow-ups. Standard message and data rates may apply. Reply STOP to opt out.\"}}]"
+      }
+    },
+    {
+      "id": "cac9e858-ee83-43fa-9ebe-4f4d0b192c70",
+      "position": [
+        2160,
+        900
+      ],
+      "name": "Log networking consent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Consent Events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "f12044cf-42ae-4a1a-b4cd-1d796b8aaf04",
+      "name": "Plan networking SMS",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        900
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const d=$('Decide').first().json, cfg=$('Config').first().json, L=d.lead\nif(!d.sendSms) return []\nconst enabled=cfg.smsEnabled===true && /^AC[a-fA-F0-9]{32}$/.test(cfg.twilioAccountSid||'') && /^MG[a-fA-F0-9]{32}$/.test(cfg.twilioMessagingServiceSid||'')\nconst demo=String(L.email_marketing_consent).toUpperCase()==='TRUE'?' The follow-up emails show the automation in action.':''\nconst body='Hey '+L.first_name+' - Kaleel from BOXX Automations here. Thanks for requesting your free audit! Check your email for your free resource and next steps. If it lands in Promotions, move it to Primary.'+demo+' Questions? Email hello@boxxautomations.space. Reply STOP to unsubscribe.'\nreturn [{json:{enabled,accountSid:cfg.twilioAccountSid,serviceSid:cfg.twilioMessagingServiceSid,phone:L.phone,body,email:L.email,lead_id:L.lead_id}}]"
+      }
+    },
+    {
+      "id": "98b397dc-8b18-46ed-84f1-759e3c25b5a7",
+      "name": "Twilio configured?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2660,
+        900
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "64cb89ed-0c12-4286-b7fa-35f38be6e622",
+              "leftValue": "={{ $json.enabled }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f02aaaef-5471-4db5-bda1-beccbebfb192",
+      "name": "Send networking SMS (Twilio)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2920,
+        800
+      ],
+      "onError": "continueErrorOutput",
+      "retryOnFail": false,
+      "credentials": {
+        "twilioApi": {
+          "id": "REPLACE_TWILIO_CREDENTIAL",
+          "name": "Twilio account"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"https://api.twilio.com/2010-04-01/Accounts/\" + $json.accountSid + \"/Messages.json\" }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twilioApi",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "={{ $json.phone }}"
+            },
+            {
+              "name": "MessagingServiceSid",
+              "value": "={{ $json.serviceSid }}"
+            },
+            {
+              "name": "Body",
+              "value": "={{ $json.body }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "d4c44891-a151-4187-b3cb-42f241a92a3c",
+      "name": "SMS result row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3180,
+        800
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const p=$('Plan networking SMS').first().json, r=$input.first().json, b=r.body||r\nconst accepted=!!b.sid && !b.error_code && !b.error\nreturn [{json:{email:p.email,sms_confirmation_status:accepted?String(b.status||'queued').toUpperCase():'FAILED',sms_confirmation_sid:b.sid||'',sms_confirmation_at:new Date().toISOString(),...(String(b.code||b.error_code)==='21610'?{sms_opt_out:'TRUE'}:{})}}]"
+      }
+    },
+    {
+      "id": "27cb80d4-a91c-4e1e-a609-5ba5ea3aa7fc",
+      "name": "SMS configuration blocked",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2920,
+        1100
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{json:{email:$json.email,sms_confirmation_status:'BLOCKED_CONFIGURATION'}}]"
+      }
+    },
+    {
+      "id": "eaa76e60-5d9a-475c-80b5-884b0c095d11",
+      "position": [
+        3440,
+        900
+      ],
+      "name": "Save SMS result",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "22b9d747-b18a-4cdf-adef-efe3c196ac95",
+      "name": "SMS error event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3180,
+        1200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const p=$('Plan networking SMS').first().json, r=$input.first().json\nreturn [{json:{error_id:'sms_'+Date.now().toString(36),timestamp:new Date().toISOString(),workflow:'BOXX - Lead Intake',email:p.email,error_message:String(r.error?.message||r.message||'Twilio rejected SMS').slice(0,500),payload:JSON.stringify({lead_id:p.lead_id})}}]"
+      }
+    },
+    {
+      "id": "7155661a-33df-4965-acdf-1d993563cc86",
+      "position": [
+        3440,
+        1200
+      ],
+      "name": "Log SMS failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "connections": {
@@ -722,6 +1000,16 @@
             "node": "Respond 200",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Networking consent event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Plan networking SMS",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -831,6 +1119,102 @@
         [
           {
             "node": "Log Email 1 failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Networking consent event": {
+      "main": [
+        [
+          {
+            "node": "Log networking consent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan networking SMS": {
+      "main": [
+        [
+          {
+            "node": "Twilio configured?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twilio configured?": {
+      "main": [
+        [
+          {
+            "node": "Send networking SMS (Twilio)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS configuration blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send networking SMS (Twilio)": {
+      "main": [
+        [
+          {
+            "node": "SMS result row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS result row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SMS error event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS result row": {
+      "main": [
+        [
+          {
+            "node": "Save SMS result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS configuration blocked": {
+      "main": [
+        [
+          {
+            "node": "Save SMS result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS error event": {
+      "main": [
+        [
+          {
+            "node": "Log SMS failure",
             "type": "main",
             "index": 0
           }

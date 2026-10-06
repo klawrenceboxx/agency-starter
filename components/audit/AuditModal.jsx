@@ -28,6 +28,8 @@ export default function AuditModal({ webhookUrl, inline = false }) {
   const [groupErr, setGroupErr] = useState('')
   const [sending, setSending] = useState(false)
   const [sendErr, setSendErr] = useState('')
+  const [emailConsent, setEmailConsent] = useState(false)
+  const [smsConsent, setSmsConsent] = useState(false)
   const lastFocus = useRef(null)
   const overlayRef = useRef(null)
   const firstFieldRef = useRef(null)
@@ -40,6 +42,8 @@ export default function AuditModal({ webhookUrl, inline = false }) {
       setErrors({})
       setGroupErr('')
       setSendErr('')
+      setEmailConsent(false)
+      setSmsConsent(false)
       setTimeout(() => firstFieldRef.current?.focus(), 50)
     } else {
       lastFocus.current?.focus()
@@ -61,7 +65,10 @@ export default function AuditModal({ webhookUrl, inline = false }) {
   const showBack = typeof step === 'number' && step > 1
 
   function checkField(id, value) {
-    const ok = RULES[id](value)
+    const digits = value.replace(/\D/g, '')
+    const ok = id === 'phone' && inline
+      ? /^[+\d\s().-]+$/.test(value.trim()) && (/^[2-9]\d{2}[2-9]\d{6}$/.test(digits) || /^1[2-9]\d{2}[2-9]\d{6}$/.test(digits))
+      : RULES[id](value)
     setErrors(prev => ({ ...prev, [id]: !ok }))
     return ok
   }
@@ -110,6 +117,11 @@ export default function AuditModal({ webhookUrl, inline = false }) {
     setSendErr('')
     const path = lead.services.length === 2 ? 'both' : lead.services[0]
     const payload = { ...lead, path, submittedAt: new Date().toISOString(), source: inline ? 'networking' : (typeof window !== 'undefined' ? window.location.href : '') }
+    if (inline) Object.assign(payload, {
+      email_marketing_consent: emailConsent,
+      sms_marketing_consent: smsConsent,
+      consent_version: 'networking-consent-v1',
+    })
     if (!webhookUrl) {
       setSending(false)
       setSendErr("The audit form is temporarily unavailable. Please try again shortly.")
@@ -169,12 +181,12 @@ export default function AuditModal({ webhookUrl, inline = false }) {
                   <div className="msg">Enter your website address, like yourbusiness.com, so I can audit it.</div>
                 </div>
                 <div className={`field${errors.phone ? ' err' : ''}`}>
-                  <label htmlFor="fPhone">Phone <span className="opt">(optional)</span></label>
-                  <input id="fPhone" name="fPhone" type="tel" autoComplete="tel" inputMode="tel" defaultValue={lead.phone} onBlur={e => e.target.value && checkField('phone', e.target.value)} />
-                  <div className="msg">That number looks too short. Check it or leave it blank.</div>
+                  <label htmlFor="fPhone">{inline ? 'Mobile phone (required)' : <>Phone <span className="opt">(optional)</span></>}</label>
+                  <input id="fPhone" name="fPhone" type="tel" autoComplete="tel" inputMode="tel" required={inline} aria-invalid={errors.phone || undefined} defaultValue={lead.phone} onBlur={e => (inline || e.target.value) && checkField('phone', e.target.value)} />
+                  <div className="msg">{inline ? 'Enter a valid Canadian or US mobile number, including area code.' : 'That number looks too short. Check it or leave it blank.'}</div>
                 </div>
                 <div className="m-actions"><button className="btn btn-primary" type="submit">Continue</button></div>
-                <p className="expect">Free. No sales call required. Used only to send your audit and follow-up emails.</p>
+                <p className="expect">{inline ? 'Free. No sales call required. Marketing is optional. Texts are sent only if you opt in below.' : 'Free. No sales call required. Used only to send your audit and follow-up emails.'}</p>
               </form>
               <span className="quick">Just want my contact info? <button type="button" onClick={() => setStep('quick')}>Tap here</button></span>
             </>
@@ -213,9 +225,15 @@ export default function AuditModal({ webhookUrl, inline = false }) {
                   </button>
                 ))}
               </div>
+              {inline && <fieldset className="audit-consent" disabled={sending}>
+                <legend>Optional updates</legend>
+                <label><input type="checkbox" checked={emailConsent} onChange={e => setEmailConsent(e.target.checked)} /><span>Yes, send me BOXX Automations tips, offers and follow-up emails. I can unsubscribe anytime.</span></label>
+                <label><input type="checkbox" checked={smsConsent} onChange={e => setSmsConsent(e.target.checked)} /><span>Yes, text me an audit confirmation and BOXX Automations tips, offers and follow-ups. Standard message and data rates may apply. Reply STOP to opt out.</span></label>
+                <p>Neither is needed for your free audit. BOXX Automations, 54 Cannes Ave, Vaughan, ON, Canada. <a href="mailto:hello@boxxautomations.space">hello@boxxautomations.space</a></p>
+              </fieldset>}
               {(groupErr || sendErr) && <p className="group-err show">{sendErr || groupErr}</p>}
               <div className="m-actions"><button className="btn btn-primary" disabled={sending} onClick={submitLead}>{sending ? 'Sending…' : 'Send My Audit'}</button></div>
-              <p className="expect">Your audit is emailed right away. I&rsquo;ll follow up with a few helpful emails. Unsubscribe anytime.</p>
+              <p className="expect">{inline ? 'Your free resource is emailed after submission. Marketing follow-ups depend on your choices above.' : <>Your audit is emailed right away. I&rsquo;ll follow up with a few helpful emails. Unsubscribe anytime.</>}</p>
             </>
           )}
 

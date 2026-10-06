@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 const { addPolling } = require('./calendly-polling')
+const { extendWorkflow } = require('./networking-consent-sms')
 
 // ---------------------------------------------------------------- helpers
 const uuid = () => crypto.randomUUID()
@@ -529,6 +530,7 @@ return { json: row }`, 'runOnceForEachItem'), 7, 6.6)
 const outDir = path.join(__dirname, 'workflows')
 fs.mkdirSync(outDir, { recursive: true })
 for (const [file, wf] of [['1-boxx-lead-intake', intake()], ['2-boxx-nurture-scheduler', scheduler()], ['3-boxx-booking-exit', booking()]]) {
+  extendWorkflow(wf)
   const json = { name: wf.name, nodes: wf.nodes, connections: wf.connections, active: false, settings: { executionOrder: 'v1' }, pinData: {} }
   fs.writeFileSync(path.join(outDir, file + '.json'), JSON.stringify(json, null, 2))
   console.log(file, wf.nodes.length, 'nodes')

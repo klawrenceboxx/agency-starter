@@ -5,47 +5,36 @@ import Link from 'next/link'
 import { useAuditModal } from './AuditModalContext'
 import { CALENDLY_URL, LINKEDIN_URL, SPOTS_OPEN, TOTAL_SPOTS } from '@/lib/site-config'
 
-type Lead = {
-  name: string
-  email: string
-  phone: string
-  website: string
-  services: string[]
-  budget: string
-}
+const EMPTY_LEAD = { name: '', email: '', phone: '', website: '', services: [], budget: '' }
 
-const EMPTY_LEAD: Lead = { name: '', email: '', phone: '', website: '', services: [], budget: '' }
-
-const RULES: Record<string, (v: string) => boolean> = {
+const RULES = {
   name: v => v.trim().length >= 2,
   email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
   website: v => /^(https?:\/\/)?[^\s.]+\.[^\s]{2,}/i.test(v.trim()),
   phone: v => !v.trim() || v.replace(/\D/g, '').length >= 10,
 }
 
-const TIERS: [string, string, string][] = [
+const TIERS = [
   ['under-1000', 'Under $1,000', 'Starting small'],
   ['1000-2500', '$1,000 – $2,500', 'Ready to invest'],
   ['2500-plus', '$2,500+', 'A more complete solution'],
 ]
 
-type Step = 1 | 2 | 3 | 'done' | 'quick'
-
-export default function AuditModal({ webhookUrl }: { webhookUrl: string }) {
+export default function AuditModal({ webhookUrl, inline = false }) {
   const { open, closeModal } = useAuditModal()
-  const [step, setStep] = useState<Step>(1)
-  const [lead, setLead] = useState<Lead>(EMPTY_LEAD)
-  const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const [step, setStep] = useState(1)
+  const [lead, setLead] = useState(EMPTY_LEAD)
+  const [errors, setErrors] = useState({})
   const [groupErr, setGroupErr] = useState('')
   const [sending, setSending] = useState(false)
   const [sendErr, setSendErr] = useState('')
-  const lastFocus = useRef<HTMLElement | null>(null)
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const firstFieldRef = useRef<HTMLInputElement>(null)
+  const lastFocus = useRef(null)
+  const overlayRef = useRef(null)
+  const firstFieldRef = useRef(null)
 
   useEffect(() => {
-    if (open) {
-      lastFocus.current = document.activeElement as HTMLElement
+    if (open && !inline) {
+      lastFocus.current = document.activeElement
       setStep(1)
       setLead(EMPTY_LEAD)
       setErrors({})
@@ -55,48 +44,48 @@ export default function AuditModal({ webhookUrl }: { webhookUrl: string }) {
     } else {
       lastFocus.current?.focus()
     }
-  }, [open])
+  }, [open, inline])
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (!open) return
+    function onKey(e) {
+      if (!open || inline) return
       if (e.key === 'Escape') closeModal()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [open, closeModal])
+  }, [open, closeModal, inline])
 
-  if (!open) return null
+  if (!open && !inline) return null
 
   const progress = typeof step === 'number' ? step : 0
   const showBack = typeof step === 'number' && step > 1
 
-  function checkField(id: keyof typeof RULES, value: string) {
+  function checkField(id, value) {
     const ok = RULES[id](value)
     setErrors(prev => ({ ...prev, [id]: !ok }))
     return ok
   }
 
-  function handleStep1Submit(e: React.FormEvent<HTMLFormElement>) {
+  function handleStep1Submit(e) {
     e.preventDefault()
     const form = e.currentTarget
-    const values: Record<keyof typeof RULES, string> = {
-      name: (form.elements.namedItem('fName') as HTMLInputElement).value,
-      email: (form.elements.namedItem('fEmail') as HTMLInputElement).value,
-      website: (form.elements.namedItem('fSite') as HTMLInputElement).value,
-      phone: (form.elements.namedItem('fPhone') as HTMLInputElement).value,
+    const values = {
+      name: form.elements.namedItem('fName').value,
+      email: form.elements.namedItem('fEmail').value,
+      website: form.elements.namedItem('fSite').value,
+      phone: form.elements.namedItem('fPhone').value,
     }
-    const fieldIds: Record<keyof typeof RULES, string> = { name: 'fName', email: 'fEmail', website: 'fSite', phone: 'fPhone' }
-    const bad = (Object.keys(RULES) as (keyof typeof RULES)[]).filter(id => !checkField(id, values[id]))
+    const fieldIds = { name: 'fName', email: 'fEmail', website: 'fSite', phone: 'fPhone' }
+    const bad = Object.keys(RULES).filter(id => !checkField(id, values[id]))
     if (bad.length) {
-      form.querySelector<HTMLInputElement>(`#${fieldIds[bad[0]]}`)?.focus()
+      form.querySelector(`#${fieldIds[bad[0]]}`)?.focus()
       return
     }
     setLead(prev => ({ ...prev, name: values.name.trim(), email: values.email.trim(), website: values.website.trim(), phone: values.phone.trim() }))
     setStep(2)
   }
 
-  function toggleService(s: string) {
+  function toggleService(s) {
     setLead(prev => {
       const has = prev.services.includes(s)
       return { ...prev, services: has ? prev.services.filter(x => x !== s) : [...prev.services, s] }
@@ -120,10 +109,18 @@ export default function AuditModal({ webhookUrl }: { webhookUrl: string }) {
     setSending(true)
     setSendErr('')
     const path = lead.services.length === 2 ? 'both' : lead.services[0]
-    const payload = { ...lead, path, submittedAt: new Date().toISOString(), source: typeof window !== 'undefined' ? window.location.href : '' }
+    const payload = { ...lead, path, submittedAt: new Date().toISOString(), source: inline ? 'networking' : (typeof window !== 'undefined' ? window.location.href : '') }
+    if (!webhookUrl) {
+      setSending(false)
+      setSendErr("The audit form is temporarily unavailable. Please try again shortly.")
+      return
+    }
     if (webhookUrl) {
       try {
-        await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        const response = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        if (!response.ok) throw new Error('Submission rejected')
+        const result = await response.json()
+        if (result.ok === false) throw new Error('Submission rejected')
       } catch {
         setSending(false)
         setSendErr("That didn’t send. Check your connection and try again.")
@@ -138,11 +135,11 @@ export default function AuditModal({ webhookUrl }: { webhookUrl: string }) {
   const spotsAvailable = SPOTS_OPEN > 0
 
   return (
-    <div className="overlay show" id="overlay" ref={overlayRef} onClick={e => { if (e.target === overlayRef.current) closeModal() }}>
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div className={inline ? "audit-inline" : "overlay show"} id="overlay" ref={overlayRef} onClick={e => { if (!inline && e.target === overlayRef.current) closeModal() }}>
+      <div className="modal" role={inline ? "region" : "dialog"} aria-modal={inline ? undefined : true} aria-labelledby="mTitle">
         <div className="m-top">
-          <button className="m-back" hidden={!showBack} onClick={() => setStep(prev => (typeof prev === 'number' && prev > 1 ? ((prev - 1) as Step) : prev))}>&lsaquo; Back</button>
-          <button className="m-close" aria-label="Close" onClick={closeModal}>&#10005;</button>
+          <button className="m-back" hidden={!showBack} onClick={() => setStep(prev => (typeof prev === 'number' && prev > 1 ? (prev - 1) : prev))}>&lsaquo; Back</button>
+          {!inline && <button className="m-close" aria-label="Close" onClick={closeModal}>&#10005;</button>}
         </div>
         {progress > 0 && (
           <div className="m-progress">
@@ -236,7 +233,7 @@ export default function AuditModal({ webhookUrl }: { webhookUrl: string }) {
                 <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg>
                 <p>Check your inbox in the next few minutes. Not there? Look in spam or promotions.</p>
               </div>
-              <div className="m-actions" style={{ marginTop: 20 }}><button className="btn btn-ghost" onClick={closeModal}>Back to the site</button></div>
+              <div className="m-actions" style={{ marginTop: 20 }}>{inline ? <Link className="btn btn-ghost" href="/">Back to the site</Link> : <button className="btn btn-ghost" onClick={closeModal}>Back to the site</button>}</div>
             </div>
           )}
 

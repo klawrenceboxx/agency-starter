@@ -23,7 +23,7 @@ type SiteSettings = {
 
 async function getSettings(): Promise<SiteSettings> {
   try {
-    return await client.fetch(`*[_type == "siteSettings"][0]`)
+    return await client.fetch(`*[_type == "siteSettings"][0]`, {}, { next: { revalidate: 60 } })
   } catch {
     return {}
   }

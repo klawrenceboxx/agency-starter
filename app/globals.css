@@ -2011,3 +2011,19 @@ footer.site a:hover {
   background: rgba(156, 22, 244, 0.4);
   border-radius: 999px;
 }
+
+/* Focused networking entry into the shared audit flow. */
+.networking-audit { max-width: 568px; margin: 0 auto; padding: 28px 24px max(24px, env(safe-area-inset-bottom)); }
+.networking-audit > .logo { color: var(--ink); display: inline-flex; margin-bottom: 28px; }
+.networking-intro h1 { font-size: clamp(28px, 6vw, 36px); line-height: 1.15; letter-spacing: -0.03em; margin: 0 0 12px; }
+.networking-intro p { color: var(--muted); font-size: 16px; line-height: 1.6; margin: 0 0 20px; }
+.audit-inline .modal { max-height: none; overflow: visible; box-shadow: none; animation: none; border: 1px solid var(--line); }
+.audit-inline .m-top { padding-top: 8px; }
+.audit-inline .m-top:has(.m-back[hidden]) { display: none; }
+@media (max-width: 480px) {
+  .networking-audit { padding: 20px 16px max(20px, env(safe-area-inset-bottom)); }
+  .networking-audit > .logo { margin-bottom: 24px; }
+  .audit-inline .m-body { padding: 18px 16px 20px; }
+  .audit-inline .m-progress { padding: 16px 16px 0; }
+  .audit-inline .m-body h2 { font-size: 22px; }
+}

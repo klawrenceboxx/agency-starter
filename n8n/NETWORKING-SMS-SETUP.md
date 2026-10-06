@@ -4,7 +4,7 @@ This extends the existing `/audit` -> BOXX Lead Intake -> BOXX Automation CRM ->
 
 ## Current rollout state
 
-Implementation is on `codex/networking-consent-sms`, not production. The existing CRM now has the additive columns and Consent Events tab below. The live intake and scheduler have NOT been replaced or edited. The existing n8n `Twilio account` credential was found; its validity, Account SID, sender and Messaging Service have not been verified. SMS remains disabled in prepared workflow configuration.
+Implementation is on `codex/networking-consent-sms` (draft PR #2), not production. Local build and automated tests pass; browser verification of this extension is blocked by the browser runtime credential-protection failure. The existing CRM now has the additive columns and Consent Events tab below. The live intake and scheduler have NOT been replaced or edited. The existing n8n `Twilio account` credential was found; its validity, Account SID, sender and Messaging Service have not been verified. SMS remains disabled in prepared workflow configuration.
 
 The cloud browser's native credential protection blocked obtaining a live workflow export. Do not import the repository's placeholder-configured workflows into production over the working workflows. First download the existing **BOXX - Lead Intake** and **BOXX - Nurture Scheduler** via each editor's top-right `...` -> **Download** in your normal browser. Provide those two exports for the configuration-preserving upgrade. Exports include credential references; don't separately export credentials or provide tokens in chat.
 

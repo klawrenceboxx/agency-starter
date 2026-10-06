@@ -2031,5 +2031,5 @@ footer.site a:hover {
 .audit-consent { border: 0; padding: 0; margin: 24px 0 0; min-width: 0; }
 .audit-consent legend { font-weight: 700; margin-bottom: 12px; }
 .audit-consent label { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; padding: 10px 0; cursor: pointer; }
-.audit-consent input { flex: 0 0 20px; width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent, #9c16f4); }
+.audit-consent input { flex: 0 0 20px; width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--p); }
 .audit-consent p { font-size: 12px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }

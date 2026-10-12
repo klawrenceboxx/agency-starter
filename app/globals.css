@@ -2064,3 +2064,27 @@ footer.site a:hover {
   .audit-inline .m-progress { padding: 16px 16px 0; }
   .audit-inline .m-body h2 { font-size: 22px; }
 }
+
+/* Audit wizard: compact dark-purple surface shared by both entry points. */
+main:has(.networking-audit) { min-height: 100vh; background: #15091f; }
+.networking-audit { padding: 24px 12px max(24px, env(safe-area-inset-bottom)); }
+.audit-inline .modal, .overlay .modal:has(.boxx-audit-form) {
+  --bg: #15091f; --ink: #f8f4fc; --muted: #c8b6d2; --line: #463052; --tint: #21102d;
+  background: var(--bg); color: var(--ink); color-scheme: dark;
+}
+.audit-inline .modal { border: 0; }
+.audit-inline .m-body { padding: 0; }
+.boxx-audit-form { min-width: 0; }
+.boxx-audit-form .logo { color: #f8f4fc; min-width: 0; gap: 10px; }
+.boxx-audit-form .logo b { font-size: 14px; letter-spacing: 0; }
+.boxx-audit-form .logo .mark { flex-shrink: 0; }
+.boxx-audit-form h2:focus { outline: none; }
+.boxx-audit-form button:focus-visible, .boxx-audit-form a:focus-visible { outline: 2px solid #db79ff; outline-offset: 3px; }
+.boxx-audit-form button:hover { filter: brightness(1.08); }
+.boxx-audit-form button:disabled { cursor: wait; }
+.boxx-audit-form input { color-scheme: dark; }
+@media (max-width: 375px) {
+  .boxx-audit-form .logo { gap: 7px; }
+  .boxx-audit-form .logo b { font-size: 11px; }
+  .boxx-audit-form .logo .mark { width: 30px; height: 30px; }
+}

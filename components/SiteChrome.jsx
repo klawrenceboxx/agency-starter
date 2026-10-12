@@ -1,7 +1,6 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import Link from 'next/link'
 import Header from './Header'
 import Footer from './Footer'
 import { AuditModalProvider } from './audit/AuditModalContext'
@@ -15,7 +14,6 @@ export default function SiteChrome({ children, webhookUrl }) {
     <AuditModalProvider>
       {!networking && <Header />}
       <main>{networking ? <div className="networking-audit">
-        <Link className="logo" href="/" aria-label="Boxx Automations home"><span className="mark" aria-hidden="true"><i /><i /><i /><i /></span><b>BOXX AUTOMATIONS</b></Link>
         {children}
         <AuditModal webhookUrl={webhookUrl} inline />
       </div> : children}</main>

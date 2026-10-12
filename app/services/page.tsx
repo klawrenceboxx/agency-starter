@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import ServicesCore from '@/components/ServicesCore'
 import AuditTrigger from '@/components/audit/AuditTrigger'
 
@@ -15,6 +16,14 @@ export default function ServicesPage() {
       <section>
         <div className="wrap">
           <ServicesCore />
+          <p className="local-related">
+            Serving Vaughan and the GTA:{' '}
+            <Link href="/services/web-design-vaughan">Web design in Vaughan</Link> ·{' '}
+            <Link href="/services/seo-vaughan">SEO in Vaughan</Link> ·{' '}
+            <Link href="/services/web-design-markham">Web design in Markham</Link> ·{' '}
+            <Link href="/services/web-design-richmond-hill">Web design in Richmond Hill</Link> ·{' '}
+            <Link href="/services/email-marketing-automation">Email follow-up</Link>
+          </p>
           <div className="process-foot"><AuditTrigger>Get Your Free Audit</AuditTrigger></div>
         </div>
       </section>

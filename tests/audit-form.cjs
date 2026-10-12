@@ -20,15 +20,17 @@ let checks = 0
 function check(condition, label) { assert.ok(condition, label); checks++; console.log('PASS', label) }
 async function render(inline = true, webhookUrl = 'https://n8n.boxxautomations.space/webhook/boxx-lead') { await act(async () => root.render(null)); await act(async () => root.render(React.createElement(Audit, {inline, webhookUrl}))) }
 async function click(text) { const button = [...document.querySelectorAll('button')].find(e => e.textContent.trim() === text); assert.ok(button, text); await act(async () => button.click()) }
-async function submitDetails(values = {}) {
+async function submitDetails(values = {}, consent = false) {
   const defaults = { fName: 'BOXX QA', fEmail: 'qa@example.com', fSite: 'example.com', fPhone: '' }
   Object.entries({...defaults,...values}).forEach(([id,value]) => document.getElementById(id).value = value)
+  document.getElementById('fConsent').checked = consent
   await act(async () => document.querySelector('form').dispatchEvent(new window.Event('submit', {bubbles:true,cancelable:true})))
 }
 async function choose(services) { for (const s of services) await click(s === 'website' ? 'High-converting websiteTurn more visitors into customers.' : 'Automated emailsTurn more leads into paying customers.'); await click('Continue'); await click('Under $1,000Starting small') }
 ;(async () => {
   await render()
   check(!!document.querySelector('form') && !document.querySelector('[role="dialog"]'), 'Networking form visible immediately without modal')
+  check(document.getElementById('fConsent').checked === false, 'Consent box is never pre-ticked')
   await submitDetails({ fName:'', fEmail:'', fSite:'' })
   check(document.querySelectorAll('.field.err').length === 3, 'All required contact fields reject empty input')
   for (const [id,value] of [['fName','X'],['fEmail','bad'],['fSite','bad'],['fPhone','123']]) {
@@ -47,6 +49,7 @@ async function choose(services) { for (const s of services) await click(s === 'w
     check(document.body.textContent.includes("You're in, BOXX."), `${services.join('+')} reaches existing success state`)
     check(JSON.stringify(payload.services) === JSON.stringify(services) && payload.path === (services.length === 2 ? 'both' : services[0]), `${services.join('+')} preserves routing payload`)
     check(payload.source === 'networking', 'Networking source attached using existing field')
+    check(payload.consent === false && payload.consent_text === '', 'Unticked consent sends consent:false')
   }
   for (const response of ['network','http','validation']) {
     await render(); await submitDetails(); await choose(['website'])
@@ -55,6 +58,11 @@ async function choose(services) { for (const s of services) await click(s === 'w
     check(!document.querySelector('.m-actions button').disabled, 'Failed submission can be retried')
   }
   await render(true,''); await submitDetails(); await choose(['website']); await click('Send My Audit'); check(document.body.textContent.includes('temporarily unavailable') && !document.querySelector('.done'), 'Missing webhook fails closed')
+  await render(); await submitDetails({}, true); await choose(['website'])
+  let consentPayload
+  global.fetch=async(url,opts)=> {consentPayload=JSON.parse(opts.body); return {ok:true,json:async()=>({ok:true})} }
+  await click('Send My Audit')
+  check(consentPayload.consent === true && consentPayload.consent_text.includes('unsubscribe'), 'Ticked consent sends consent:true with wording')
   modalOpen = true; await render(false); await submitDetails(); await choose(['emails'])
   let homepagePayload
   global.fetch=async(url,opts)=> {homepagePayload=JSON.parse(opts.body); return {ok:true,json:async()=>({ok:true})} }

@@ -417,12 +417,12 @@ export default function HomeHero() {
           </div>
         </div>
 
-        <div className="founder photo">
+        <div className="founder founder--video">
           <video
             ref={videoRef}
             className="founder-video"
-            src="/cleaned_v6.mp4"
-            poster="/founder.jpg"
+            src="/cleaned_v7-upscaled.mp4"
+            poster="/founder-video-poster.jpg"
             autoPlay
             muted
             loop

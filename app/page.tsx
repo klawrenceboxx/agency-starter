@@ -1,6 +1,5 @@
 import HomeHero from '@/components/home/HomeHero'
 import ProjectShowcase from '@/components/home/ProjectShowcase'
-import AuthorityStrip from '@/components/home/AuthorityStrip'
 import ProblemSection from '@/components/home/ProblemSection'
 import ServicesCore from '@/components/ServicesCore'
 import FaqGuarantee from '@/components/home/FaqGuarantee'
@@ -12,7 +11,6 @@ export default function HomePage() {
     <>
       <HomeHero />
       <ProjectShowcase />
-      <AuthorityStrip />
       <ProblemSection />
       <section className="tinted">
         <div className="wrap">

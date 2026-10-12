@@ -6,8 +6,8 @@ const projects = [
     kind: "Client work",
     stack: "Shopify + Klaviyo",
     description:
-      "An e-commerce website for professional GPR and PDR tools. I worked on the website and conversion experience, technical SEO, and automated email flows.",
-    tags: ["Shopify", "Klaviyo email flows", "Technical SEO", "Conversion-focused design"],
+      "An e-commerce website for professional GPR and PDR tools.",
+    tags: ["Shopify", "Klaviyo email flows", "Technical SEO"],
     image: "/projects/camautopro-mockup.png",
     imageAlt:
       "CamAutoPro e-commerce website shown on desktop and mobile devices",
@@ -19,8 +19,8 @@ const projects = [
     kind: "Personal project",
     stack: "Next.js + e-commerce",
     description:
-      "My own e-commerce business, designed and developed as a real-world implementation of the same conversion-first principles I use for client work.",
-    tags: ["Next.js e-commerce", "Custom design", "Responsive", "Mobile optimized"],
+      "My own e-commerce website, built with the same conversion-first approach I use for clients.",
+    tags: ["Next.js e-commerce", "Responsive", "Mobile optimized"],
     image: "/projects/postergenius-mockup.png",
     imageAlt:
       "PosterGenius e-commerce website shown on desktop and mobile devices",
@@ -36,7 +36,7 @@ export default function ProjectShowcase() {
         <div className="project-showcase__head">
           <span className="eyebrow">Real projects, real builds</span>
           <h2 className="h2" id="project-showcase-title">
-            Websites that convert. Not just look good.
+            Websites That Convert
           </h2>
           <p className="lead">
             Real client and personal builds using the same conversion-first
@@ -46,9 +46,13 @@ export default function ProjectShowcase() {
 
         <div className="project-grid">
           {projects.map((project) => (
-            <article
+            <a
               className={`project-card project-card--${project.tone}`}
               key={project.name}
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`View ${project.name} live site (opens in a new tab)`}
             >
               <div className="project-card__meta">
                 <span>{project.kind}</span>
@@ -75,17 +79,13 @@ export default function ProjectShowcase() {
                   ))}
                 </ul>
 
-                <a
+                <span
                   className="btn btn-primary project-card__link"
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`View ${project.name} live site (opens in a new tab)`}
                 >
                   View Live Site <span aria-hidden="true">↗</span>
-                </a>
+                </span>
               </div>
-            </article>
+            </a>
           ))}
         </div>
       </div>

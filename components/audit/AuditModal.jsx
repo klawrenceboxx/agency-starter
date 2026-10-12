@@ -5,7 +5,9 @@ import Link from 'next/link'
 import { useAuditModal } from './AuditModalContext'
 import { CALENDLY_URL, LINKEDIN_URL, SPOTS_OPEN, TOTAL_SPOTS } from '@/lib/site-config'
 
-const EMPTY_LEAD = { name: '', email: '', phone: '', website: '', services: [], budget: '' }
+const CONSENT_TEXT = 'Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.'
+
+const EMPTY_LEAD = { name: '', email: '', phone: '', website: '', services: [], budget: '', consent: false }
 
 const RULES = {
   name: v => v.trim().length >= 2,
@@ -75,13 +77,14 @@ export default function AuditModal({ webhookUrl, inline = false }) {
       website: form.elements.namedItem('fSite').value,
       phone: form.elements.namedItem('fPhone').value,
     }
+    const consent = form.elements.namedItem('fConsent').checked
     const fieldIds = { name: 'fName', email: 'fEmail', website: 'fSite', phone: 'fPhone' }
     const bad = Object.keys(RULES).filter(id => !checkField(id, values[id]))
     if (bad.length) {
       form.querySelector(`#${fieldIds[bad[0]]}`)?.focus()
       return
     }
-    setLead(prev => ({ ...prev, name: values.name.trim(), email: values.email.trim(), website: values.website.trim(), phone: values.phone.trim() }))
+    setLead(prev => ({ ...prev, name: values.name.trim(), email: values.email.trim(), website: values.website.trim(), phone: values.phone.trim(), consent }))
     setStep(2)
   }
 
@@ -109,7 +112,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
     setSending(true)
     setSendErr('')
     const path = lead.services.length === 2 ? 'both' : lead.services[0]
-    const payload = { ...lead, path, submittedAt: new Date().toISOString(), source: inline ? 'networking' : (typeof window !== 'undefined' ? window.location.href : '') }
+    const payload = { ...lead, consent: lead.consent === true, consent_text: lead.consent ? CONSENT_TEXT : '', path, submittedAt: new Date().toISOString(), source: inline ? 'networking' : (typeof window !== 'undefined' ? window.location.href : '') }
     if (!webhookUrl) {
       setSending(false)
       setSendErr("The audit form is temporarily unavailable. Please try again shortly.")
@@ -173,8 +176,12 @@ export default function AuditModal({ webhookUrl, inline = false }) {
                   <input id="fPhone" name="fPhone" type="tel" autoComplete="tel" inputMode="tel" defaultValue={lead.phone} onBlur={e => e.target.value && checkField('phone', e.target.value)} />
                   <div className="msg">That number looks too short. Check it or leave it blank.</div>
                 </div>
+                <label className="consent" htmlFor="fConsent">
+                  <input id="fConsent" name="fConsent" type="checkbox" defaultChecked={lead.consent} />
+                  <span>{CONSENT_TEXT}</span>
+                </label>
                 <div className="m-actions"><button className="btn btn-primary" type="submit">Continue</button></div>
-                <p className="expect">Free. No sales call required. Used only to send your audit and follow-up emails.</p>
+                <p className="expect">Free. No sales call required. Your details are used only to send your audit and, if you tick the box, follow-up emails.</p>
               </form>
               <span className="quick">Just want my contact info? <button type="button" onClick={() => setStep('quick')}>Tap here</button></span>
             </>

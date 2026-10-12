@@ -1741,6 +1741,23 @@ footer.site a:hover {
   border-color: var(--p);
   box-shadow: 0 0 0 3px rgba(156, 22, 244, 0.18);
 }
+.consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+}
+.consent input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--p);
+}
 .field.err input {
   border-color: #d23b5a;
 }

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useAuditModal } from './AuditModalContext'
-import { CALENDLY_URL, LINKEDIN_URL, SPOTS_OPEN, TOTAL_SPOTS } from '@/lib/site-config'
+import { CALENDLY_URL, LINKEDIN_URL } from '@/lib/site-config'
 
 const EMPTY_LEAD = { name: '', email: '', phone: '', website: '', services: [], budget: '' }
 
@@ -132,7 +132,6 @@ export default function AuditModal({ webhookUrl, inline = false }) {
   }
 
   const first = lead.name.split(' ')[0]
-  const spotsAvailable = SPOTS_OPEN > 0
 
   return (
     <div className={inline ? "audit-inline" : "overlay show"} id="overlay" ref={overlayRef} onClick={e => { if (!inline && e.target === overlayRef.current) closeModal() }}>
@@ -220,15 +219,12 @@ export default function AuditModal({ webhookUrl, inline = false }) {
           )}
 
           {step === 'done' && (
-            <div className={`done ${spotsAvailable ? 'ok' : 'wait'}`}>
+            <div className="done ok">
               <div className="badge">
-                {spotsAvailable
-                  ? <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                  : <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>}
+                <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
               </div>
-              <h2 id="mTitle">{spotsAvailable ? `You're in, ${first}.` : `You're on the waitlist, ${first}.`}</h2>
-              <p className="spots">{spotsAvailable ? `I currently have ${SPOTS_OPEN} of ${TOTAL_SPOTS} client spots open.` : `All ${TOTAL_SPOTS} client spots are taken right now.`}</p>
-              <p className="sub">{spotsAvailable ? `Your audit is on its way to ${lead.email}.` : `Your audit is still on its way to ${lead.email}, and I'll email you when a spot opens.`}</p>
+              <h2 id="mTitle">{`You're in, ${first}.`}</h2>
+              <p className="sub">{`Your audit is on its way to ${lead.email}.`}</p>
               <div className="inbox">
                 <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg>
                 <p>Check your inbox in the next few minutes. Not there? Look in spam or promotions.</p>

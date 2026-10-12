@@ -17,7 +17,7 @@ export default function FaqGuarantee() {
         </details>
         <details>
           <summary>How do I know this actually works?</summary>
-          <div className="ans"><p>You&rsquo;re looking at it. This site was built with the same 10-phase system, step by step. You can watch every phase on the How It Works page.</p></div>
+          <div className="ans"><p>You&rsquo;re looking at it. This site was built with the same 11-phase system, step by step. You can watch every phase on the How It Works page.</p></div>
         </details>
         <details>
           <summary>Do you work with my type of business?</summary>

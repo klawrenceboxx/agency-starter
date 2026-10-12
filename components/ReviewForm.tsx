@@ -39,6 +39,12 @@ export default function ReviewForm({ googleReviewUrl }: { googleReviewUrl: strin
       <div className="review-card">
         <h2 className="h3">Thank you.</h2>
         <p>{happy ? 'We appreciate it.' : 'I will read this myself and get back to you soon.'}</p>
+        {!happy && googleReviewUrl && (
+          <p>
+            You are always welcome to share your experience publicly too:{' '}
+            <a href={googleReviewUrl} target="_blank" rel="noopener noreferrer">leave a Google review</a>.
+          </p>
+        )}
       </div>
     )
   }

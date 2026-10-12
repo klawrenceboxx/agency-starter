@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 import { useAuditModal } from '@/components/audit/AuditModalContext'
-import { SPOTS_OPEN, TOTAL_SPOTS } from '@/lib/site-config'
 
 export default function FinalCta() {
   const { openModal } = useAuditModal()
@@ -43,16 +42,6 @@ export default function FinalCta() {
         <h2 className="h2 dim-soft">Find out where your leads are getting lost.</h2>
         <p className="lead dim">Get a free audit and see what I&rsquo;d fix first.</p>
         <button className="btn btn-primary fill-cta" onClick={openModal}>Get Your Free Audit</button>
-        <div className="dim">
-          <span className="capacity">
-            <span className="dots" aria-hidden="true">
-              {Array.from({ length: TOTAL_SPOTS }, (_, i) => <i key={i} className={i < SPOTS_OPEN ? 'open' : ''} />)}
-            </span>
-            {SPOTS_OPEN > 0
-              ? `Currently accepting ${SPOTS_OPEN} more client ${SPOTS_OPEN === 1 ? 'project' : 'projects'}`
-              : `All ${TOTAL_SPOTS} client spots are taken. Join the waitlist.`}
-          </span>
-        </div>
       </div>
     </section>
   )

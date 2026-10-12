@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "test": "node tests/audit-form.cjs && node n8n/test-logic.js"
   },
   "dependencies": {
     "@portabletext/react": "^3.1.0",
@@ -23,6 +24,9 @@
     "sanity": "^3.57.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.28.6",
+    "@babel/preset-react": "^7.28.5",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.0",
@@ -30,6 +34,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.15",
+    "jsdom": "^23.2.0",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.4"

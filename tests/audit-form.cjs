@@ -3,73 +3,47 @@ const fs = require('node:fs')
 const vm = require('node:vm')
 const { JSDOM } = require('jsdom')
 const babel = require('@babel/core')
-const React = require('react')
-const { act } = React
 const dom = new JSDOM('<div id="root"></div>', { url: 'https://boxxautomations.space/audit' })
 Object.assign(global, { window: dom.window, document: dom.window.document, IS_REACT_ACT_ENVIRONMENT: true })
+const React = require('react')
+const { act } = React
 const { createRoot } = require('react-dom/client')
-let modalOpen = false
+let modalOpen = true
 const context = { useAuditModal: () => ({ open: modalOpen, closeModal: () => { modalOpen = false } }) }
 const config = { CALENDLY_URL: 'https://calendly.com/kaleellawrenceboxx/discovery-call', LINKEDIN_URL: '#', SPOTS_OPEN: 2, TOTAL_SPOTS: 5 }
-const code = babel.transformSync(fs.readFileSync('components/audit/AuditModal.jsx', 'utf8'), { presets: ['@babel/preset-react'], plugins: ['@babel/plugin-transform-modules-commonjs'] }).code
-const moduleObject = { exports: {} }
-vm.runInNewContext(code, { React, module: moduleObject, exports: moduleObject.exports, require: name => name === 'react' ? React : name === 'next/link' ? (({children, ...props}) => React.createElement('a', props, children)) : name.includes('AuditModalContext') ? context : config, document, window, fetch: (...args) => global.fetch(...args), setTimeout, Date })
-const Audit = moduleObject.exports.default
+function load(file) {
+  const code = babel.transformSync(fs.readFileSync(file, 'utf8'), { presets: ['@babel/preset-react'], plugins: ['@babel/plugin-transform-modules-commonjs'] }).code
+  const mod = { exports: {} }
+  vm.runInNewContext(code, { React, module: mod, exports: mod.exports, require: name => name === 'react' ? React : name === './BoxxAuditForm' ? { default: load('components/audit/BoxxAuditForm.jsx'), __esModule: true } : name === 'next/link' ? (({children,...props}) => React.createElement('a', props, children)) : name.includes('AuditModalContext') ? context : config, document, window, fetch: (...args) => global.fetch(...args), setTimeout, clearTimeout, Date })
+  return mod.exports.default
+}
+const Audit = load('components/audit/AuditModal.jsx')
 const root = createRoot(document.getElementById('root'))
 let checks = 0
-function check(condition, label) { assert.ok(condition, label); checks++; console.log('PASS', label) }
-async function render(inline = true, webhookUrl = 'https://n8n.boxxautomations.space/webhook/boxx-lead') { await act(async () => root.render(null)); await act(async () => root.render(React.createElement(Audit, {inline, webhookUrl}))) }
-async function click(text) { const button = [...document.querySelectorAll('button')].find(e => e.textContent.trim() === text); assert.ok(button, text); await act(async () => button.click()) }
-async function submitDetails(values = {}, consent = false) {
-  const defaults = { fName: 'BOXX QA', fEmail: 'qa@example.com', fSite: 'example.com', fPhone: '' }
-  Object.entries({...defaults,...values}).forEach(([id,value]) => document.getElementById(id).value = value)
-  document.getElementById('fConsent').checked = consent
-  await act(async () => document.querySelector('form').dispatchEvent(new window.Event('submit', {bubbles:true,cancelable:true})))
+function check(condition,label) { assert.ok(condition,label); checks++; console.log('PASS',label) }
+async function render(inline=true,url='https://example.test/webhook') { modalOpen=true; await act(async()=>root.render(null)); await act(async()=>root.render(React.createElement(Audit,{inline,webhookUrl:url}))) }
+async function click(prefix) { const b=[...document.querySelectorAll('button')].find(e=>e.textContent.trim().includes(prefix)); assert.ok(b,prefix); await act(async()=>b.click()) }
+async function fill(key,value) {
+  const input=document.querySelector(`[name="${key}"]`)
+  await act(async()=>{Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set.call(input,value); input.dispatchEvent(new window.Event('input',{bubbles:true}))})
 }
-async function choose(services) { for (const s of services) await click(s === 'website' ? 'High-converting websiteTurn more visitors into customers.' : 'Automated emailsTurn more leads into paying customers.'); await click('Continue'); await click('Under $1,000Starting small') }
-;(async () => {
-  await render()
-  check(!!document.querySelector('form') && !document.querySelector('[role="dialog"]'), 'Networking form visible immediately without modal')
-  check(document.getElementById('fConsent').checked === false, 'Consent box is never pre-ticked')
-  await submitDetails({ fName:'', fEmail:'', fSite:'' })
-  check(document.querySelectorAll('.field.err').length === 3, 'All required contact fields reject empty input')
-  for (const [id,value] of [['fName','X'],['fEmail','bad'],['fSite','bad'],['fPhone','123']]) {
-    await render(); await submitDetails({[id]:value}); check(document.querySelector('.field.err')?.querySelector('input').id === id, `${id} validation rejects malformed input`)
+async function details(values={}) { for(const [k,v] of Object.entries({fullName:'BOXX QA',email:'qa@example.com',website:'example.com',phone:'4165551234',...values})) await fill(k,v); await click('Continue') }
+async function start(service='My website',inline=true,url) { await render(inline,url); await click(service); await click('Continue') }
+async function ready(service='My website',inline=true) { await start(service,inline); await details(inline?{}:{phone:''}) }
+;(async()=>{
+  await render(); check(document.body.textContent.includes('What would you like to improve?')&&!document.querySelector('input'),'Service comes first'); await click('Continue'); check(document.querySelector('[role="alert"]'),'Service required')
+  await start(); check(document.querySelector('input[type="checkbox"]').checked===false,'Consent starts unchecked'); check(document.querySelectorAll('input[type="checkbox"]').length===1,'No unsupported SMS consent introduced'); await details({fullName:'',email:'',website:'',phone:''}); check(document.querySelectorAll('[aria-invalid="true"]').length===4,'Audit requires all contact fields')
+  for(const [k,v] of [['fullName','X'],['email','bad'],['website','bad'],['phone','123']]) {await start();await details({[k]:v});check(document.querySelector(`[name="${k}"]`).getAttribute('aria-invalid')==='true',`${k} validates`)}
+  await ready(); await click('Back'); check(document.querySelector('[name="fullName"]').value==='BOXX QA','Back preserves contact values'); await click('Back');check(document.querySelector('[aria-pressed="true"]').textContent.includes('My website'),'Back preserves service');await click('Continue');await click('Continue');check(document.body.textContent.includes('Optional'),'Budget optional')
+  for(const [service,services,path] of [['My website',['website'],'website'],['My email follow-ups',['emails'],'emails'],['Both website',['website','emails'],'both']]){
+    await ready(service);let payload;global.fetch=async(url,opts)=>{check(url==='https://example.test/webhook','Existing handler URL');payload=JSON.parse(opts.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(document.body.textContent.includes("You're in, BOXX."),'Existing success state');assert.deepEqual(payload.services,services);check(payload.path===path,'Routing preserved');check(payload.budget===''&&payload.source==='networking','Optional budget and source preserved');check(payload.consent===false&&payload.consent_text==='','Unchecked consent preserved');check(!('smsConsent' in payload),'No new SMS payload')
   }
-  await render(); await submitDetails()
-  check(document.body.textContent.includes('What would you like to improve?'), 'Optional phone can be blank')
-  await click('Continue'); check(document.body.textContent.includes('Pick at least one'), 'Service selection required')
-  await click('High-converting websiteTurn more visitors into customers.'); await click('Continue'); await click('Send My Audit')
-  check(document.body.textContent.includes('Pick the range'), 'Budget selection required')
-  for (const services of [['website'],['emails'],['website','emails']]) {
-    await render(); await submitDetails(); await choose(services)
-    let payload
-    global.fetch = async (url, options) => { check(url === 'https://n8n.boxxautomations.space/webhook/boxx-lead', 'Existing webhook reused'); payload=JSON.parse(options.body); return {ok:true,json:async()=>({ok:true})} }
-    await click('Send My Audit')
-    check(document.body.textContent.includes("You're in, BOXX."), `${services.join('+')} reaches existing success state`)
-    check(JSON.stringify(payload.services) === JSON.stringify(services) && payload.path === (services.length === 2 ? 'both' : services[0]), `${services.join('+')} preserves routing payload`)
-    check(payload.source === 'networking', 'Networking source attached using existing field')
-    check(payload.consent === false && payload.consent_text === '', 'Unticked consent sends consent:false')
-  }
-  for (const response of ['network','http','validation']) {
-    await render(); await submitDetails(); await choose(['website'])
-    global.fetch=async()=> { if(response==='network') throw new Error('offline'); return {ok:response!=='http',json:async()=>({ok:false})} }
-    await click('Send My Audit'); check(document.body.textContent.includes('That didn’t send') && !document.querySelector('.done'), `${response} failure does not show false success`)
-    check(!document.querySelector('.m-actions button').disabled, 'Failed submission can be retried')
-  }
-  await render(true,''); await submitDetails(); await choose(['website']); await click('Send My Audit'); check(document.body.textContent.includes('temporarily unavailable') && !document.querySelector('.done'), 'Missing webhook fails closed')
-  await render(); await submitDetails({}, true); await choose(['website'])
-  let consentPayload
-  global.fetch=async(url,opts)=> {consentPayload=JSON.parse(opts.body); return {ok:true,json:async()=>({ok:true})} }
-  await click('Send My Audit')
-  check(consentPayload.consent === true && consentPayload.consent_text.includes('unsubscribe'), 'Ticked consent sends consent:true with wording')
-  modalOpen = true; await render(false); await submitDetails(); await choose(['emails'])
-  let homepagePayload
-  global.fetch=async(url,opts)=> {homepagePayload=JSON.parse(opts.body); return {ok:true,json:async()=>({ok:true})} }
-  await click('Send My Audit')
-  check(!!document.querySelector('[role="dialog"]') && !!document.querySelector('button.m-close'), 'Homepage retains modal presentation')
-  check(homepagePayload.source === window.location.href, 'Homepage source remains page URL')
-  check([...document.querySelectorAll('button')].some(e=>e.textContent==='Back to the site'), 'Homepage retains close-only success action')
-  await act(async()=>root.unmount())
-  console.log(`${checks} checks passed`)
-})().catch(error=>{console.error(error);process.exitCode=1})
+  for(const [label,value] of [['Under $1,000','under-1000'],['$1,000\u2013$2,500','1000-2500'],['$2,500+','2500-plus'],['Just exploring','']]) {await ready();await click(label);let p;global.fetch=async(u,o)=>{p=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(p.budget===value,`${label} maps to backend`)}
+  await ready();await click('Under $1,000');await click('Under $1,000');check(!document.querySelector('[aria-pressed="true"]'),'Budget can be cleared')
+  await start();await act(async()=>document.querySelector('input[type="checkbox"]').click());await details();await click('Back');check(document.querySelector('input[type="checkbox"]').checked,'Consent survives Back');await click('Continue');let p;global.fetch=async(u,o)=>{p=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(p.consent===true&&p.consent_text==='Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.','Consent wording unchanged')
+  for(const failure of ['network','http','validation']) {await ready();global.fetch=async()=>{if(failure==='network')throw Error('offline');return{ok:failure!=='http',json:async()=>({ok:false})}};await click('Send My Free Audit');check(document.querySelector('[role="alert"]')&&!document.querySelector('.done'),`${failure} fails without success`);check(![...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My')).disabled,'Retry enabled')}
+  await start('My website',true,'');await details();await click('Send My Free Audit');check(document.body.textContent.includes('temporarily unavailable'),'Missing webhook fails closed')
+  await ready();let resolve,count=0;global.fetch=()=>{count++;return new Promise(r=>resolve=r)};const button=[...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My'));await act(async()=>{button.click();button.click()});check(count===1&&button.disabled,'Duplicate submission blocked');check([...document.querySelectorAll('button')].find(e=>e.textContent.includes('Back')).disabled,'Back disabled while sending');await act(async()=>resolve({ok:true,json:async()=>({ok:true})}))
+  await ready('My email follow-ups',false);global.fetch=async(u,o)=>{p=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(p.phone===''&&p.source===window.location.href,'Homepage phone optional and source unchanged');check(document.querySelector('[role="dialog"]')&&document.querySelector('.m-close'),'Homepage modal retained')
+  await act(async()=>root.unmount());console.log(`${checks} checks passed`)
+})().catch(e=>{console.error(e);process.exitCode=1})

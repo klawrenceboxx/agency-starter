@@ -21,12 +21,12 @@ export default function ReviewForm({ googleReviewUrl }: { googleReviewUrl: strin
       await fetch('/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, rating, feedback: happy ? '' : feedback }),
+        body: JSON.stringify({ name, email, rating, feedback }),
       })
     } catch {
       /* never block the visitor on a failed log */
     }
-    if (happy && googleReviewUrl) {
+    if (googleReviewUrl) {
       window.location.href = googleReviewUrl
       return
     }

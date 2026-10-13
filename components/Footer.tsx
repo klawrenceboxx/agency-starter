@@ -12,6 +12,7 @@ export default function Footer() {
           {NAV_LINKS.map(({ href, label }) => (
             <Link key={href} href={href}>{label}</Link>
           ))}
+          <Link href="/blog">Blog</Link>
         </nav>
       </div>
     </footer>

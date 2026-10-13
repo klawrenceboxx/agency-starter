@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import BoxxAuditForm from './BoxxAuditForm'
 import { useAuditModal } from './AuditModalContext'
-import { CALENDLY_URL, LINKEDIN_URL, SPOTS_OPEN, TOTAL_SPOTS } from '@/lib/site-config'
+import { CALENDLY_URL, LINKEDIN_URL } from '@/lib/site-config'
 
 const CONSENT_TEXT = 'Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.'
 
@@ -78,7 +78,6 @@ export default function AuditModal({ webhookUrl, inline = false }) {
   }
 
   const first = lead.name.split(' ')[0]
-  const spotsAvailable = SPOTS_OPEN > 0
 
   return (
     <div className={inline ? "audit-inline" : "overlay show"} id="overlay" ref={overlayRef} onClick={e => { if (!inline && !sending && e.target === overlayRef.current) closeModal() }}>
@@ -91,15 +90,12 @@ export default function AuditModal({ webhookUrl, inline = false }) {
           {typeof step === 'number' && <span className="quick">Just want my contact info? <button type="button" disabled={sending} onClick={() => setStep('quick')}>Tap here</button></span>}
 
           {step === 'done' && (
-            <div className={`done ${spotsAvailable ? 'ok' : 'wait'}`}>
+            <div className="done ok">
               <div className="badge">
-                {spotsAvailable
-                  ? <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                  : <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>}
+                <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
               </div>
-              <h2 id="mTitle">{spotsAvailable ? `You're in, ${first}.` : `You're on the waitlist, ${first}.`}</h2>
-              <p className="spots">{spotsAvailable ? `I currently have ${SPOTS_OPEN} of ${TOTAL_SPOTS} client spots open.` : `All ${TOTAL_SPOTS} client spots are taken right now.`}</p>
-              <p className="sub">{spotsAvailable ? `Your request has been received. I’ll personally review your business and follow up at ${lead.email}.` : `Your request has been received. I’ll follow up at ${lead.email} and email you when a spot opens.`}</p>
+              <h2 id="mTitle">{`You're in, ${first}.`}</h2>
+              <p className="sub">{`Your request has been received. I’ll personally review your business and follow up at ${lead.email}.`}</p>
               <div className="inbox">
                 <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg>
                 <p>Watch your inbox for next steps. If you don’t see an email, check spam or promotions.</p>

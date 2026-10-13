@@ -24,7 +24,7 @@ export default function ProcessStepsHome() {
         </ol>
         <div className="process-foot">
           <AuditTrigger>Get Your Free Audit</AuditTrigger>
-          <Link className="textlink" href="/how-it-works">See the full 10-phase system &rarr;</Link>
+          <Link className="textlink" href="/how-it-works">See the full 11-phase system &rarr;</Link>
         </div>
       </div>
     </section>

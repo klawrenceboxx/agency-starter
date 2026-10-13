@@ -1,5 +1,6 @@
 import { client } from '@/sanity/client'
 import type { MetadataRoute } from 'next'
+import { LOCAL_PAGES, POSTS } from '@/lib/local-seo-content'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
@@ -31,5 +32,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...servicePages, ...caseStudyPages]
+  const localPages: MetadataRoute.Sitemap = LOCAL_PAGES.map((p) => ({
+    url: `${siteUrl}/services/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }))
+
+  const blogPages: MetadataRoute.Sitemap = [
+    { url: `${siteUrl}/blog`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    ...POSTS.map((p) => ({
+      url: `${siteUrl}/blog/${p.slug}`,
+      lastModified: new Date(p.published),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  ]
+
+  return [...staticPages, ...servicePages, ...localPages, ...blogPages, ...caseStudyPages]
 }

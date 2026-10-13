@@ -60,6 +60,6 @@ Primary references: [Calendly list scheduled events](https://developer.calendly.
 - SendGrid has no idempotency key: if a send succeeds but the sheet write then fails, the next run can resend. Failures land in `Error Log`.
 - Google Sheets is not transactional; two near-simultaneous submissions from one email could create two rows.
 - Polling can take up to 15 minutes plus execution time to detect a booking. A booking between polls can race a due nurture email. The 30-day historical scan does not discover changes to older calls. Confirm the discovery-call length matches the email copy.
-- Capacity counter (spots open) is still hand-set in `lib/site-config.ts`; not wired to the sheet.
+- Capacity counter (spots open) was removed from the site because it was hand-set. Re-add it only once it reads from the sheet/CRM (BUSINESS.md: never hardcoded).
 - Email 4 has no client proof by design. Real `[CLIENT RESULT]`, `[CLIENT QUOTE]`, `[CASE STUDY]` go in `emails/build.js` only once they exist.
 - Post-call proposal / access checklist / invoice stay manual (only status auto-updates to CALL_COMPLETED).

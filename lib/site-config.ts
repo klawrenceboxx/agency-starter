@@ -1,9 +1,3 @@
-// Live capacity (scarcity counter shown on the final CTA + audit "done" screen).
-// TODO(Kaleel): wire this to real client-slot data once you have a CRM/backend for it —
-// for now it's a hand-set number, update it manually as your open slots change.
-export const TOTAL_SPOTS: number = 5
-export const SPOTS_OPEN: number = 2
-
 export const NAV_LINKS = [
   { href: '/services', label: 'Services' },
   { href: '/how-it-works', label: 'How It Works' },

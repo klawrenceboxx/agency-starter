@@ -8,7 +8,7 @@ export default function AuthorityStrip() {
           <h2>Built with the same system I use for clients.</h2>
           <p>
             You&rsquo;re looking at it right now. This site was planned, written
-            and built using my 10-phase conversion framework.
+            and built using my 11-phase conversion framework.
           </p>
           <div className="creds">
             <span>Mechanical engineering degree</span>

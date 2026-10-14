@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server'
 
-// Private review routing (server-side only; none of these env vars reach the browser).
-//  - Ratings 4-5: logged to REVIEW_WEBHOOK_URL (optional). The page then sends the visitor to Google.
-//  - Ratings 1-3: stay private. Emailed to REVIEW_ALERT_EMAIL via Resend, and also sent to the webhook.
-// Env: RESEND_API_KEY, REVIEW_ALERT_EMAIL, REVIEW_FROM_EMAIL (optional), REVIEW_WEBHOOK_URL (optional)
+// Review routing (server-side only; env vars never reach the browser).
+//  - Every response (any rating) is emailed to ALERT_EMAIL via Resend and logged to REVIEW_WEBHOOK_URL (optional).
+//  - The page then sends every visitor to Google (no rating-based gating).
+// Env: RESEND_API_KEY, REVIEW_FROM_EMAIL (optional), REVIEW_WEBHOOK_URL (optional)
+const ALERT_EMAIL = 'kaleellawrenceboxx@gmail.com'
 
 type Payload = { name: string; email: string; rating: number; feedback: string; submittedAt: string }
 
 async function sendAlert(p: Payload): Promise<boolean> {
   const key = process.env.RESEND_API_KEY
-  const to = process.env.REVIEW_ALERT_EMAIL
-  if (!key || !to) return false
+  const to = ALERT_EMAIL
+  if (!key) return false
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
@@ -18,7 +19,7 @@ async function sendAlert(p: Payload): Promise<boolean> {
       from: process.env.REVIEW_FROM_EMAIL || 'Boxx Automations <onboarding@resend.dev>',
       to: [to],
       reply_to: p.email,
-      subject: `${p.rating}-star feedback from ${p.name || p.email}`,
+      subject: `New ${p.rating}-star review response from ${p.name || p.email}`,
       text: [
         `Rating: ${p.rating} / 5`,
         `Name: ${p.name}`,
@@ -68,16 +69,15 @@ export async function POST(req: Request) {
     submittedAt: new Date().toISOString(),
   }
 
-  const jobs: Promise<boolean>[] = [sendWebhook(payload)]
-  if (rating <= 3) jobs.push(sendAlert(payload))
+  const jobs: Promise<boolean>[] = [sendWebhook(payload), sendAlert(payload)]
   const results = await Promise.allSettled(jobs)
 
   results.forEach((r) => {
     if (r.status === 'rejected') console.error('[review] delivery failed', r.reason)
   })
   const delivered = results.some((r) => r.status === 'fulfilled' && r.value)
-  if (!delivered && rating <= 3) {
-    console.error('[review] low rating NOT delivered anywhere. Check RESEND_API_KEY / REVIEW_ALERT_EMAIL.', {
+  if (!delivered) {
+    console.error('[review] response NOT delivered anywhere. Check RESEND_API_KEY.', {
       rating,
       email: payload.email,
     })

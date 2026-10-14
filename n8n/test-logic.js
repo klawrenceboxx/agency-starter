@@ -52,7 +52,7 @@ const decide = (existing, services = ['website']) => {
 let d = decide(null)
 ok('New lead: creates row + sends Email 1', d.isNew && d.sendEmail1 && d.row.nurture_status === 'ACTIVE' && d.row.current_email === 0)
 const existing = (over = {}) => ({ lead_id: 'ld_1', email: 'alice@acme.com', created_at: ago(5), framework_delivered_at: ago(5), framework_delivered: 'TRUE',
-  calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', nurture_status: 'ACTIVE', current_email: '2', consent_email: 'TRUE', ...over })
+  calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', nurture_status: 'ACTIVE', current_email: '2', email_marketing_consent: 'TRUE', ...over })
 d = decide(existing())
 ok('Duplicate <30d: updates, no Email 1, nurture untouched', !d.isNew && !d.sendEmail1 && d.row.nurture_status === undefined && d.row.updated_at)
 d = decide(existing({ framework_delivered_at: ago(31), created_at: ago(31) }))
@@ -70,17 +70,17 @@ const decideNC = (existing) => run(W.intake, 'Decide', { input: existing ? [exis
 d = decideNC(null)
 ok('No consent: lead saved HELD, no Email 1', d.isNew && !d.sendEmail1 && d.row.nurture_status === 'HELD' && d.row.stop_reason === 'no_consent')
 d = decide(null)
-ok('Consent ticked: recorded with timestamp + source', d.row.consent_email === 'TRUE' && !!d.row.consent_at && !!d.row.consent_source)
-d = decide(existing({ nurture_status: 'HELD', consent_email: '', framework_delivered: 'FALSE' }))
+ok('Consent ticked: recorded with timestamp + source', d.row.email_marketing_consent === 'TRUE' && !!d.row.email_consent_at && !!d.row.consent_source)
+d = decide(existing({ nurture_status: 'HELD', email_marketing_consent: '', framework_delivered: 'FALSE' }))
 ok('HELD lead resubmits with box ticked: hold released, Email 1 sent', d.sendEmail1 && d.row.nurture_status === 'ACTIVE' && d.reason === 'hold_released_consent_given')
 d = decideNC(existing({ framework_delivered_at: ago(31), created_at: ago(31) }))
-ok('Unticked resubmit never erases earlier consent', d.row.consent_email === undefined && d.sendEmail1)
+ok('Unticked resubmit never erases earlier consent', d.row.email_marketing_consent === undefined && d.sendEmail1)
 
 // ---- scheduler: Plan sends
 const plan = rows => run(W.sched, 'Plan sends', { input: rows, nodes: { Config: [cfg] } })
 const lead = (over = {}) => ({ lead_id: 'ld_1', email: 'a@b.com', name: 'Alice Smith', website: 'acme.com', nurture_path: 'WEBSITE', nurture_status: 'ACTIVE',
   framework_delivered: 'TRUE', framework_delivered_at: ago(0.1), created_at: ago(0.1), current_email: '1', calendly_booked: 'FALSE',
-  unsubscribe_status: 'FALSE', client_status: 'PROSPECT', consent_email: 'TRUE', ...over })
+  unsubscribe_status: 'FALSE', client_status: 'PROSPECT', email_marketing_consent: 'TRUE', ...over })
 ok('Day 0.1: nothing due', plan([lead()]).length === 0)
 let p = plan([lead({ framework_delivered_at: ago(2.01) })])
 ok('Day 2: Email 2 due, next due set from anchor', p.length === 1 && p[0].action === 'send' && p[0].n === 2 && !!p[0].nextDue)
@@ -107,7 +107,7 @@ ok('Failed Email 1 is retried (n=1)', p[0] && p[0].action === 'send' && p[0].n =
 p = plan([lead({ framework_delivered: 'FALSE', framework_delivered_at: '', current_email: '0', created_at: ago(3) })])
 ok('Email 1 retry is bounded to 48h', p[0].action === 'stop' && p[0].reason === 'email1_failed')
 
-p = plan([lead({ framework_delivered_at: ago(2.01), consent_email: '' })])
+p = plan([lead({ framework_delivered_at: ago(2.01), email_marketing_consent: '' })])
 ok('Active lead without consent is stopped', p[0].action === 'stop' && p[0].reason === 'no_consent')
 
 // ---- scheduler: row after Email 5

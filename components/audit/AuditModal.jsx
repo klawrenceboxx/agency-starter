@@ -98,7 +98,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
           {!inline && <button className="m-close" aria-label="Close" disabled={sending} onClick={closeModal}>&#10005;</button>}
         </div>
         <div className="m-body">
-          {typeof step === 'number' && <BoxxAuditForm onSubmit={submitLead} phoneRequired={false} websiteRequired smsConsentEnabled={inline} />}
+          {typeof step === 'number' && <BoxxAuditForm onSubmit={submitLead} phoneRequired={false} websiteRequired smsConsentEnabled />}
           {typeof step === 'number' && <span className="quick">Just want my contact info? <button type="button" disabled={sending} onClick={() => setStep('quick')}>Tap here</button></span>}
 
           {step === 'done' && (

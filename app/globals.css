@@ -2221,3 +2221,9 @@ main:has(.networking-audit) { min-height: 100vh; background: #15091f; }
 @media (prefers-reduced-motion: reduce) {
   .boxx-audit-form .audit-contact-input::placeholder { transition: none; }
 }
+
+.boxx-audit-form .audit-submit-spinner { animation: audit-submit-spin .8s linear infinite; }
+@keyframes audit-submit-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .boxx-audit-form .audit-submit-spinner { animation: none; }
+}

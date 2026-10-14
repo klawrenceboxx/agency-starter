@@ -86,7 +86,6 @@ export default function BoxxAuditForm({
       await onSubmit({ ...form, smsConsent: smsConsentEnabled ? form.smsConsent : false });
     } catch (err) {
       setError(err?.message || 'Something went wrong. Please try again.');
-    } finally {
       submitLock.current = false;
       setSubmitting(false);
     }
@@ -165,7 +164,7 @@ export default function BoxxAuditForm({
               {error && <p role="alert" style={{ color: '#FFB8C0', fontSize: 13, marginTop: 16 }}>{error}</p>}
 
               <div style={{ marginTop: 25 }}>
-                {step < 2 ? <button type="button" style={styles.button} onClick={next}>Continue →</button> : <button type="submit" style={{ ...styles.button, opacity: submitting ? .7 : 1 }} disabled={submitting}>{submitting ? 'Sending…' : 'Send My Free Audit →'}</button>}
+                {step < 2 ? <button type="button" style={styles.button} onClick={next}>Continue →</button> : <button type="submit" style={{ ...styles.button, opacity: submitting ? .7 : 1 }} disabled={submitting} aria-busy={submitting}>{submitting ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><svg className="audit-submit-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" opacity=".25" /><path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>Submitting…</span> : 'Send My Free Audit →'}</button>}
               </div>
               {step > 0 && <button type="button" disabled={submitting} onClick={() => { setError(''); setStep((s) => s - 1); }} style={{ border: 0, background: 'transparent', color: '#D7B7EE', padding: '14px 0 0', cursor: 'pointer', fontSize: 14 }}>← Back</button>}
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 22, color: '#BDA9C9', fontSize: 12 }}><span>No sales call required</span><span>Free personal audit</span></div>

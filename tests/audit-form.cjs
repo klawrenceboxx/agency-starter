@@ -67,9 +67,9 @@ async function ready(service='My website',inline=true) { await start(service,inl
     check(payload.phone===expected,'Phone normalization preserves contact and formats recognized numbers');
     check(payload.email_marketing_consent===false&&payload.sms_marketing_consent===false,'Phone supplied never implies consent');
   }
-  for(const failure of ['network','http','validation']) {await ready();global.fetch=async()=>{if(failure==='network')throw Error('offline');return{ok:failure!=='http',json:async()=>({ok:false})}};await click('Send My Free Audit');check(document.querySelector('[role="alert"]')&&!document.querySelector('.done'),`${failure} fails without success`);check(![...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My')).disabled,'Retry enabled')}
+  for(const failure of ['network','http','validation']) {await ready();global.fetch=async()=>{if(failure==='network')throw Error('offline');return{ok:failure!=='http',json:async()=>({ok:false})}};await click('Send My Free Audit');check(document.querySelector('[role="alert"]')&&!document.querySelector('.done'),`${failure} fails without success`);check(![...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My')).disabled,'Retry enabled');global.fetch=async()=>({ok:true,json:async()=>({ok:true})});await click('Send My Free Audit');check(document.querySelector('.done'),'Retry succeeds after failure')}
   await start('My website',true,'');await details();await click('Send My Free Audit');check(document.body.textContent.includes('temporarily unavailable'),'Missing webhook fails closed')
-  await ready();let resolve,count=0;global.fetch=()=>{count++;return new Promise(r=>resolve=r)};const button=[...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My'));await act(async()=>{button.click();button.click()});check(count===1&&button.disabled,'Duplicate submission blocked');check([...document.querySelectorAll('button')].find(e=>e.textContent.includes('Back')).disabled,'Back disabled while sending');await act(async()=>resolve({ok:true,json:async()=>({ok:true})}))
+  await ready();let resolve,count=0;global.fetch=()=>{count++;return new Promise(r=>resolve=r)};const button=[...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My'));await act(async()=>{button.click();button.click();button.form.requestSubmit();button.form.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}))});check(count===1&&button.disabled,'Double-clicks and repeated form/implicit submissions blocked');check(button.textContent==='Submitting…'&&button.querySelector('.audit-submit-spinner')&&button.getAttribute('aria-busy')==='true','Loading text, spinner and busy state visible');check([...document.querySelectorAll('button')].find(e=>e.textContent.includes('Back')).disabled,'Back disabled while sending');await act(async()=>resolve({ok:true,json:async()=>({ok:true})}))
   await start('My email follow-ups',false);
   check(document.querySelectorAll('input[type="checkbox"]').length===2,'Homepage popup shows both consent checkboxes');
   check([...document.querySelectorAll('input[type="checkbox"]')].every(box=>!box.checked),'Popup consent defaults unchecked');
@@ -79,5 +79,13 @@ async function ready(service='My website',inline=true) { await start(service,inl
   await click('Send My Free Audit');
   check(p.sms_marketing_consent===true&&p.email_marketing_consent===false,'Popup submits independently selected SMS consent');
   await ready('My email follow-ups',false);global.fetch=async(u,o)=>{p=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(p.phone===''&&p.source===window.location.href,'Homepage phone optional and source unchanged');check(document.querySelector('[role="dialog"]')&&document.querySelector('.m-close'),'Homepage modal retained')
+  // Verify the synchronous lock remains closed even if a successful handler leaves the form mounted.
+  await act(async()=>root.render(null));
+  let standaloneCount=0;
+  await act(async()=>root.render(React.createElement(load('components/audit/BoxxAuditForm.jsx'),{phoneRequired:false,onSubmit:async()=>{standaloneCount++}})));
+  await click('My website');await click('Continue');await details({phone:''});await click('Send My Free Audit');
+  const completedForm=document.querySelector('form');
+  await act(async()=>{completedForm.requestSubmit();completedForm.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}))});
+  check(standaloneCount===1&&document.querySelector('button[type="submit"]').disabled,'Successful submission stays locked until form unmounts');
   await act(async()=>root.unmount());console.log(`${checks} checks passed`)
 })().catch(e=>{console.error(e);process.exitCode=1})

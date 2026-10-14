@@ -2194,3 +2194,30 @@ main:has(.networking-audit) { min-height: 100vh; background: #15091f; }
 .review-card .btn {
   width: 100%;
 }
+
+/* Contact-step guidance and independently optional marketing consent. */
+.boxx-audit-form .audit-contact-input::placeholder {
+  color: #fff;
+  opacity: .45;
+  transition: opacity 150ms ease;
+}
+.boxx-audit-form .audit-contact-input:focus::placeholder { opacity: .7; }
+.boxx-audit-form .audit-consents { display: grid; gap: 8px; }
+.boxx-audit-form .audit-consent-checkbox {
+  appearance: none;
+  border: 2px solid #AE12F4;
+  border-radius: 4px;
+  background: transparent;
+  margin: 2px 0 0;
+  cursor: pointer;
+}
+.boxx-audit-form .audit-consent-checkbox:checked {
+  background: #AE12F4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3 3 7-7' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") center / 16px no-repeat;
+}
+.boxx-audit-form .audit-consent-checkbox:focus-visible { outline: 2px solid #db79ff; outline-offset: 3px; }
+@media (forced-colors: active) {
+  .boxx-audit-form .audit-consent-checkbox { appearance: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boxx-audit-form .audit-contact-input::placeholder { transition: none; }
+}

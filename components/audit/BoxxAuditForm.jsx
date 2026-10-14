@@ -21,8 +21,8 @@ const BUDGETS = [
  * - Supply the existing submit handler as onSubmit(formData).
  * - Map SERVICES values to the existing CRM/nurture-path enum if necessary.
  * - Keep the existing validation, analytics, error handling, and backend payload contract.
- * - Pass phoneRequired={false} for homepage usage, true for /audit.
- * - Set smsConsentEnabled only if SMS consent is already supported and recorded.
+ * - Pass phoneRequired={false} when the phone number is optional.
+ * - Set smsConsentEnabled where the submit handler records SMS consent.
  */
 export default function BoxxAuditForm({
   onSubmit,
@@ -98,12 +98,12 @@ export default function BoxxAuditForm({
     panel: { border: '1px solid #463052', borderRadius: 24, padding: '26px 22px', background: '#190B25' },
     card: (selected) => ({ width: '100%', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', border: `1px solid ${selected ? PURPLE : '#483053'}`, background: selected ? '#311341' : '#21102D', color: '#F8F4FC', borderRadius: 15, padding: '16px 14px', cursor: 'pointer', minHeight: 82 }),
     input: { width: '100%', boxSizing: 'border-box', background: '#1A0B26', color: '#FFFFFF', border: '1px solid #4A3256', borderRadius: 12, padding: '15px 14px', fontSize: 16, outlineColor: PURPLE },
-    button: { width: '100%', background: PURPLE, color: '#FFFFFF', border: 0, borderRadius: 12, padding: '16px 18px', fontWeight: 700, fontSize: 16, cursor: 'pointer', minHeight: 52 },
+    button: { width: '100%', background: 'linear-gradient(145deg, #b54dff, #9c16f4 60%, #8513d1)', color: '#FFFFFF', border: 0, borderRadius: 12, padding: '16px 18px', fontWeight: 700, fontSize: 16, cursor: 'pointer', minHeight: 52 },
     muted: { color: '#C8B6D2', lineHeight: 1.55 },
   };
 
   const heading = ['What would you like to improve?', 'Where should I send your free audit?', 'What budget would you be comfortable with?'][step];
-  const subheading = ["I'll personally review your website, email follow-ups, or both. Free.", 'Just a few details so I can review your business and send you the results.', 'Your audit is completely free. This just helps me recommend the right next steps.'][step];
+  const subheading = ["I'll personally review your website, email follow-ups, or both. Free.", '', 'Your audit is completely free. This just helps me recommend the right next steps.'][step];
 
   return (
     <div className="boxx-audit-form" style={styles.page}>
@@ -119,8 +119,8 @@ export default function BoxxAuditForm({
 
         <form ref={formRef} onSubmit={(event) => { if (step < 2) { event.preventDefault(); next(); } else submit(event); }} style={styles.panel} noValidate>
             <>
-              <h2 id="audit-question" ref={headingRef} tabIndex={-1} style={{ fontSize: 'clamp(24px, 6vw, 32px)', lineHeight: 1.17, letterSpacing: '-.035em', margin: '0 0 12px', fontWeight: 750 }}>{heading}</h2>
-              <p style={{ ...styles.muted, fontSize: 15, margin: '0 0 26px' }}>{subheading}</p>
+              <h2 id="audit-question" ref={headingRef} tabIndex={-1} style={{ fontSize: 'clamp(24px, 6vw, 32px)', lineHeight: 1.17, letterSpacing: '-.035em', margin: step === 1 ? '0 0 24px' : '0 0 12px', fontWeight: 750 }}>{heading}</h2>
+              {subheading && <p style={{ ...styles.muted, fontSize: 15, margin: '0 0 26px' }}>{subheading}</p>}
 
               {step === 0 && <div style={{ display: 'grid', gap: 11 }}>
                 {SERVICES.map((service) => <button type="button" key={service.value} aria-pressed={form.service === service.value} onClick={() => { update('service', service.value); setError(''); }} style={styles.card(form.service === service.value)}>
@@ -137,18 +137,20 @@ export default function BoxxAuditForm({
                   { key: 'website', label: 'Your website', type: 'url', placeholder: 'yourbusiness.com', required: websiteRequired },
                   { key: 'phone', label: 'Phone number', type: 'tel', placeholder: '(416) 123-4567', required: phoneRequired },
                 ].map((field) => <label key={field.key} style={{ display: 'grid', gap: 7 }}>
-                  <span style={{ fontWeight: 600, fontSize: 14 }}>{field.label}{!field.required && <span style={{ color: '#BDA9C9', fontWeight: 400 }}> (optional)</span>}</span>
-                  <input name={field.key} autoComplete={{ fullName: 'name', email: 'email', website: 'url', phone: 'tel' }[field.key]} inputMode={field.key === 'website' ? 'url' : field.key === 'phone' ? 'tel' : field.key === 'email' ? 'email' : undefined} aria-invalid={!!fieldErrors[field.key]} aria-describedby={fieldErrors[field.key] ? `error-${field.key}` : undefined} type={field.type} value={form[field.key]} onChange={(e) => update(field.key, e.target.value)} placeholder={field.placeholder} required={field.required} style={{ ...styles.input, borderColor: fieldErrors[field.key] ? '#FFB8C0' : '#4A3256' }} />
+                  <span style={{ color: '#FFFFFF', fontWeight: 600, fontSize: 14 }}>{field.label}{!field.required && <span style={{ color: '#BDA9C9', fontWeight: 400 }}> (optional)</span>}</span>
+                  <input className="audit-contact-input" name={field.key} autoComplete={{ fullName: 'name', email: 'email', website: 'url', phone: 'tel' }[field.key]} inputMode={field.key === 'website' ? 'url' : field.key === 'phone' ? 'tel' : field.key === 'email' ? 'email' : undefined} aria-invalid={!!fieldErrors[field.key]} aria-describedby={fieldErrors[field.key] ? `error-${field.key}` : undefined} type={field.type} value={form[field.key]} onChange={(e) => update(field.key, e.target.value)} placeholder={field.placeholder} required={field.required} style={{ ...styles.input, borderColor: fieldErrors[field.key] ? '#FFB8C0' : '#4A3256' }} />
                   {fieldErrors[field.key] && <span id={`error-${field.key}`} style={{ color: '#FFB8C0', fontSize: 13 }}>{fieldErrors[field.key]}</span>}
                 </label>)}
-                <label style={{ display: 'flex', gap: 11, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5, color: '#CDBCD8' }}>
-                  <input type="checkbox" checked={form.emailConsent} onChange={(e) => update('emailConsent', e.target.checked)} style={{ accentColor: PURPLE, width: 18, height: 18, flexShrink: 0 }} />
-                  Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.
-                </label>
-                {smsConsentEnabled && <label style={{ display: 'flex', gap: 11, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5, color: '#CDBCD8' }}>
-                  <input type="checkbox" checked={form.smsConsent} onChange={(e) => update('smsConsent', e.target.checked)} style={{ accentColor: PURPLE, width: 18, height: 18, flexShrink: 0 }} />
-                  I agree to receive optional marketing texts from BOXX Automations. I can opt out anytime.
-                </label>}
+                <div className="audit-consents">
+                  <label style={{ display: 'flex', gap: 11, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5, color: '#CDBCD8' }}>
+                    <input className="audit-consent-checkbox" name="email_marketing_consent" type="checkbox" checked={form.emailConsent} onChange={(e) => update('emailConsent', e.target.checked)} style={{ accentColor: PURPLE, width: 18, height: 18, flexShrink: 0 }} />
+                    Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.
+                  </label>
+                  {smsConsentEnabled && <label style={{ display: 'flex', gap: 11, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5, color: '#CDBCD8' }}>
+                    <input className="audit-consent-checkbox" name="sms_marketing_consent" type="checkbox" checked={form.smsConsent} onChange={(e) => update('smsConsent', e.target.checked)} style={{ accentColor: PURPLE, width: 18, height: 18, flexShrink: 0 }} />
+                    Yes, text me follow-ups and occasional tips from BOXX Automations. Message frequency varies. Reply STOP to opt out.
+                  </label>}
+                </div>
               </div>}
 
               {step === 2 && <div style={{ display: 'grid', gap: 11 }}>

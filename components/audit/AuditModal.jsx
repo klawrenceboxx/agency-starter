@@ -57,7 +57,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
     setLead(submittedLead);
     setSending(true)
     const path = lead.services.length === 2 ? 'both' : lead.services[0]
-    const payload = { ...lead, consent: lead.consent === true, consent_text: lead.consent ? CONSENT_TEXT : '', path, submittedAt: new Date().toISOString(), source: inline ? 'networking' : (typeof window !== 'undefined' ? window.location.href : '') }
+    const payload = { ...lead, email_marketing_consent: form.emailConsent === true, sms_marketing_consent: form.smsConsent === true, consent: lead.consent === true, consent_text: lead.consent ? CONSENT_TEXT : '', path, submittedAt: new Date().toISOString(), source: inline ? 'networking' : (typeof window !== 'undefined' ? window.location.href : '') }
     if (!webhookUrl) {
       setSending(false)
       throw new Error("The audit form is temporarily unavailable. Please try again shortly.")
@@ -86,7 +86,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
           {!inline && <button className="m-close" aria-label="Close" disabled={sending} onClick={closeModal}>&#10005;</button>}
         </div>
         <div className="m-body">
-          {typeof step === 'number' && <BoxxAuditForm onSubmit={submitLead} phoneRequired={inline} websiteRequired smsConsentEnabled={false} />}
+          {typeof step === 'number' && <BoxxAuditForm onSubmit={submitLead} phoneRequired={false} websiteRequired smsConsentEnabled={inline} />}
           {typeof step === 'number' && <span className="quick">Just want my contact info? <button type="button" disabled={sending} onClick={() => setStep('quick')}>Tap here</button></span>}
 
           {step === 'done' && (

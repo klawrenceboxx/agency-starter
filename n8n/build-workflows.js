@@ -197,8 +197,8 @@ const rows = $input.all().map(i => i.json).filter(r => r && r.email)
 const ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)
 const T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'
 const now = new Date(), iso = now.toISOString()
-const consentFields = L.consent ? { consent_email: 'TRUE', consent_at: iso, consent_source: L.consent_text || 'audit form checkbox' } : {}
-const hasConsent = !!(L.consent || (ex && T(ex.consent_email)))
+const consentFields = L.consent ? { email_marketing_consent: 'TRUE', email_consent_at: iso, consent_source: L.consent_text || 'audit form checkbox' } : {}
+const hasConsent = !!(L.consent || (ex && T(ex.email_marketing_consent)))
 const contact = Object.assign({ email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }, consentFields)
 const fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,
   nurture_status: hasConsent ? 'ACTIVE' : 'HELD', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '',
@@ -312,7 +312,7 @@ for (const { json: r } of $input.all()) {
   if (T(r.unsubscribe_status)) stop = 'unsubscribed'
   else if (T(r.calendly_booked)) stop = 'booked'
   else if (cs === 'ACTIVE') stop = 'client_active'
-  else if (!T(r.consent_email)) stop = 'no_consent'
+  else if (!T(r.email_marketing_consent)) stop = 'no_consent'
   if (stop) { out.push({ json: { action: 'stop', email: r.email, reason: stop } }); continue }
 
   const delivered = T(r.framework_delivered)

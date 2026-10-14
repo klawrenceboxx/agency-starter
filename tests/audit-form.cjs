@@ -59,6 +59,14 @@ async function ready(service='My website',inline=true) { await start(service,inl
     check(payload.consent===emailConsent&&payload.phone==='','Legacy consent preserved and phone optional');
     check(document.querySelector('.done'),'Submission succeeds with optional consent');
   }
+  for (const [phone, expected] of [['(416) 555-1234','+14165551234'],['1 416 555 1234','+14165551234'],['+44 20 7183 8750','+442071838750'],['4165551234 ext 25','4165551234 ext 25']]) {
+    await start(); await details({phone});
+    let payload;
+    global.fetch=async(u,o)=>{payload=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};
+    await click('Send My Free Audit');
+    check(payload.phone===expected,'Phone normalization preserves contact and formats recognized numbers');
+    check(payload.email_marketing_consent===false&&payload.sms_marketing_consent===false,'Phone supplied never implies consent');
+  }
   for(const failure of ['network','http','validation']) {await ready();global.fetch=async()=>{if(failure==='network')throw Error('offline');return{ok:failure!=='http',json:async()=>({ok:false})}};await click('Send My Free Audit');check(document.querySelector('[role="alert"]')&&!document.querySelector('.done'),`${failure} fails without success`);check(![...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My')).disabled,'Retry enabled')}
   await start('My website',true,'');await details();await click('Send My Free Audit');check(document.body.textContent.includes('temporarily unavailable'),'Missing webhook fails closed')
   await ready();let resolve,count=0;global.fetch=()=>{count++;return new Promise(r=>resolve=r)};const button=[...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My'));await act(async()=>{button.click();button.click()});check(count===1&&button.disabled,'Duplicate submission blocked');check([...document.querySelectorAll('button')].find(e=>e.textContent.includes('Back')).disabled,'Back disabled while sending');await act(async()=>resolve({ok:true,json:async()=>({ok:true})}))

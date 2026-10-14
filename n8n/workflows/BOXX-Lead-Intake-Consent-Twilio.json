@@ -1,0 +1,1528 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "boxx-lead",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://boxxautomations.space"
+        }
+      },
+      "id": "04f8521b-41fe-4a8f-abf6-d6d9a6c36ebe",
+      "position": [
+        0,
+        608
+      ],
+      "name": "Audit form webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "9590b89e-46ab-4712-843c-1990bfbeacf8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ====== BOXX AUTOMATIONS CONFIG ======\n// Secrets live in n8n Credentials, not here.\n\nconst fiveTemplates = [\n  'd-0cd7bdd5623a46c8abc185880f02d4aa',\n  'd-0cd7bdd5623a46c8abc185880f02d4aa',\n  'd-0cd7bdd5623a46c8abc185880f02d4aa',\n  'd-0cd7bdd5623a46c8abc185880f02d4aa',\n  'd-0cd7bdd5623a46c8abc185880f02d4aa',\n]\n\nreturn [{\n  json: {\n    sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n\n    siteUrl: 'https://boxxautomations.space',\n    frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n    calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n\n    fromEmail: 'hello@boxxautomations.space',\n    fromName: 'Kaleel at BOXX',\n    replyTo: 'hello@boxxautomations.space',\n    notifyEmail: 'kaleellawrenceboxx@gmail.com',\n\n    mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n    asmGroupId: 42909,\n\n    cadenceDays: [2, 4, 7, 10],\n    resendAfterDays: 30,\n\n    // Required for SMS; enter your Twilio SMS-capable number in E.164 format.\n    twilioFromNumber: '+1REPLACE_WITH_TWILIO_NUMBER',\n\n    dayBeforeHours: 24,\n    sameDayHours: 3,\n    completedAfterHours: 1,\n\n    templates: {\n      WEBSITE: fiveTemplates.slice(),\n      EMAIL: fiveTemplates.slice(),\n      BOTH: fiveTemplates.slice(),\n\n      // Ignore these for this test.\n      confirm: 'd-REPLACE_CONFIRM',\n      reminder24: 'd-REPLACE_REMINDER_24H',\n      reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n    },\n\n    subjects: [\n      'Your BOXX Website Conversion Framework',\n      'Every page should ask for one thing',\n      'What fixing a homepage looks like',\n      'The proof I can show you right now',\n      'Straight answers before you decide',\n    ],\n\n    bookingSubjects: {\n      confirm: 'You are booked: your BOXX call',\n      reminder24: 'Reminder: your BOXX call is tomorrow',\n      reminderDay: 'Your BOXX call is today',\n    },\n  }\n}]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "f76f403a-b8dc-4f09-98e2-a7dba50c7e40",
+      "position": [
+        272,
+        608
+      ],
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $('Audit form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst name = clean(b.name).slice(0, 100)\nif (name.length < 2) errors.push('missing_name')\nconst website = clean(b.website).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/+$/, '').slice(0, 200)\nif (!/^[^\\s.\\/]+(\\.[^\\s.\\/]+)+(\\/\\S*)?$/.test(website)) errors.push('invalid_website')\nconst svc = (Array.isArray(b.services) ? b.services : []).map(s => clean(s).toLowerCase())\nconst hasW = svc.includes('website'), hasE = svc.includes('emails')\nif (!hasW && !hasE) errors.push('unknown_interest')\nconst budgets = ['under-1000', '1000-2500', '2500-plus']\nconst lead = {\n  email, name, first_name: name.split(' ')[0], website,\n  phone: clean(b.phone).slice(0, 30),\n  interest: hasW && hasE ? 'both' : hasE ? 'emails' : 'website',\n  nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',\n  budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',\n  source: clean(b.source).slice(0, 300) || 'BOXX audit form',\n  email_marketing_consent: b.email_marketing_consent === true,\n  sms_marketing_consent: b.sms_marketing_consent === true,\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "26493a10-c23a-4b6f-84dd-7494a881b65e",
+      "position": [
+        528,
+        608
+      ],
+      "name": "Validate & normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "a6372270-3dba-4185-bd41-c2ce74a8fc3e",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9824f635-9e75-40ce-9853-1e1f238f7b5f",
+      "position": [
+        784,
+        608
+      ],
+      "name": "Valid submission?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const v = $input.first().json\nreturn [{ json: { error_id: 'err_' + Date.now().toString(36), timestamp: new Date().toISOString(),\n  workflow: 'BOXX - Lead Intake', email: v.lead.email, error_message: 'invalid_submission: ' + v.errors.join(','), payload: v.raw } }]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "c4d1d77a-9dfd-4e93-819c-af7369933348",
+      "position": [
+        1040,
+        400
+      ],
+      "name": "Error row: invalid submission",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "674b1583-c504-45a7-b3ac-f47162087578",
+      "position": [
+        1312,
+        400
+      ],
+      "name": "Log invalid submission",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, errors: $('Validate & normalize').first().json.errors }) }}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://boxxautomations.space"
+              }
+            ]
+          }
+        }
+      },
+      "id": "595eec43-e235-4168-952d-738263695f65",
+      "position": [
+        1568,
+        400
+      ],
+      "name": "Respond 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $('Validate & normalize').first().json.lead.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "88042cb4-ca29-458b-8e06-fb714d72ec91",
+      "position": [
+        1040,
+        800
+      ],
+      "name": "Find existing lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Validate & normalize').first().json.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\n// New opt-ins can grant consent. Unticked boxes on a later inquiry never reinstate an opt-out\n// or silently erase earlier express consent: opt-outs are handled by dedicated opt-out flows.\nconst emailOptedOut = !!(ex && (T(ex.unsubscribe_status) || String(ex.email_status || '').toLowerCase() === 'unsubscribed'))\nconst smsOptedOut = !!(ex && (T(ex.sms_opted_out) || T(ex.sms_opt_out) || String(ex.sms_status || '').toLowerCase() === 'unsubscribed' || !!ex.sms_opt_out_date))\nconst emailConsent = !emailOptedOut && (L.email_marketing_consent || !!(ex && T(ex.email_marketing_consent)))\nconst smsConsent = !smsOptedOut && (L.sms_marketing_consent || !!(ex && T(ex.sms_marketing_consent)))\nconst contact = { email: L.email, name: L.name, phone: L.phone || (ex && ex.phone) || '', website: L.website, updated_at: iso, last_submission_at: iso }\nconst consentFields = {\n  email_marketing_consent: emailConsent ? 'TRUE' : 'FALSE',\n  sms_marketing_consent: smsConsent ? 'TRUE' : 'FALSE',\n}\nif (L.email_marketing_consent && !emailOptedOut) {\n  consentFields.email_consent_at = iso\n  consentFields.email_consent_source = 'BOXX /audit checkbox'\n}\nif (L.sms_marketing_consent && !smsOptedOut) {\n  consentFields.sms_consent_at = iso\n  consentFields.sms_consent_source = 'BOXX /audit checkbox'\n}\nconst fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,\n  nurture_status: emailConsent ? 'ACTIVE' : 'HELD', current_email: 0,\n  framework_delivered: 'FALSE', next_email_due_at: '', stop_reason: emailConsent ? '' : 'no_email_marketing_consent' }\nlet row, sendEmail1 = false, reason, isNew = false\nif (!ex) {\n  isNew = true; sendEmail1 = true; reason = 'new_lead'\n  row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,\n    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING',\n    sms_status: smsConsent ? 'subscribed' : 'not_subscribed', sms_opted_out: 'FALSE' }, contact, fresh, consentFields)\n} else {\n  const bookedOrClient = T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'\n  const start = new Date(ex.framework_delivered_at || ex.created_at)\n  const ageDays = isNaN(start) ? 0 : (now - start) / 864e5\n  // Existing lead: avoid duplicate fulfillment; keep booking and opt-out status intact.\n  if (!bookedOrClient && !emailOptedOut && ageDays > cfg.resendAfterDays) {\n    sendEmail1 = true; reason = 'resend_after_' + cfg.resendAfterDays + '_days'\n    row = Object.assign({}, contact, fresh, consentFields)\n  } else {\n    reason = bookedOrClient ? 'existing_lead_booked_or_client' : emailOptedOut ? 'existing_email_opted_out' : 'duplicate_within_window'\n    row = Object.assign({}, contact, consentFields)\n    // When an existing previously HELD lead opts into marketing, allow scheduler to begin\n    // only if a fulfillment email was already sent. Never invent a delivered timestamp.\n    if (String(ex.nurture_status || '').toUpperCase() === 'HELD' && emailConsent && T(ex.framework_delivered)) {\n      row.nurture_status = 'ACTIVE'; row.stop_reason = ''\n    }\n  }\n}\n// Do not mark SMS as subscribed if the CRM has an explicit STOP record.\nif (smsOptedOut) row.sms_marketing_consent = 'FALSE'\nconst lead = Object.assign({}, L, { lead_id: ex ? ex.lead_id : row.lead_id })\n// One attempt per lead, including prior pending/failed attempts that need manual reconciliation.\nconst priorSMSAttempt = !!(ex && (ex.sms_confirmation_sid || ex.sms_confirmation_at || ex.sms_confirmation_status || ['pending','accepted','queued','sent','delivered','failed','undelivered'].includes(String(ex.sms_status || '').toLowerCase())))\nconst sendSMS1 = sendEmail1 && L.sms_marketing_consent === true && smsConsent && !!L.phone && !smsOptedOut && !priorSMSAttempt\nreturn [{ json: { sendEmail1, sendSMS1, reason, isNew, row, lead, emailConsent, smsConsent } }]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "aec34814-fe1d-4b77-a65f-c4328fd939f9",
+      "position": [
+        1312,
+        800
+      ],
+      "name": "Decide",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $input.first().json.row }]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "a42cbb8c-b842-462a-b96a-4301ec6daf6f",
+      "position": [
+        1568,
+        800
+      ],
+      "name": "Row only",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "779a50ec-b593-45ec-ba70-600a6263a0a0",
+      "position": [
+        1824,
+        800
+      ],
+      "name": "Save lead (upsert by email)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://boxxautomations.space"
+              }
+            ]
+          }
+        }
+      },
+      "id": "19bc9fea-db70-425b-8bc9-3f6a85a5f9d6",
+      "position": [
+        2080,
+        800
+      ],
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json\nconst d = $('Decide').first().json, L = d.lead\nconst lines = ['Name: ' + L.name, 'Email: ' + L.email, 'Phone: ' + (L.phone || '-'), 'Website: ' + L.website,\n  'Interest: ' + L.interest + ' (path ' + L.nurture_path + ')', 'Budget: ' + (L.budget || '-'), 'Source: ' + (L.source || '-'),\n  'Email marketing opt-in this submission: ' + (L.email_marketing_consent ? 'YES' : 'NO'),\n  'SMS marketing opt-in this submission: ' + (L.sms_marketing_consent ? 'YES' : 'NO'),\n  'Effective email consent: ' + (d.emailConsent ? 'YES' : 'NO'),\n  'Effective SMS consent: ' + (d.smsConsent ? 'YES' : 'NO'),\n  '', 'System action: ' + d.reason]\nconst subject = (d.isNew ? 'New audit request: ' : 'Repeat audit request: ') + L.name + ' (' + L.website + ')'\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: cfg.notifyEmail }], subject }],\n  from: { email: cfg.fromEmail, name: 'BOXX system' },\n  content: [{ type: 'text/plain', value: lines.join('\\n') }],\n}, meta: { email: L.email } } }]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "0c7c92a6-7c6e-44e3-81c1-d6c1816311fd",
+      "position": [
+        2352,
+        800
+      ],
+      "name": "Build notify email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sendGridApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "fb1a818b-129b-410e-90f3-01d376caff3d",
+      "position": [
+        2608,
+        800
+      ],
+      "name": "Notify Kaleel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "sendGridApi": {
+          "id": "gA1gUhRCX6Rb92X4",
+          "name": "SendGrid account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "7dc889ff-6399-4f94-b8dd-0cbffee360e4",
+              "leftValue": "={{ $('Decide').first().json.sendEmail1 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "99a24893-e7b3-48a8-a50a-b3866dc1ccc1",
+      "position": [
+        2864,
+        800
+      ],
+      "name": "Send Email 1?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nconst body = [\n  'Hey ' + L.first_name + ',',\n  '',\n  'Thanks for requesting the BOXX Website Conversion Framework.',\n  '',\n  'You can get it here: ' + cfg.frameworkUrl,\n  '',\n  'I hope it helps you spot a few opportunities on your website.',\n  '',\n  'Thanks again,',\n  'Kaleel',\n  'BOXX Automations',\n].join('\\n')\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject: cfg.subjects[0] }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  content: [{ type: 'text/plain', value: body }],\n  categories: ['boxx-framework-fulfillment', 'email-1'],\n  custom_args: { lead_id: L.lead_id, email_type: 'fulfillment-1' },\n  // Transactional fulfillment only. Do not add sales promotions to this message.\n  mail_settings: { bypass_unsubscribe_management: { enable: true } },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'fulfillment-1' } } }]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "5a05f17b-f606-4e86-a792-321c80d828ce",
+      "position": [
+        3120,
+        608
+      ],
+      "name": "Build Email 1 request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sendGridApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.sgBody) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "6415a8ec-c9a2-49d1-881a-920943a9b0c4",
+      "position": [
+        3392,
+        608
+      ],
+      "name": "Send Email 1 (SendGrid)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "sendGridApi": {
+          "id": "gA1gUhRCX6Rb92X4",
+          "name": "SendGrid account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json\nconst m = $('Build Email 1 request').first().json.meta\nconst d = $('Decide').first().json\nconst now = new Date()\nconst optedIn = d.emailConsent\nreturn [{ json: { email: m.email, framework_delivered: 'TRUE', framework_delivered_at: now.toISOString(), current_email: 1,\n  last_email_sent_at: now.toISOString(), next_email_due_at: optedIn ? new Date(now.getTime() + cfg.cadenceDays[0] * 864e5).toISOString() : '',\n  nurture_status: optedIn ? 'ACTIVE' : 'HELD', stop_reason: optedIn ? '' : 'no_email_marketing_consent', updated_at: now.toISOString() } }]",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "58f5ab8d-deb7-4665-9dbe-7ad1f13722e0",
+      "position": [
+        3648,
+        400
+      ],
+      "name": "Row: Email 1 sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "3283b3c5-fc0e-412b-b2f5-433e043a9643",
+      "position": [
+        3904,
+        400
+      ],
+      "name": "Mark Email 1 sent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build Email 1 request').item.json\nreturn { json: {\n  event_id: 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  lead_id: src.meta.lead_id, email: src.meta.email, email_type: src.meta.email_type,\n  template_id: src.sgBody.template_id || '', sent_at: new Date().toISOString(),\n  message_id: (res.headers || {})['x-message-id'] || '', status: 'sent',\n} }"
+      },
+      "id": "b0847748-5db6-4f06-af3b-0c104ea6a507",
+      "position": [
+        3648,
+        608
+      ],
+      "name": "Row: Email 1 event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Email Events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "0e7d35e8-7447-43cc-88b7-14a88548a35e",
+      "position": [
+        3904,
+        608
+      ],
+      "name": "Log Email 1 event",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const res = $input.item.json\nconst src = $('Build Email 1 request').item.json\nreturn { json: {\n  error_id: 'err_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  timestamp: new Date().toISOString(),\n  workflow: 'BOXX - Lead Intake',\n  email: src.meta.email,\n  error_message: String((res.error && res.error.message) || res.message || 'SendGrid send failed').slice(0, 500),\n  payload: JSON.stringify(src.meta),\n} }"
+      },
+      "id": "379b097f-26db-45af-aa1e-aa11cc7d5f4f",
+      "position": [
+        3648,
+        1008
+      ],
+      "name": "Row: Email 1 error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "db0e79fb-e4cb-4f65-9f36-101e578eea12",
+      "position": [
+        3904,
+        1008
+      ],
+      "name": "Log Email 1 failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## BOXX - Lead Intake | Email + SMS consent (2026-10-14)\nWebhook `/webhook/boxx-lead` receives `/audit` form.\n\n**Website payload:** `email_marketing_consent` and `sms_marketing_consent` as booleans. Both unchecked by default. SMS only sent when opt-in + phone valid.\n\n**Leads columns to add:** `email_marketing_consent`, `email_consent_at`, `email_consent_source`, `sms_marketing_consent`, `sms_consent_at`, `sms_consent_source`, `sms_status`, `sms_opt_out_date` (optional), `sms_opted_out` (optional). Existing `unsubscribe_status` remains authoritative for email.\n\n**New tab:** `SMS Events` with headers `event_id, lead_id, email, channel, email_type, sent_at, message_id, status, phone`. Existing `Error Log` and `Email Events` unchanged.\n\n**Twilio:** Existing account credential name `Twilio account` is referenced; select/rebind it on import if n8n asks. Enter SMS-capable sender E.164 phone in Config `twilioFromNumber`. Requires Twilio SMS enabled and recipients opted in; test on own verified number if using Twilio trial. Reply STOP must be separately processed by a Twilio inbound webhook/opt-out workflow (not built here).\n\n**Email 1:** Plain-text-style framework fulfillment, sent for new qualifying audit submissions even if email marketing unchecked. No promotional booking link. Its successful send sets `framework_delivered` and `nurture_status` ACTIVE only with effective email marketing consent, otherwise HELD. Email 2-5 enforcement REQUIRES a separate Scheduler patch; do not enable Scheduler before patch.\n\n**SMS 1:** One welcome SMS with Calendly booking link after Email 1 is recorded as sent, only with SMS consent. Failed/invalid sends logged. No SMS on duplicate submissions.\n\n**Important:** No secret keys in this JSON; preserve/select existing credentials. Do not replace the live workflow until tested. Duplicate prevention is best-effort only; concurrent submissions need a unique-lock/idempotency strategy for production.\n\nReviewed repository revision: strict boolean consent; legacy SMS opt-outs preserved; welcome attempt reserved in Leads; Twilio automatic retries disabled; accepted/failed results recorded. Set twilioFromNumber before SMS can send. Concurrent duplicate protection still requires serialized execution or an atomic lock. Nurture Scheduler patch and inbound STOP handler remain separate requirements.\n",
+        "height": 260,
+        "width": 420
+      },
+      "id": "9a77874b-df50-43e5-960c-a1766237428d",
+      "position": [
+        0,
+        0
+      ],
+      "name": "Setup notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "95a765d6-5e92-460d-b218-db5a1bd37c0c",
+              "leftValue": "={{ $('Decide').first().json.sendSMS1 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c2e04a1e-8b2e-4af0-9e79-9da66b3de664",
+      "position": [
+        4144,
+        400
+      ],
+      "name": "Send welcome SMS?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst cfg = $('Config').first().json\nconst d = $('Decide').first().json\nconst L = d.lead\nconst raw = String(L.phone || '').trim()\nconst formatAllowed = /^\\+?[\\d\\s().-]+$/.test(raw)\nlet digits = raw.replace(/\\D/g, '')\nlet toNumber = ''\nif (formatAllowed && raw.startsWith('+')) toNumber = '+' + digits\nelse if (formatAllowed && /^[2-9]\\d{2}[2-9]\\d{6}$/.test(digits)) toNumber = '+1' + digits\nelse if (formatAllowed && /^1[2-9]\\d{2}[2-9]\\d{6}$/.test(digits)) toNumber = '+' + digits\nconst fromNumber = String(cfg.twilioFromNumber || '').trim()\nconst validTo = /^\\+[1-9]\\d{7,14}$/.test(toNumber)\nconst validFrom = /^\\+[1-9]\\d{7,14}$/.test(fromNumber)\nconst message = 'Hey, it\\'s Kaleel from BOXX Automations! Thanks so much for requesting your free audit. I just sent your framework to your email. If you\\'d like help going through it, you can book a call here: ' + cfg.calendlyUrl + ' Thanks again, talk soon! Reply STOP to opt out.'\nreturn [{ json: { canSend: validTo && validFrom && d.sendSMS1 === true && d.lead.sms_marketing_consent === true && d.smsConsent === true, toNumber, fromNumber, message,\n  lead_id: L.lead_id, email: L.email, problem: !validTo ? 'invalid_recipient_phone' : !validFrom ? 'configure_twilio_from_number' : !d.smsConsent ? 'no_sms_consent' : '' } }]\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "1262d605-d85d-4ae5-99a2-4477041940b0",
+      "position": [
+        4400,
+        400
+      ],
+      "name": "Build welcome SMS",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c5b4fe0b-4a81-4775-89ff-34b31b2fc4cc",
+              "leftValue": "={{ $json.canSend }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "947b7742-729a-4bed-90d9-0806af502513",
+      "position": [
+        4656,
+        400
+      ],
+      "name": "SMS configuration valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "from": "={{ $('Build welcome SMS').first().json.fromNumber }}",
+        "to": "={{ $('Build welcome SMS').first().json.toNumber }}",
+        "message": "={{ $('Build welcome SMS').first().json.message }}",
+        "options": {},
+        "resource": "sms",
+        "operation": "send",
+        "toWhatsapp": false
+      },
+      "id": "dc4d348c-e430-4846-85f1-8099afb7f162",
+      "position": [
+        4912,
+        304
+      ],
+      "name": "Send welcome SMS (Twilio)",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "credentials": {
+        "twilioApi": {
+          "name": "Twilio account"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst src = $('Build welcome SMS').first().json\nconst res = $input.first().json\nreturn [{ json: { event_id: 'sms_' + Date.now().toString(36), lead_id: src.lead_id,\n email: src.email, channel: 'sms', email_type: 'welcome-sms',\n sent_at: new Date().toISOString(), message_id: res.sid || res.id || '', status: res.status || 'accepted',\n phone: src.toNumber } }]\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "fbb76d73-b12f-4230-9eac-6af828a922ae",
+      "position": [
+        5168,
+        224
+      ],
+      "name": "Row: SMS sent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "SMS Events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "90c445fd-e923-4037-bffa-443efbafa053",
+      "position": [
+        5424,
+        224
+      ],
+      "name": "Log welcome SMS event",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst src = $('Build welcome SMS').first().json\nconst res = $input.first().json\nreturn [{ json: { error_id: 'err_sms_' + Date.now().toString(36), timestamp: new Date().toISOString(),\n workflow: 'BOXX - Lead Intake', email: src.email,\n error_message: String((res.error && res.error.message) || res.message || src.problem || 'Twilio SMS failure').slice(0, 500),\n payload: JSON.stringify({ phone: src.toNumber, stage: 'welcome-sms' }) } }]\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "1d7c2486-0e44-4159-997d-ae9bca42dbd8",
+      "position": [
+        5168,
+        496
+      ],
+      "name": "Row: SMS error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "f4f97175-742f-411d-9ff3-993df70cb393",
+      "position": [
+        5424,
+        496
+      ],
+      "name": "Log SMS failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst src = $('Build welcome SMS').first().json\nreturn [{ json: { error_id: 'err_sms_' + Date.now().toString(36), timestamp: new Date().toISOString(),\n workflow: 'BOXX - Lead Intake', email: src.email,\n error_message: src.problem || 'SMS skipped due to invalid configuration',\n payload: JSON.stringify({ phone: src.toNumber, stage: 'welcome-sms-preflight' }) } }]\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "2c4cfafc-a2ef-4820-808e-f3279acc3a70",
+      "position": [
+        4912,
+        608
+      ],
+      "name": "Row: SMS config error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "311c9440-dcac-4ae4-8196-4fd372d228ad",
+      "position": [
+        5168,
+        688
+      ],
+      "name": "Log SMS config failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "name": "Row: SMS pending",
+      "id": "a5cbe44d-89b3-4993-bc46-ac6f97db7f93",
+      "position": [
+        4800,
+        150
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src = $('Build welcome SMS').first().json\nreturn [{json:{email:src.email,sms_confirmation_status:'pending',sms_confirmation_at:new Date().toISOString()}}]"
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "ee14ffa0-6e62-42a2-aecc-e328321cab59",
+      "position": [
+        4912,
+        150
+      ],
+      "name": "Reserve welcome SMS attempt",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "name": "Row: SMS confirmation",
+      "id": "d784c770-5427-4007-bca6-3ef8478980c4",
+      "position": [
+        5168,
+        50
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src = $('Build welcome SMS').first().json\nconst res = $input.first().json\nreturn [{json:{email:src.email,sms_confirmation_status:res.status || 'accepted',sms_confirmation_sid:res.sid || '',sms_confirmation_at:new Date().toISOString()}}]"
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "3f3fa153-6e53-415f-bfc5-b53038f8c5e0",
+      "position": [
+        5424,
+        50
+      ],
+      "name": "Record SMS confirmation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "name": "Row: SMS failed",
+      "id": "8fe35be3-0305-4c99-bb6f-646e892a3b3f",
+      "position": [
+        5168,
+        820
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src = $('Build welcome SMS').first().json\nconst res = $input.first().json\nconst err = res.error || res\nconst code = String(err.code || err.errorCode || res.code || '')\nconst row = {email:src.email,sms_confirmation_status:'failed',sms_confirmation_at:new Date().toISOString()}\nif (code === '21610') Object.assign(row,{sms_marketing_consent:'FALSE',sms_opted_out:'TRUE',sms_opt_out:'TRUE',sms_status:'unsubscribed',sms_opt_out_date:new Date().toISOString()})\nreturn [{json:row}]"
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "2069623a-4a94-4a4f-b3ed-cf749cb0a001",
+      "position": [
+        5424,
+        820
+      ],
+      "name": "Record SMS failure",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "name": "Row: SMS failure event",
+      "id": "33aa86fb-1cdc-424d-ac18-f60ed646e93e",
+      "position": [
+        5680,
+        496
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const src = $('Build welcome SMS').first().json\nreturn [{json:{event_id:'sms_fail_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),lead_id:src.lead_id,email:src.email,channel:'sms',email_type:'welcome-sms',sent_at:new Date().toISOString(),message_id:'',status:'failed',phone:src.toNumber}}]"
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "SMS Events"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "17ce3803-73db-4fc0-ab27-e1c5202bcd3e",
+      "position": [
+        5940,
+        496
+      ],
+      "name": "Log SMS failure event",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RMLaCuAYegEueMdp",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Audit form webhook": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Validate & normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & normalize": {
+      "main": [
+        [
+          {
+            "node": "Valid submission?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid submission?": {
+      "main": [
+        [
+          {
+            "node": "Find existing lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error row: invalid submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error row: invalid submission": {
+      "main": [
+        [
+          {
+            "node": "Log invalid submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log invalid submission": {
+      "main": [
+        [
+          {
+            "node": "Respond 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find existing lead": {
+      "main": [
+        [
+          {
+            "node": "Decide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide": {
+      "main": [
+        [
+          {
+            "node": "Row only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row only": {
+      "main": [
+        [
+          {
+            "node": "Save lead (upsert by email)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save lead (upsert by email)": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 200": {
+      "main": [
+        [
+          {
+            "node": "Build notify email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build notify email": {
+      "main": [
+        [
+          {
+            "node": "Notify Kaleel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Kaleel": {
+      "main": [
+        [
+          {
+            "node": "Send Email 1?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 1?": {
+      "main": [
+        [
+          {
+            "node": "Build Email 1 request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Email 1 request": {
+      "main": [
+        [
+          {
+            "node": "Send Email 1 (SendGrid)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 1 (SendGrid)": {
+      "main": [
+        [
+          {
+            "node": "Row: Email 1 sent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Row: Email 1 event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row: Email 1 error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: Email 1 sent": {
+      "main": [
+        [
+          {
+            "node": "Mark Email 1 sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: Email 1 event": {
+      "main": [
+        [
+          {
+            "node": "Log Email 1 event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: Email 1 error": {
+      "main": [
+        [
+          {
+            "node": "Log Email 1 failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Email 1 sent": {
+      "main": [
+        [
+          {
+            "node": "Send welcome SMS?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send welcome SMS?": {
+      "main": [
+        [
+          {
+            "node": "Build welcome SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build welcome SMS": {
+      "main": [
+        [
+          {
+            "node": "SMS configuration valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS configuration valid?": {
+      "main": [
+        [
+          {
+            "node": "Row: SMS pending",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row: SMS config error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: SMS config error": {
+      "main": [
+        [
+          {
+            "node": "Log SMS config failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send welcome SMS (Twilio)": {
+      "main": [
+        [
+          {
+            "node": "Row: SMS sent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Row: SMS confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Row: SMS error",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Row: SMS failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: SMS sent": {
+      "main": [
+        [
+          {
+            "node": "Log welcome SMS event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: SMS error": {
+      "main": [
+        [
+          {
+            "node": "Log SMS failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: SMS pending": {
+      "main": [
+        [
+          {
+            "node": "Reserve welcome SMS attempt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserve welcome SMS attempt": {
+      "main": [
+        [
+          {
+            "node": "Send welcome SMS (Twilio)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: SMS confirmation": {
+      "main": [
+        [
+          {
+            "node": "Record SMS confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: SMS failed": {
+      "main": [
+        [
+          {
+            "node": "Record SMS failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS failure": {
+      "main": [
+        [
+          {
+            "node": "Row: SMS failure event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS config failure": {
+      "main": [
+        [
+          {
+            "node": "Row: SMS failure event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row: SMS failure event": {
+      "main": [
+        [
+          {
+            "node": "Log SMS failure event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "name": "BOXX - Lead Intake | Email + SMS consent",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

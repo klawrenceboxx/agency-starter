@@ -76,6 +76,28 @@ ok('HELD lead resubmits with box ticked: hold released, Email 1 sent', d.sendEma
 d = decideNC(existing({ framework_delivered_at: ago(31), created_at: ago(31) }))
 ok('Unticked resubmit never erases earlier consent', d.row.email_marketing_consent === undefined && d.sendEmail1)
 
+// ---- separate consent contract and CRM preservation
+const decideBody = (body, existingRow) => run(W.intake, 'Decide', { input: [existingRow || {}], nodes: { Config: [cfg], 'Validate & normalize': [validate({ ...base, services: ['website'], ...body })] } })[0]
+for (const [em, sms] of [[false,false],[true,false],[false,true],[true,true]]) {
+  const result = decideBody({ email_marketing_consent: em, sms_marketing_consent: sms })
+  ok('Separate consent flags map independently to CRM', result.row.email_marketing_consent === (em ? 'TRUE' : 'FALSE') && result.row.sms_marketing_consent === (sms ? 'TRUE' : 'FALSE'))
+  ok('Each granted channel has its own timestamp and source', (!em || (!!result.row.email_consent_at && !!result.row.email_consent_source)) && (!sms || (!!result.row.sms_consent_at && !!result.row.sms_consent_source)))
+}
+for (const value of [undefined, null, '', 'false', 'true', 1]) {
+  const result = decideBody({ consent: value, email_marketing_consent: value, sms_marketing_consent: value })
+  ok('Absent or nonboolean submission cannot grant consent', result.row.email_marketing_consent === 'FALSE' && result.row.sms_marketing_consent === 'FALSE')
+}
+const declined = decideBody({ consent: true, email_marketing_consent: false })
+ok('Explicit email false takes precedence over legacy consent', declined.row.email_marketing_consent === 'FALSE')
+for (const optOut of [{sms_opted_out:'TRUE'}, {sms_opt_out:'TRUE'}, {sms_opt_out_date:ago(1)}]) {
+  const result = decideBody({ sms_marketing_consent:true }, existing(optOut))
+  ok('SMS opt-out is preserved across resubmission', result.row.sms_marketing_consent === undefined && result.row.sms_opted_out === undefined && result.row.sms_opt_out === undefined && result.row.sms_opt_out_date === undefined)
+}
+const repeated = decideBody({ email_marketing_consent:false, sms_marketing_consent:false, phone:'' }, existing({sms_marketing_consent:'TRUE',sms_confirmation_sid:'SMexisting',sms_confirmation_status:'sent',phone:'+14165551234'}))
+ok('Unchecked resubmission does not overwrite existing consent or welcome history', repeated.row.email_marketing_consent === undefined && repeated.row.sms_marketing_consent === undefined && repeated.row.sms_confirmation_sid === undefined && repeated.row.sms_confirmation_status === undefined)
+
+ok('Blank optional phone preserves existing CRM phone', repeated.row.phone === '+14165551234')
+
 // ---- scheduler: Plan sends
 const plan = rows => run(W.sched, 'Plan sends', { input: rows, nodes: { Config: [cfg] } })
 const lead = (over = {}) => ({ lead_id: 'ld_1', email: 'a@b.com', name: 'Alice Smith', website: 'acme.com', nurture_path: 'WEBSITE', nurture_status: 'ACTIVE',

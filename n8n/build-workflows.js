@@ -152,7 +152,8 @@ function intake() {
 
   A(code('Validate & normalize', String.raw`const b = $('Audit form webhook').first().json.body || {}
 const clean = s => String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f<>]/g, '').trim()
-const truthy = v => v === true || ['true', 'on', 'yes', '1'].includes(String(v).toLowerCase())
+const emailConsent = Object.prototype.hasOwnProperty.call(b, 'email_marketing_consent') ? b.email_marketing_consent === true : b.consent === true
+const smsConsent = b.sms_marketing_consent === true
 const errors = []
 const email = clean(b.email).toLowerCase()
 if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.push('invalid_email')
@@ -171,7 +172,9 @@ const lead = {
   nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',
   budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',
   source: clean(b.source).slice(0, 300),
-  consent: truthy(b.consent),
+  consent: emailConsent,
+  email_marketing_consent: emailConsent,
+  sms_marketing_consent: smsConsent,
   consent_text: clean(b.consent_text).slice(0, 300),
 }
 return [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]`), 2, 1)
@@ -197,9 +200,15 @@ const rows = $input.all().map(i => i.json).filter(r => r && r.email)
 const ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)
 const T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'
 const now = new Date(), iso = now.toISOString()
-const consentFields = L.consent ? { email_marketing_consent: 'TRUE', email_consent_at: iso, consent_source: L.consent_text || 'audit form checkbox' } : {}
+const consentFields = L.consent ? { email_marketing_consent: 'TRUE', email_consent_at: iso,
+  email_consent_source: L.source || 'audit form checkbox', consent_source: L.consent_text || 'audit form checkbox' } : {}
+// Respect both existing and new opt-out columns; never clear them on a resubmission.
+const smsBlocked = ex && (T(ex.sms_opted_out) || T(ex.sms_opt_out) || !!ex.sms_opt_out_date)
+if (L.sms_marketing_consent && !smsBlocked) Object.assign(consentFields, {
+  sms_marketing_consent: 'TRUE', sms_consent_at: iso, sms_consent_source: L.source || 'audit form checkbox'
+})
 const hasConsent = !!(L.consent || (ex && T(ex.email_marketing_consent)))
-const contact = Object.assign({ email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }, consentFields)
+const contact = Object.assign({ email: L.email, name: L.name, phone: L.phone || (ex && ex.phone) || '', website: L.website, updated_at: iso, last_submission_at: iso }, consentFields)
 const fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,
   nurture_status: hasConsent ? 'ACTIVE' : 'HELD', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '',
   stop_reason: hasConsent ? '' : 'no_consent' }
@@ -208,7 +217,8 @@ let row, sendEmail1 = false, reason, isNew = false
 if (!ex) {
   isNew = true; sendEmail1 = hasConsent; reason = hasConsent ? 'new_lead' : 'new_lead_held_no_consent'
   row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,
-    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING' }, contact, fresh)
+    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING',
+    email_marketing_consent: 'FALSE', sms_marketing_consent: 'FALSE', sms_opted_out: 'FALSE' }, contact, fresh)
 } else {
   const blocked = T(ex.unsubscribe_status) || T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'
   const releaseHold = String(ex.nurture_status || '').toUpperCase() === 'HELD' && L.consent

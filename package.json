@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "node scripts/seed.js",
-    "test": "node tests/audit-form.cjs && node n8n/test-logic.js"
+    "test": "node tests/audit-form.cjs && node n8n/test-logic.js && node n8n/test-consent-twilio.js"
   },
   "dependencies": {
     "@portabletext/react": "^3.1.0",

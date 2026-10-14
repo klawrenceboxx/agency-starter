@@ -8,6 +8,18 @@ import { CALENDLY_URL, LINKEDIN_URL } from '@/lib/site-config'
 
 const CONSENT_TEXT = 'Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.'
 
+// The form's local-number example is Canadian. Preserve other contact formats;
+// the workflow must validate E.164 before sending an SMS.
+function normalizePhone(phone) {
+  const raw = phone.trim()
+  if (!/^\+?[\d\s().-]*$/.test(raw)) return raw
+  const digits = raw.replace(/\D/g, '')
+  if (raw.startsWith('+') && /^[1-9]\d{1,14}$/.test(digits)) return '+' + digits
+  if (!raw.startsWith('+') && /^[2-9]\d{2}[2-9]\d{6}$/.test(digits)) return '+1' + digits
+  if (!raw.startsWith('+') && /^1[2-9]\d{2}[2-9]\d{6}$/.test(digits)) return '+' + digits
+  return raw
+}
+
 const EMPTY_LEAD = { name: '', email: '', phone: '', website: '', services: [], budget: '', consent: false }
 
 export default function AuditModal({ webhookUrl, inline = false }) {
@@ -52,7 +64,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
   async function submitLead(form) {
     const services = form.service === 'BOTH' ? ['website', 'emails'] : [form.service === 'AUTOMATED_EMAILS' ? 'emails' : 'website'];
     const budgets = { 'Under $1,000': 'under-1000', '$1,000–$2,500': '1000-2500', '$2,500+': '2500-plus', 'Just exploring for now': '' };
-    const submittedLead = { name: form.fullName.trim(), email: form.email.trim(), website: form.website.trim(), phone: form.phone.trim(), services, budget: budgets[form.budget] || '', consent: form.emailConsent === true };
+    const submittedLead = { name: form.fullName.trim(), email: form.email.trim(), website: form.website.trim(), phone: normalizePhone(form.phone), services, budget: budgets[form.budget] || '', consent: form.emailConsent === true };
     const lead = submittedLead;
     setLead(submittedLead);
     setSending(true)

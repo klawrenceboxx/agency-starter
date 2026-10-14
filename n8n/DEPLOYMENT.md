@@ -1,5 +1,7 @@
 # BOXX deployment status
 
+2026-10-14 consent preparation: the existing CRM headers and SMS Events tab were updated and verified through Google Sheets. The reviewed intake JSON is ready for configuration/import review; live n8n and Twilio were not changed or tested. See [remaining consent/Twilio deployment steps](CONSENT-TWILIO-PREPARATION.md).
+
 Updated 2026-10-05 UTC, continuing `cce2b9c` on `main`. No system redesign.
 
 ## Existing live state

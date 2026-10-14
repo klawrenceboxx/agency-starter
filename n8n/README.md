@@ -3,6 +3,10 @@
 Form submit -> Email 1 (framework) -> Emails 2-5 on a schedule -> booking exits nurture -> booked-call emails.
 Built for BOXX first; to reuse for a client, copy the Google Sheet, edit the **Config** node, swap the email copy in `emails/build.js`.
 
+## Email and SMS consent preparation
+
+The reviewed, inactive replacement intake is `workflows/BOXX-Lead-Intake-Consent-Twilio.json`. See [consent and Twilio preparation](CONSENT-TWILIO-PREPARATION.md) for verified live CRM headers, transactional Email 1 behavior, welcome SMS guards, and required sender/STOP/Scheduler setup. No live n8n change or message send was performed.
+
 ## What is here
 
 | Path | What |
@@ -12,10 +16,10 @@ Built for BOXX first; to reuse for a client, copy the Google Sheet, edit the **C
 | `workflows/3-boxx-booking-exit.json` | Calendly booking/cancel -> stops nurture. Also sends confirmation + reminders, flips status to CALL_COMPLETED. |
 | `workflows/4-boxx-sendgrid-events.json` | SendGrid Event Webhook receiver. Unsubscribes, spam reports and hard bounces mark the lead STOPPED. Change the random webhook path, activate, then paste its production URL into SendGrid > Mail Settings > Event Webhook. |
 | `emails/build.js` -> `emails/dist/` | 5 nurture + 3 booking emails (HTML + plain text) from shared components. |
-| `sheet-template/*.csv` | Header rows for the 3 Google Sheet tabs. `Leads` matches the live CRM consent columns, including `email_marketing_consent`, `email_consent_at`, and `consent_source`. Do not add duplicate columns. |
+| `sheet-template/*.csv` | Reference headers for Leads, Email Events, Error Log, and SMS Events. `Leads` matches the live CRM consent columns, including `email_marketing_consent`, `email_consent_at`, and `consent_source`. Do not add duplicate columns. |
 | `build-workflows.js`, `test-logic.js` | Generator for the workflow JSON and a logic test (`node n8n/test-logic.js`). |
 
-Edit the generators, not the JSON, then re-run `node n8n/build-workflows.js` / `node n8n/emails/build.js`.
+The separately reviewed `BOXX-Lead-Intake-Consent-Twilio.json` is maintained directly and is not overwritten by the generic generator. For the older generated workflows, edit the generators, then re-run `node n8n/build-workflows.js` / `node n8n/emails/build.js`.
 
 ## Continue the existing deployment
 
@@ -40,7 +44,7 @@ The scan covers events starting within the last 30 days and all future events, f
 
 Primary references: [Calendly list scheduled events](https://developer.calendly.com/api-docs/calendly-api/scheduled-events/list-scheduled-events), [Calendly list event invitees](https://developer.calendly.com/api-docs/calendly-api/scheduled-events/list-event-invitees), [Calendly scopes](https://developer.calendly.com/docs/authentication/scopes).
 
-## Rules it enforces
+## Earlier generated workflow rules
 
 - One 5-email sequence per lead. Path (WEBSITE / EMAIL / BOTH) is derived from `services` server-side; browser-sent `path`/state is ignored.
 - Dedupe by lowercased email. Repeat within 30 days: updates contact info only. After 30 days: Email 1 is re-sent and nurture restarts (never for unsubscribed, booked, or active clients).
@@ -50,14 +54,14 @@ Primary references: [Calendly list scheduled events](https://developer.calendly.
 - Failures: 3 tries per Sheets/SendGrid call, then a row in `Error Log`. A failed Email 1 is retried by the scheduler for 48h. A booking from an email that matches no lead is logged.
 - No secrets in the JSON. The webhook allows only `https://boxxautomations.space`.
 
-## Verified vs not verified
+## Earlier deployment verification
 
-- Verified: all decision logic in the Code nodes (64 checks in `test-logic.js`): routing, dedupe, 30-day resend, cadence, stop conditions, Email 5 completion, booking/cancel/duplicate/stale events, reminders. Workflow JSON is structurally valid (no broken links).
+- Historical verification: decision logic in the earlier Code nodes (current checks are run by `npm test`): routing, dedupe, 30-day resend, cadence, stop conditions, Email 5 completion, booking/cancel/duplicate/stale events, reminders. Workflow JSON is structurally valid (no broken links).
 - **Not verified:** the polling revision has not been applied to live n8n. The three earlier workflows were imported and saved, but provider integration and live website end-to-end testing remain outstanding. Check HTTP pagination, sequential loop item selection, credentials, and static-data persistence on the installed n8n version.
 
 ## Known limits / follow-ups
 
-- No SendGrid event webhook yet (bounces/spam complaints/unsubscribes). SendGrid still suppresses those addresses itself, but the sheet will not show it and the scheduler keeps advancing them. Next step: a 4th small workflow that sets `unsubscribe_status=TRUE`.
+- The repository includes a SendGrid event webhook workflow for bounces/spam complaints/unsubscribes; its live activation and event configuration remain deployment checks.
 - SendGrid has no idempotency key: if a send succeeds but the sheet write then fails, the next run can resend. Failures land in `Error Log`.
 - Google Sheets is not transactional; two near-simultaneous submissions from one email could create two rows.
 - Polling can take up to 15 minutes plus execution time to detect a booking. A booking between polls can race a due nurture email. The 30-day historical scan does not discover changes to older calls. Confirm the discovery-call length matches the email copy.
@@ -67,7 +71,7 @@ Primary references: [Calendly list scheduled events](https://developer.calendly.
 
 
 ## Consent and unsubscribe rules (Oct 2026)
-- The audit form sends `consent` and `consent_text`. A ticked box saves `email_marketing_consent=TRUE` with a timestamp. No tick on a new lead saves the row as `HELD` and sends no email; a later tick releases the hold.
+- The audit form now sends separate boolean `email_marketing_consent` and `sms_marketing_consent` fields, both optional and initially false. Legacy `consent` and `consent_text` remain for compatibility. The reviewed Twilio intake uses only the separate flags, sends transactional Email 1 for new valid requests regardless of marketing consent, and keeps marketing nurture HELD without effective email consent. The earlier generated intake remains marketing-gated; see the reviewed artifact above.
 - Legacy leads have no consent recorded. The Scheduler stops any ACTIVE lead whose `email_marketing_consent` is not TRUE (`stop_reason=no_consent`). Only record TRUE when documented marketing consent exists; never bulk-enable legacy leads without evidence.
 - Booking confirmations and reminders bypass SendGrid unsubscribe management (transactional). Their templates must not contain unsubscribe tags. Nurture emails keep the unsubscribe group.
 - Booking Exit matches a booker by email, then phone (needs a phone/SMS field on the Calendly event), then name (only when exactly one lead matches).

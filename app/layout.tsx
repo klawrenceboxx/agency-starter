@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { client } from '@/sanity/client'
 import JsonLd from '@/components/JsonLd'
 import SiteChrome from '@/components/SiteChrome'
+import { PHONE_E164 } from '@/lib/site-config'
 import './globals.css'
 
 const inter = Inter({
@@ -60,6 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             name: settings?.companyName || 'Boxx Automations',
             url: settings?.siteUrl,
             email: settings?.email,
+            telephone: PHONE_E164,
             sameAs: [settings?.linkedinUrl].filter(Boolean),
           }}
         />

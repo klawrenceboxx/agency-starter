@@ -27,7 +27,7 @@ const cfg = run(W.intake, 'Config')[0]
 
 // ---- intake: validation + routing
 const validate = body => run(W.intake, 'Validate & normalize', { nodes: { 'Audit form webhook': [{ body }] } })[0]
-const base = { name: 'Alice Smith', email: '  Alice@Acme.COM ', phone: '555-123-4567', website: 'https://www.Acme.com/', budget: '1000-2500', source: 'https://boxxautomations.space/' }
+const base = { name: 'Alice Smith', email: '  Alice@Acme.COM ', phone: '555-123-4567', website: 'https://www.Acme.com/', budget: '1000-2500', source: 'https://boxxautomations.space/', consent: true, consent_text: 'I agree to emails' }
 let v = validate({ ...base, services: ['website'] })
 ok('Website lead -> WEBSITE path only', v.ok && v.lead.nurture_path === 'WEBSITE')
 ok('Email normalized (lowercase/trim)', v.lead.email === 'alice@acme.com')
@@ -52,7 +52,7 @@ const decide = (existing, services = ['website']) => {
 let d = decide(null)
 ok('New lead: creates row + sends Email 1', d.isNew && d.sendEmail1 && d.row.nurture_status === 'ACTIVE' && d.row.current_email === 0)
 const existing = (over = {}) => ({ lead_id: 'ld_1', email: 'alice@acme.com', created_at: ago(5), framework_delivered_at: ago(5), framework_delivered: 'TRUE',
-  calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', nurture_status: 'ACTIVE', current_email: '2', ...over })
+  calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', nurture_status: 'ACTIVE', current_email: '2', consent_email: 'TRUE', ...over })
 d = decide(existing())
 ok('Duplicate <30d: updates, no Email 1, nurture untouched', !d.isNew && !d.sendEmail1 && d.row.nurture_status === undefined && d.row.updated_at)
 d = decide(existing({ framework_delivered_at: ago(31), created_at: ago(31) }))
@@ -64,11 +64,23 @@ ok('Booked >30d: not re-sent', !d.sendEmail1)
 d = decide(existing({ framework_delivered_at: ago(31), client_status: 'ACTIVE' }))
 ok('Active client >30d: prospect nurture not restarted', !d.sendEmail1)
 
+// ---- consent
+const noConsent = { ...base, consent: false, consent_text: '' }
+const decideNC = (existing) => run(W.intake, 'Decide', { input: existing ? [existing] : [{}], nodes: { Config: [cfg], 'Validate & normalize': [validate({ ...noConsent, services: ['website'] })] } })[0]
+d = decideNC(null)
+ok('No consent: lead saved HELD, no Email 1', d.isNew && !d.sendEmail1 && d.row.nurture_status === 'HELD' && d.row.stop_reason === 'no_consent')
+d = decide(null)
+ok('Consent ticked: recorded with timestamp + source', d.row.consent_email === 'TRUE' && !!d.row.consent_at && !!d.row.consent_source)
+d = decide(existing({ nurture_status: 'HELD', consent_email: '', framework_delivered: 'FALSE' }))
+ok('HELD lead resubmits with box ticked: hold released, Email 1 sent', d.sendEmail1 && d.row.nurture_status === 'ACTIVE' && d.reason === 'hold_released_consent_given')
+d = decideNC(existing({ framework_delivered_at: ago(31), created_at: ago(31) }))
+ok('Unticked resubmit never erases earlier consent', d.row.consent_email === undefined && d.sendEmail1)
+
 // ---- scheduler: Plan sends
 const plan = rows => run(W.sched, 'Plan sends', { input: rows, nodes: { Config: [cfg] } })
 const lead = (over = {}) => ({ lead_id: 'ld_1', email: 'a@b.com', name: 'Alice Smith', website: 'acme.com', nurture_path: 'WEBSITE', nurture_status: 'ACTIVE',
   framework_delivered: 'TRUE', framework_delivered_at: ago(0.1), created_at: ago(0.1), current_email: '1', calendly_booked: 'FALSE',
-  unsubscribe_status: 'FALSE', client_status: 'PROSPECT', ...over })
+  unsubscribe_status: 'FALSE', client_status: 'PROSPECT', consent_email: 'TRUE', ...over })
 ok('Day 0.1: nothing due', plan([lead()]).length === 0)
 let p = plan([lead({ framework_delivered_at: ago(2.01) })])
 ok('Day 2: Email 2 due, next due set from anchor', p.length === 1 && p[0].action === 'send' && p[0].n === 2 && !!p[0].nextDue)
@@ -94,6 +106,9 @@ p = plan([lead({ framework_delivered: 'FALSE', framework_delivered_at: '', curre
 ok('Failed Email 1 is retried (n=1)', p[0] && p[0].action === 'send' && p[0].n === 1)
 p = plan([lead({ framework_delivered: 'FALSE', framework_delivered_at: '', current_email: '0', created_at: ago(3) })])
 ok('Email 1 retry is bounded to 48h', p[0].action === 'stop' && p[0].reason === 'email1_failed')
+
+p = plan([lead({ framework_delivered_at: ago(2.01), consent_email: '' })])
+ok('Active lead without consent is stopped', p[0].action === 'stop' && p[0].reason === 'no_consent')
 
 // ---- scheduler: row after Email 5
 const advance = n => run(W.sched, 'Row: lead advanced', { input: [{}], nodes: { 'Build SendGrid request': [{ meta: { email: 'a@b.com', n, nextDue: '' } }] } })
@@ -162,7 +177,7 @@ ok('List requests paginate until next_page is empty without dropping canceled re
 ok('Reminders run after sequential booking loop is done', W.book.connections['Process one booking'].main[0][0].node === 'Config (reminders)')
 ok('No-op and duplicate routes advance the loop', W.book.nodes.find(n => n.name === 'Route booking action').parameters.options.fallbackOutput === 'extra' && W.book.connections['Route booking action'].main[3][0].node === 'Mark poll observation')
 ok('All generated workflows are inactive and have no dangling connections', Object.values(W).every(w => !w.active && Object.entries(w.connections).every(([source, outputs]) => w.nodes.some(n => n.name === source) && outputs.main.flat().every(c => w.nodes.some(n => n.name === c.node)))))
-ok('Sender and unsubscribe group match owner values', cfg.fromEmail === 'hello@boxxautomations.space' && cfg.replyTo === cfg.fromEmail && cfg.fromName === 'BOXX Automations' && cfg.asmGroupId === 42909)
+ok('Sender and unsubscribe group match owner values', cfg.fromEmail === 'hello@boxxautomations.space' && cfg.replyTo === cfg.fromEmail && cfg.fromName === 'Kaleel at BOXX' && cfg.asmGroupId === 42909)
 
 // ---- reminders
 const remind = rows => run(W.book, 'Plan reminders', { input: rows, nodes: { 'Config (reminders)': [cfg] } })
@@ -174,6 +189,29 @@ ok('23h out, already sent: no repeat', remind([bk(23, { reminder_24h_sent: 'TRUE
 ok('2h out: same-day reminder', remind([bk(2)])[0].action === 'remindDay')
 ok('Call finished: status -> completed', remind([bk(-2)])[0].action === 'completed')
 ok('Completed lead not re-flagged', remind([bk(-2, { client_status: 'CALL_COMPLETED' })]).length === 0)
+
+// ---- sendgrid events
+{
+  const ev = wf('4-boxx-sendgrid-events')
+  const out = run(ev, 'Parse events', { nodes: { 'SendGrid event webhook': [{ body: [
+    { email: 'A@b.com', event: 'delivered' }, { email: 'A@b.com', event: 'group_unsubscribe' },
+    { email: 'c@d.com', event: 'bounce', type: 'blocked' }, { email: 'e@f.com', event: 'bounce', type: 'bounce' } ] }] } })
+  ok('Unsubscribe event stops lead + sets unsubscribe_status', out.length === 2 && out[0].email === 'a@b.com' && out[0].unsubscribe_status === 'TRUE' && out[0].nurture_status === 'STOPPED')
+  ok('Hard bounce stops lead without flagging unsubscribe; soft block ignored', out[1].email === 'e@f.com' && out[1].stop_reason === 'bounced' && out[1].unsubscribe_status === undefined)
+}
+
+
+// ---- booking: match by phone / name when the booker uses a different email
+{
+  const pp = parse('invitee.created', { email: 'other@x.com', text_reminder_number: '+1 (555) 123-4567', name: 'Someone Else' })
+  const rows = [exb({ email: 'a@b.com', phone: '555-123-4567' }), exb({ email: 'c@d.com', phone: '555-000-0000', name: 'Carl' })]
+  const r = run(W.book, 'Decide booking', { input: rows, nodes: { 'Parse Calendly event': [pp] } })[0]
+  ok('Different email, same phone: matched, confirmation goes to booker', r.action === 'booked' && r.email === 'a@b.com' && r.sendTo === 'other@x.com')
+  const pn = parse('invitee.created', { email: 'zz@x.com', name: 'Carl' })
+  ok('Name match only when exactly one lead', run(W.book, 'Decide booking', { input: rows, nodes: { 'Parse Calendly event': [pn] } })[0].email === 'c@d.com'
+    && run(W.book, 'Decide booking', { input: [...rows, exb({ email: 'e@f.com', name: 'Carl' })], nodes: { 'Parse Calendly event': [pn] } })[0].action === 'unmatched')
+
+}
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed')
 process.exit(fail ? 1 : 0)

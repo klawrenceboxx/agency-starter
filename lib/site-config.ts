@@ -21,3 +21,7 @@ export const PHASES: [string, string, string][] = [
 
 export const CALENDLY_URL = 'https://calendly.com/kaleellawrenceboxx/discovery-call'
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/klawrenceboxx'
+
+// Must match the phone number on the Google Business Profile.
+export const PHONE_DISPLAY = '(647) 632-1709'
+export const PHONE_E164 = '+16476321709'

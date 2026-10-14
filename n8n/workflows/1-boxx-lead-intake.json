@@ -2,7 +2,7 @@
   "name": "BOXX - Lead Intake",
   "nodes": [
     {
-      "id": "8465277f-62c7-4604-9ba8-df1da887b3b6",
+      "id": "395856c8-7967-40c5-a0ea-818b6e3cf7fe",
       "position": [
         0,
         200
@@ -10,7 +10,7 @@
       "name": "Audit form webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "webhookId": "dd3cfe06-315e-4671-8e92-50bbcdc5ffce",
+      "webhookId": "1f04d1bb-2daa-4255-bcf1-c9e914623ed6",
       "parameters": {
         "httpMethod": "POST",
         "path": "boxx-lead",
@@ -21,7 +21,7 @@
       }
     },
     {
-      "id": "6d160466-f723-4342-88dc-d497df3c31b6",
+      "id": "39bdf207-59c1-471f-b3cd-e948d14da49e",
       "position": [
         260,
         200
@@ -31,11 +31,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\n// All five emails share one SendGrid template for now (content comes from dynamic data).\nconst fiveTemplates = Array(5).fill('d-0cd7bdd5623a46c8abc185880f02d4aa')\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
       }
     },
     {
-      "id": "342af387-ef5c-4d81-a6bd-42a13d27f8ba",
+      "id": "5e852591-d11b-4072-8a64-e5d3b9c2655a",
       "position": [
         520,
         200
@@ -45,11 +45,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const b = $('Audit form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst name = clean(b.name).slice(0, 100)\nif (name.length < 2) errors.push('missing_name')\nconst website = clean(b.website).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/+$/, '').slice(0, 200)\nif (!/^[^\\s.\\/]+(\\.[^\\s.\\/]+)+(\\/\\S*)?$/.test(website)) errors.push('invalid_website')\nconst svc = (Array.isArray(b.services) ? b.services : []).map(s => clean(s).toLowerCase())\nconst hasW = svc.includes('website'), hasE = svc.includes('emails')\nif (!hasW && !hasE) errors.push('unknown_interest')\nconst budgets = ['under-1000', '1000-2500', '2500-plus']\nconst lead = {\n  email, name, first_name: name.split(' ')[0], website,\n  phone: clean(b.phone).slice(0, 30),\n  interest: hasW && hasE ? 'both' : hasE ? 'emails' : 'website',\n  nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',\n  budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',\n  source: clean(b.source).slice(0, 300),\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
+        "jsCode": "const b = $('Audit form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst truthy = v => v === true || ['true', 'on', 'yes', '1'].includes(String(v).toLowerCase())\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst name = clean(b.name).slice(0, 100)\nif (name.length < 2) errors.push('missing_name')\nconst website = clean(b.website).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/+$/, '').slice(0, 200)\nif (!/^[^\\s.\\/]+(\\.[^\\s.\\/]+)+(\\/\\S*)?$/.test(website)) errors.push('invalid_website')\nconst svc = (Array.isArray(b.services) ? b.services : []).map(s => clean(s).toLowerCase())\nconst hasW = svc.includes('website'), hasE = svc.includes('emails')\nif (!hasW && !hasE) errors.push('unknown_interest')\nconst budgets = ['under-1000', '1000-2500', '2500-plus']\nconst lead = {\n  email, name, first_name: name.split(' ')[0], website,\n  phone: clean(b.phone).slice(0, 30),\n  interest: hasW && hasE ? 'both' : hasE ? 'emails' : 'website',\n  nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',\n  budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',\n  source: clean(b.source).slice(0, 300),\n  consent: truthy(b.consent),\n  consent_text: clean(b.consent_text).slice(0, 300),\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
       }
     },
     {
-      "id": "c52b9eed-73d3-4036-8e7a-5e45f9c9cde2",
+      "id": "c929df32-b414-4c0d-88a4-f670981658fd",
       "position": [
         780,
         200
@@ -67,7 +67,7 @@
           },
           "conditions": [
             {
-              "id": "4d8ab471-ceee-4dab-8787-d60e99c21e29",
+              "id": "0eb41c29-61a0-4147-a8a6-3b35c56d95ee",
               "leftValue": "={{ $json.ok }}",
               "rightValue": true,
               "operator": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "4f7834dd-2946-4181-92f3-61d79ca7d69b",
+      "id": "be269c52-c603-431a-a759-6e8a4c946c61",
       "position": [
         1040,
         0
@@ -96,7 +96,7 @@
       }
     },
     {
-      "id": "df3d8ba1-faaa-408e-92e7-1d8ee9b2e531",
+      "id": "b86526d8-3679-4f07-9890-ec9c7f806bc4",
       "position": [
         1300,
         0
@@ -136,7 +136,7 @@
       }
     },
     {
-      "id": "644a5dbf-38da-464e-97bd-7af8eaba25ed",
+      "id": "b31b76ab-181c-422c-8e31-431ae49800fe",
       "position": [
         1560,
         0
@@ -161,7 +161,7 @@
       }
     },
     {
-      "id": "a7490435-1554-45c3-9e92-fbfe985169f9",
+      "id": "1360fc86-e53c-403a-a9b6-6b987d4dccf4",
       "position": [
         1040,
         400
@@ -201,7 +201,7 @@
       }
     },
     {
-      "id": "5243adc2-8b0d-4d14-9f5e-2676c653fa63",
+      "id": "d6222a56-9afb-424b-a359-18b439ac0be0",
       "position": [
         1300,
         400
@@ -211,11 +211,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst v = $('Validate & normalize').first().json\nconst L = v.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\nconst contact = { email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }\nconst fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,\n  nurture_status: 'ACTIVE', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '', stop_reason: '' }\nlet row, sendEmail1 = false, reason, isNew = false\nif (!ex) {\n  isNew = true; sendEmail1 = true; reason = 'new_lead'\n  row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,\n    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING' }, contact, fresh)\n} else {\n  const blocked = T(ex.unsubscribe_status) || T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'\n  const start = new Date(ex.framework_delivered_at || ex.created_at)\n  const ageDays = isNaN(start) ? 0 : (now - start) / 864e5\n  if (!blocked && ageDays > cfg.resendAfterDays) {\n    sendEmail1 = true; reason = 'resend_after_' + cfg.resendAfterDays + '_days'; row = Object.assign({}, contact, fresh)\n  } else {\n    reason = blocked ? 'existing_lead_blocked' : 'duplicate_within_window'; row = contact\n  }\n}\nconst lead = Object.assign({}, L, { lead_id: ex ? ex.lead_id : row.lead_id })\nreturn [{ json: { sendEmail1, reason, isNew, row, lead } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst v = $('Validate & normalize').first().json\nconst L = v.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\nconst consentFields = L.consent ? { consent_email: 'TRUE', consent_at: iso, consent_source: L.consent_text || 'audit form checkbox' } : {}\nconst hasConsent = !!(L.consent || (ex && T(ex.consent_email)))\nconst contact = Object.assign({ email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }, consentFields)\nconst fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,\n  nurture_status: hasConsent ? 'ACTIVE' : 'HELD', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '',\n  stop_reason: hasConsent ? '' : 'no_consent' }\n\nlet row, sendEmail1 = false, reason, isNew = false\nif (!ex) {\n  isNew = true; sendEmail1 = hasConsent; reason = hasConsent ? 'new_lead' : 'new_lead_held_no_consent'\n  row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,\n    calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING' }, contact, fresh)\n} else {\n  const blocked = T(ex.unsubscribe_status) || T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'\n  const releaseHold = String(ex.nurture_status || '').toUpperCase() === 'HELD' && L.consent\n  const start = new Date(ex.framework_delivered_at || ex.created_at)\n  const ageDays = isNaN(start) ? 0 : (now - start) / 864e5\n  if (!blocked && hasConsent && (releaseHold || ageDays > cfg.resendAfterDays)) {\n    sendEmail1 = true\n    reason = releaseHold ? 'hold_released_consent_given' : 'resend_after_' + cfg.resendAfterDays + '_days'\n    row = Object.assign({}, contact, fresh)\n  } else {\n    reason = blocked ? 'existing_lead_blocked' : !hasConsent ? 'held_no_consent' : 'duplicate_within_window'\n    row = contact\n  }\n}\nconst lead = Object.assign({}, L, { lead_id: ex ? ex.lead_id : row.lead_id })\nreturn [{ json: { sendEmail1, reason, isNew, row, lead } }]"
       }
     },
     {
-      "id": "d386ccd6-ebd4-4989-9d77-147493dc8009",
+      "id": "c14850b3-2b59-4f88-9961-80886d479e95",
       "position": [
         1560,
         400
@@ -229,7 +229,7 @@
       }
     },
     {
-      "id": "4723d32b-e378-4d79-9ff6-4dde138bad35",
+      "id": "8dda40c4-b50b-4560-8c76-88ef58113886",
       "position": [
         1820,
         400
@@ -271,7 +271,7 @@
       }
     },
     {
-      "id": "37fdad19-d844-4532-ba61-fd9275bec391",
+      "id": "f32deeff-4c76-4f60-b11e-f6aef3b61418",
       "position": [
         2080,
         400
@@ -296,7 +296,7 @@
       }
     },
     {
-      "id": "e9d1ddab-4f97-4946-b43d-56421bec4cd0",
+      "id": "b2f71782-4d9c-4000-ae87-3126eb5bec66",
       "position": [
         2340,
         400
@@ -306,11 +306,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst d = $('Decide').first().json, L = d.lead\nconst lines = ['Name: ' + L.name, 'Email: ' + L.email, 'Phone: ' + (L.phone || '-'), 'Website: ' + L.website,\n  'Interest: ' + L.interest + ' (path ' + L.nurture_path + ')', 'Budget: ' + (L.budget || '-'), 'Source: ' + (L.source || '-'), '', 'System action: ' + d.reason]\nconst subject = (d.isNew ? 'New audit request: ' : 'Repeat audit request: ') + L.name + ' (' + L.website + ')'\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: cfg.notifyEmail }], subject }],\n  from: { email: cfg.fromEmail, name: 'BOXX system' },\n  content: [{ type: 'text/plain', value: lines.join('\\n') }],\n}, meta: { email: L.email } } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst d = $('Decide').first().json, L = d.lead\nconst lines = ['Name: ' + L.name, 'Email: ' + L.email, 'Phone: ' + (L.phone || '-'), 'Website: ' + L.website,\n  'Interest: ' + L.interest + ' (path ' + L.nurture_path + ')', 'Budget: ' + (L.budget || '-'), 'Source: ' + (L.source || '-'),\n  'Consent box: ' + (L.consent ? 'ticked' : 'NOT ticked this time'), '', 'System action: ' + d.reason]\nconst subject = (d.isNew ? 'New audit request: ' : 'Repeat audit request: ') + L.name + ' (' + L.website + ')' + (d.reason.indexOf('held') > -1 ? ' [HELD: no consent, no email sent]' : '')\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: cfg.notifyEmail }], subject }],\n  from: { email: cfg.fromEmail, name: 'BOXX system' },\n  content: [{ type: 'text/plain', value: lines.join('\\n') }],\n}, meta: { email: L.email } } }]"
       }
     },
     {
-      "id": "56787f65-75f2-4959-a47e-b7fcaa742f05",
+      "id": "56dac45a-b7d3-4191-8233-7a09f0986fa5",
       "position": [
         2600,
         400
@@ -346,7 +346,7 @@
       }
     },
     {
-      "id": "e33b361f-4171-4a74-b916-d2cf833e1dd9",
+      "id": "9c19f4dd-fb97-43df-842b-26a426a94574",
       "position": [
         2860,
         400
@@ -364,7 +364,7 @@
           },
           "conditions": [
             {
-              "id": "3e025ca4-c8c1-4fa0-b0a8-3c5636c3fff7",
+              "id": "5376e2b7-5f9e-4cb1-9e13-a79dc46e9bcc",
               "leftValue": "={{ $('Decide').first().json.sendEmail1 }}",
               "rightValue": true,
               "operator": {
@@ -379,7 +379,7 @@
       }
     },
     {
-      "id": "e6ec8f7c-80e9-4a86-bf41-045c62958c2a",
+      "id": "70c9d049-fe11-4f90-9e88-e730b9ef662e",
       "position": [
         3120,
         200
@@ -393,7 +393,7 @@
       }
     },
     {
-      "id": "cdfee95e-4f75-4b8b-b6c7-5054e2de4319",
+      "id": "5b2e32fd-15f8-4ede-a83d-878870d6695a",
       "position": [
         3380,
         200
@@ -429,7 +429,7 @@
       }
     },
     {
-      "id": "d07d56dd-17b4-4586-a617-ece4dd9b931c",
+      "id": "2c826cf6-1213-452b-8bed-540e92068a52",
       "position": [
         3640,
         0
@@ -443,7 +443,7 @@
       }
     },
     {
-      "id": "cc30fbdd-01a2-4311-9b4b-2d2e778171cd",
+      "id": "b5d4864e-6728-45d5-b63f-a04fac00ec12",
       "position": [
         3900,
         0
@@ -485,7 +485,7 @@
       }
     },
     {
-      "id": "0a7f10b9-4c43-4bae-8d93-c8a3a8ae9ff0",
+      "id": "4e32110b-376c-4eb3-a567-1b7b6c5bb356",
       "position": [
         3640,
         200
@@ -499,7 +499,7 @@
       }
     },
     {
-      "id": "9ce1d91e-fd73-43d9-ac80-49ed71d181fb",
+      "id": "dc6685e2-7e1f-4e1b-a4c6-c9b5857bf625",
       "position": [
         3900,
         200
@@ -539,7 +539,7 @@
       }
     },
     {
-      "id": "02e0eb15-126e-442d-8c53-5c31910bf75a",
+      "id": "0d089cee-dd1a-4314-8d9e-e484a8298fe5",
       "position": [
         3640,
         600
@@ -553,7 +553,7 @@
       }
     },
     {
-      "id": "af08e882-63b8-445e-959c-d04f3592e2cd",
+      "id": "bbb62346-dc52-43bf-b1c8-09922b409cf0",
       "position": [
         3900,
         600
@@ -593,7 +593,7 @@
       }
     },
     {
-      "id": "1cdea694-def6-47bd-bd0f-1d00b96ab58c",
+      "id": "a7cf630d-fdd9-47c0-811e-7d8348ba13f6",
       "position": [
         0,
         -400

@@ -10,8 +10,9 @@ Built for BOXX first; to reuse for a client, copy the Google Sheet, edit the **C
 | `workflows/1-boxx-lead-intake.json` | Webhook for the audit form. Validates, dedupes by email, saves lead, notifies you, sends Email 1. |
 | `workflows/2-boxx-nurture-scheduler.json` | Every 15 min. Sends Emails 2-5 when due. Re-checks stop conditions before every send. |
 | `workflows/3-boxx-booking-exit.json` | Calendly booking/cancel -> stops nurture. Also sends confirmation + reminders, flips status to CALL_COMPLETED. |
+| `workflows/4-boxx-sendgrid-events.json` | SendGrid Event Webhook receiver. Unsubscribes, spam reports and hard bounces mark the lead STOPPED. Change the random webhook path, activate, then paste its production URL into SendGrid > Mail Settings > Event Webhook. |
 | `emails/build.js` -> `emails/dist/` | 5 nurture + 3 booking emails (HTML + plain text) from shared components. |
-| `sheet-template/*.csv` | Header rows for the 3 Google Sheet tabs. |
+| `sheet-template/*.csv` | Header rows for the 3 Google Sheet tabs. `Leads` now ends with `consent_email`, `consent_at`, `consent_source`: add these three columns to the live sheet. |
 | `build-workflows.js`, `test-logic.js` | Generator for the workflow JSON and a logic test (`node n8n/test-logic.js`). |
 
 Edit the generators, not the JSON, then re-run `node n8n/build-workflows.js` / `node n8n/emails/build.js`.
@@ -63,3 +64,11 @@ Primary references: [Calendly list scheduled events](https://developer.calendly.
 - Capacity counter (spots open) was removed from the site because it was hand-set. Re-add it only once it reads from the sheet/CRM (BUSINESS.md: never hardcoded).
 - Email 4 has no client proof by design. Real `[CLIENT RESULT]`, `[CLIENT QUOTE]`, `[CASE STUDY]` go in `emails/build.js` only once they exist.
 - Post-call proposal / access checklist / invoice stay manual (only status auto-updates to CALL_COMPLETED).
+
+
+## Consent and unsubscribe rules (Oct 2026)
+- The audit form sends `consent` and `consent_text`. A ticked box saves `consent_email=TRUE` with a timestamp. No tick on a new lead saves the row as `HELD` and sends no email; a later tick releases the hold.
+- Legacy leads have no consent recorded. The Scheduler stops any ACTIVE lead whose `consent_email` is not TRUE (`stop_reason=no_consent`). Set TRUE on rows where the person knowingly opted in.
+- Booking confirmations and reminders bypass SendGrid unsubscribe management (transactional). Their templates must not contain unsubscribe tags. Nurture emails keep the unsubscribe group.
+- Booking Exit matches a booker by email, then phone (needs a phone/SMS field on the Calendly event), then name (only when exactly one lead matches).
+- Replace the three placeholder template IDs in Config (`confirm`, `reminder24`, `reminderDay`) before go-live.

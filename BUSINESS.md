@@ -137,7 +137,7 @@ Templates live outside the site repo (client-ops files). Use them in this order:
 
 ## 7. Open items (confirm with Kaleel)
 
-- Site copy currently says "10-phase" in places, but the framework is 11 phases (0–10) and 77 items. Align on one wording.
+- Wording is aligned: site copy and BUSINESS.md both say "11 phases, 77 items" (phases 0–10).
 - "Both" sequence emails are not finalized.
 - Guarantee fine print and performance-fee percentages are set per client.
 - Whether SEO gets an equal fourth services card (currently: no, supporting only).

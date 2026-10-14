@@ -2,7 +2,7 @@
   "name": "BOXX - Nurture Scheduler",
   "nodes": [
     {
-      "id": "a9972eb6-d0c9-409c-9444-82d402124983",
+      "id": "9a33fe29-abcb-4eba-b70a-9999c6b4d673",
       "position": [
         0,
         200
@@ -22,7 +22,7 @@
       }
     },
     {
-      "id": "46bb3e07-9f01-4b54-9919-ee3e4ebca94b",
+      "id": "45040ab5-ccd4-409b-a55f-59362ab411f0",
       "position": [
         260,
         200
@@ -32,11 +32,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\n// All five emails share one SendGrid template for now (content comes from dynamic data).\nconst fiveTemplates = Array(5).fill('d-0cd7bdd5623a46c8abc185880f02d4aa')\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
       }
     },
     {
-      "id": "f3676649-791f-44d4-978c-4f109ce9b3fa",
+      "id": "d3d8d182-15d7-4321-8899-50fc76f7ca5f",
       "position": [
         520,
         200
@@ -76,7 +76,7 @@
       }
     },
     {
-      "id": "77c99040-3cb9-47b8-ac72-63954b777180",
+      "id": "6fe1fd8c-92c6-4f98-be65-60e86af21255",
       "position": [
         780,
         200
@@ -86,11 +86,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst now = new Date()\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst out = []\nfor (const { json: r } of $input.all()) {\n  if (!r.email) continue\n  const cs = String(r.client_status || '').toUpperCase()\n  let stop = ''\n  if (String(r.nurture_status).toUpperCase() !== 'ACTIVE') continue\n  if (T(r.unsubscribe_status)) stop = 'unsubscribed'\n  else if (T(r.calendly_booked)) stop = 'booked'\n  else if (cs === 'ACTIVE') stop = 'client_active'\n  if (stop) { out.push({ json: { action: 'stop', email: r.email, reason: stop } }); continue }\n\n  const delivered = T(r.framework_delivered)\n  const last = parseInt(r.current_email || 0, 10) || 0\n  const path = ['WEBSITE', 'EMAIL', 'BOTH'].includes(r.nurture_path) ? r.nurture_path : 'WEBSITE'\n  let next, nextDue = ''\n  if (!delivered) {\n    const ageH = (now - new Date(r.created_at)) / 36e5\n    if (!(ageH <= 48)) { out.push({ json: { action: 'stop', email: r.email, reason: 'email1_failed' } }); continue }\n    next = 1\n    nextDue = new Date(now.getTime() + cfg.cadenceDays[0] * 864e5).toISOString()\n  } else {\n    if (last >= 5) { out.push({ json: { action: 'complete', email: r.email, reason: 'sequence_complete' } }); continue }\n    next = Math.max(last, 1) + 1\n    let start = new Date(r.framework_delivered_at || r.last_email_sent_at)\n    if (isNaN(start)) continue\n    const due = new Date(start.getTime() + cfg.cadenceDays[next - 2] * 864e5)\n    if (now < due) continue\n    if (next < 5) nextDue = new Date(start.getTime() + cfg.cadenceDays[next - 1] * 864e5).toISOString()\n  }\n  out.push({ json: { action: 'send', email: r.email, lead_id: r.lead_id, first_name: String(r.name || '').split(' ')[0],\n    website: r.website, path, n: next, nextDue } })\n}\nreturn out"
+        "jsCode": "const cfg = $('Config').first().json\nconst now = new Date()\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst out = []\nfor (const { json: r } of $input.all()) {\n  if (!r.email) continue\n  const cs = String(r.client_status || '').toUpperCase()\n  let stop = ''\n  if (String(r.nurture_status).toUpperCase() !== 'ACTIVE') continue\n  if (T(r.unsubscribe_status)) stop = 'unsubscribed'\n  else if (T(r.calendly_booked)) stop = 'booked'\n  else if (cs === 'ACTIVE') stop = 'client_active'\n  else if (!T(r.consent_email)) stop = 'no_consent'\n  if (stop) { out.push({ json: { action: 'stop', email: r.email, reason: stop } }); continue }\n\n  const delivered = T(r.framework_delivered)\n  const last = parseInt(r.current_email || 0, 10) || 0\n  const path = ['WEBSITE', 'EMAIL', 'BOTH'].includes(r.nurture_path) ? r.nurture_path : 'WEBSITE'\n  let next, nextDue = ''\n  if (!delivered) {\n    const ageH = (now - new Date(r.created_at)) / 36e5\n    if (!(ageH <= 48)) { out.push({ json: { action: 'stop', email: r.email, reason: 'email1_failed' } }); continue }\n    next = 1\n    nextDue = new Date(now.getTime() + cfg.cadenceDays[0] * 864e5).toISOString()\n  } else {\n    if (last >= 5) { out.push({ json: { action: 'complete', email: r.email, reason: 'sequence_complete' } }); continue }\n    next = Math.max(last, 1) + 1\n    let start = new Date(r.framework_delivered_at || r.last_email_sent_at)\n    if (isNaN(start)) continue\n    const due = new Date(start.getTime() + cfg.cadenceDays[next - 2] * 864e5)\n    if (now < due) continue\n    if (next < 5) nextDue = new Date(start.getTime() + cfg.cadenceDays[next - 1] * 864e5).toISOString()\n  }\n  out.push({ json: { action: 'send', email: r.email, lead_id: r.lead_id, first_name: String(r.name || '').split(' ')[0],\n    website: r.website, path, n: next, nextDue } })\n}\nreturn out"
       }
     },
     {
-      "id": "894eca8b-b135-4228-956b-310aa1d2cd69",
+      "id": "c89bace2-c664-44ff-8112-c9eda7b1c0a0",
       "position": [
         1040,
         200
@@ -108,7 +108,7 @@
           },
           "conditions": [
             {
-              "id": "371c8945-fad6-4074-bdfd-692d463b4d35",
+              "id": "35bcb14f-b388-4226-aca0-92179c7c1238",
               "leftValue": "={{ $json.action }}",
               "rightValue": "send",
               "operator": {
@@ -123,7 +123,7 @@
       }
     },
     {
-      "id": "fcf09561-976c-40b7-a7e8-cacd9fe32e62",
+      "id": "2dc51595-f5c5-4042-8ce0-74c1ac4d477f",
       "position": [
         1300,
         600
@@ -137,7 +137,7 @@
       }
     },
     {
-      "id": "bfca46e3-4deb-40f1-b166-ddef061f3fa8",
+      "id": "b7a5325c-f55a-45c6-9d24-28881983c571",
       "position": [
         1560,
         600
@@ -179,7 +179,7 @@
       }
     },
     {
-      "id": "b0a8fc17-cf58-4a36-b0cd-faa3473369b1",
+      "id": "2d9a2702-50d9-4e30-88b9-6e2d62e977b9",
       "position": [
         1300,
         0
@@ -193,7 +193,7 @@
       }
     },
     {
-      "id": "7718d300-6536-4572-9a7b-eff4560518d9",
+      "id": "962b2ec0-338b-490e-95c5-5d798405aee6",
       "position": [
         1560,
         0
@@ -229,7 +229,7 @@
       }
     },
     {
-      "id": "772fac54-6bb5-4317-8414-792d93e927a8",
+      "id": "4e6de815-7ae8-4d0b-8a5f-0755652d8d8a",
       "position": [
         1820,
         -60
@@ -243,7 +243,7 @@
       }
     },
     {
-      "id": "646794d8-ba4b-4835-bab9-e3dec4ddba7d",
+      "id": "4478c922-fafd-46d9-bf92-c4ec55ea1e68",
       "position": [
         2080,
         -60
@@ -285,7 +285,7 @@
       }
     },
     {
-      "id": "d7c14374-df7d-430c-915b-6edcdd39fd59",
+      "id": "96f18002-f092-458d-9c15-c5eb5500a9a8",
       "position": [
         1820,
         140
@@ -299,7 +299,7 @@
       }
     },
     {
-      "id": "a2dbeee4-50b2-4cef-b71a-0e4adc34b845",
+      "id": "d9128d03-a2b1-4892-a00a-e5af23d81676",
       "position": [
         2080,
         140
@@ -339,7 +339,7 @@
       }
     },
     {
-      "id": "0b2ad97e-ac1e-4331-a4d4-f0c39b43cc72",
+      "id": "9078635a-7bd3-43ee-a523-7c865bb01f13",
       "position": [
         1820,
         340
@@ -353,7 +353,7 @@
       }
     },
     {
-      "id": "df0ed4d1-161f-4c4c-80da-9e5b656eed1a",
+      "id": "5d399f5f-2f39-4bac-9d37-374a21560c41",
       "position": [
         2080,
         340
@@ -393,7 +393,7 @@
       }
     },
     {
-      "id": "7e7b669c-0cca-4c5c-a063-fbd1c2237796",
+      "id": "9e62e717-84d3-4599-94db-49711829b562",
       "position": [
         0,
         -400

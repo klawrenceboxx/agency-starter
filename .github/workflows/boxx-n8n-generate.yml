@@ -1,0 +1,47 @@
+name: Regenerate and test BOXX n8n workflows
+on:
+  push:
+    branches: [fix/crm-consent-field-alignment]
+    paths:
+      - 'n8n/build-workflows.js'
+      - 'n8n/calendly-polling.js'
+      - 'n8n/test-logic.js'
+      - '.github/workflows/boxx-n8n-generate.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate four workflow JSON files
+        run: node n8n/build-workflows.js
+      - name: Run n8n logic tests
+        run: node n8n/test-logic.js
+      - name: Verify generated workflow consent fields
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const files = fs.readdirSync('n8n/workflows').filter(f => f.endsWith('.json'));
+          if (files.length !== 4) throw new Error('Expected four workflow JSON files');
+          const all = files.map(f => JSON.parse(fs.readFileSync('n8n/workflows/' + f, 'utf8')));
+          const code = all.flatMap(w => w.nodes).filter(n => n.type === 'n8n-nodes-base.code').map(n => n.parameters.jsCode || '').join('\n');
+          if (code.includes('consent_email') || code.includes('consent_at')) throw new Error('Old consent fields remain');
+          if (!code.includes('email_marketing_consent') || !code.includes('email_consent_at')) throw new Error('CRM consent fields missing');
+          if (all.some(w => w.active)) throw new Error('Generated workflows must remain inactive');
+          NODE
+      - name: Commit generated JSON to branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add n8n/workflows/
+          if ! git diff --cached --quiet; then
+            git commit -m "Regenerate verified n8n workflow JSON"
+            git push
+          fi

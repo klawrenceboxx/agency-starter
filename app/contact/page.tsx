@@ -1,5 +1,5 @@
 import AuditTrigger from '@/components/audit/AuditTrigger'
-import { CALENDLY_URL, LINKEDIN_URL } from '@/lib/site-config'
+import { CALENDLY_URL, LINKEDIN_URL, PHONE_DISPLAY, PHONE_E164 } from '@/lib/site-config'
 
 export const metadata = { title: 'Contact' }
 
@@ -23,6 +23,11 @@ export default function ContactPage() {
             <strong>Book a call</strong>
             <p>Pick a time that works for you.</p>
             <a className="btn btn-ghost" href={CALENDLY_URL} target="_blank" rel="noopener noreferrer">Open calendar</a>
+          </div>
+          <div className="contact-card">
+            <strong>Phone</strong>
+            <p>Prefer to talk? Call or text.</p>
+            <a className="btn btn-ghost" href={`tel:${PHONE_E164}`}>{PHONE_DISPLAY}</a>
           </div>
           <div className="contact-card">
             <strong>LinkedIn</strong>

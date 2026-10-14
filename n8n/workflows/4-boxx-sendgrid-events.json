@@ -1,0 +1,147 @@
+{
+  "name": "BOXX - SendGrid Events",
+  "nodes": [
+    {
+      "id": "0594b488-1e92-4508-b1fd-cf8c6602ba86",
+      "position": [
+        0,
+        200
+      ],
+      "name": "SendGrid event webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "88cd6a8d-b2ff-4bd4-9665-4ca9e8a3c312",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "boxx-sg-events-CHANGE-THIS-ab674455a9fe",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "0d4565e8-a048-4c99-82d9-7f89030d0ff2",
+      "position": [
+        260,
+        200
+      ],
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\n// All five emails share one SendGrid template for now (content comes from dynamic data).\nconst fiveTemplates = Array(5).fill('d-0cd7bdd5623a46c8abc185880f02d4aa')\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+      }
+    },
+    {
+      "id": "5bfad30d-3f72-4ab6-9341-800360020fa8",
+      "position": [
+        520,
+        200
+      ],
+      "name": "Parse events",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const body = $('SendGrid event webhook').first().json.body\nconst events = Array.isArray(body) ? body : []\nconst iso = new Date().toISOString()\nconst rank = { bounced: 1, unsubscribed: 2, spam_report: 3 }\nconst byEmail = {}\nfor (const e of events) {\n  const email = String(e.email || '').toLowerCase().trim()\n  if (!email) continue\n  let reason = ''\n  if (e.event === 'unsubscribe' || e.event === 'group_unsubscribe') reason = 'unsubscribed'\n  else if (e.event === 'spamreport') reason = 'spam_report'\n  else if (e.event === 'bounce' && String(e.type || 'bounce') !== 'blocked') reason = 'bounced'\n  if (!reason) continue\n  if (!byEmail[email] || rank[reason] > rank[byEmail[email].reason]) byEmail[email] = { reason }\n}\nreturn Object.keys(byEmail).map(email => {\n  const reason = byEmail[email].reason\n  const row = { email, nurture_status: 'STOPPED', stop_reason: reason, updated_at: iso }\n  if (reason !== 'bounced') row.unsubscribe_status = 'TRUE'\n  return { json: row }\n})"
+      }
+    },
+    {
+      "id": "1eb9ebf3-2e96-4cfe-bb17-620281d9e990",
+      "position": [
+        780,
+        200
+      ],
+      "name": "Stop lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f41741d4-b667-46c0-8cbe-42bbbfd2d485",
+      "position": [
+        0,
+        -400
+      ],
+      "name": "Setup notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "parameters": {
+        "content": "## BOXX - SendGrid Events\nReceives SendGrid Event Webhook posts. Unsubscribes, group unsubscribes, spam reports and hard bounces mark the lead STOPPED (unsubscribe_status = TRUE except for bounces).\n\n1. Change the random part of the webhook path, then activate.\n2. SendGrid > Settings > Mail Settings > Event Webhook: paste the PRODUCTION URL. Enable Unsubscribes, Group Unsubscribes, Spam Reports, Bounces.\n3. Optional: turn on Signed Event Webhook and verify the signature before going wide.\n\nWithout this workflow unsubscribe_status is never set and the Scheduler unsubscribe check never fires. Bookings and confirmations still send to unsubscribed leads (transactional).",
+        "width": 460,
+        "height": 330
+      }
+    }
+  ],
+  "connections": {
+    "SendGrid event webhook": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Parse events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse events": {
+      "main": [
+        [
+          {
+            "node": "Stop lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

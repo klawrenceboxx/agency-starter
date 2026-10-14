@@ -27,7 +27,7 @@ for (const page of $input.all()) {
     if (seen[invitee.uri] && seen[invitee.uri].fingerprint === fingerprint) continue
     observations.set(invitee.uri, {
       event: type,
-      payload: { email: invitee.email, name: invitee.name, scheduled_event: { uri: event.uri, start_time: event.start_time } },
+      payload: { email: invitee.email, name: invitee.name, text_reminder_number: invitee.text_reminder_number || '', scheduled_event: { uri: event.uri, start_time: event.start_time } },
       poll: { key: invitee.uri, fingerprint, createdAt: invitee.created_at || event.created_at || '' },
     })
   }

@@ -45,7 +45,7 @@ const sheetsRead = (name, cfgNode, tab, col, valueExpr) => ({
   name, type: 'n8n-nodes-base.googleSheets', typeVersion: 4.5, alwaysOutputData: true, credentials: CRED_SHEETS,
   parameters: {
     resource: 'sheet', operation: 'read', documentId: sheetDoc(cfgNode), sheetName: sheetTab(tab),
-    filtersUI: { values: [{ lookupColumn: col, lookupValue: valueExpr }] }, options: {},
+    ...(col ? { filtersUI: { values: [{ lookupColumn: col, lookupValue: valueExpr }] } } : {}), options: {},
   },
 })
 const sheetsWrite = (name, cfgNode, tab, operation, match) => ({
@@ -75,14 +75,15 @@ const sticky = (content, w = 420, h = 260) => ({
 // ------------------------------------------------- shared code snippets
 const CONFIG_JS = String.raw`// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======
 // Keep the same values in all three BOXX workflows.
-const fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']
+// All five emails share one SendGrid template for now (content comes from dynamic data).
+const fiveTemplates = Array(5).fill('d-0cd7bdd5623a46c8abc185880f02d4aa')
 return [{ json: {
   sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',
   siteUrl: 'https://boxxautomations.space',
   frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',
   calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',
   fromEmail: 'hello@boxxautomations.space',
-  fromName: 'BOXX Automations',
+  fromName: 'Kaleel at BOXX',
   replyTo: 'hello@boxxautomations.space',
   notifyEmail: 'kaleellawrenceboxx@gmail.com',
   mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',
@@ -151,6 +152,7 @@ function intake() {
 
   A(code('Validate & normalize', String.raw`const b = $('Audit form webhook').first().json.body || {}
 const clean = s => String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f<>]/g, '').trim()
+const truthy = v => v === true || ['true', 'on', 'yes', '1'].includes(String(v).toLowerCase())
 const errors = []
 const email = clean(b.email).toLowerCase()
 if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.push('invalid_email')
@@ -169,6 +171,8 @@ const lead = {
   nurture_path: hasW && hasE ? 'BOTH' : hasE ? 'EMAIL' : 'WEBSITE',
   budget: budgets.includes(clean(b.budget)) ? clean(b.budget) : '',
   source: clean(b.source).slice(0, 300),
+  consent: truthy(b.consent),
+  consent_text: clean(b.consent_text).slice(0, 300),
 }
 return [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]`), 2, 1)
 
@@ -193,22 +197,30 @@ const rows = $input.all().map(i => i.json).filter(r => r && r.email)
 const ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)
 const T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'
 const now = new Date(), iso = now.toISOString()
-const contact = { email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }
+const consentFields = L.consent ? { consent_email: 'TRUE', consent_at: iso, consent_source: L.consent_text || 'audit form checkbox' } : {}
+const hasConsent = !!(L.consent || (ex && T(ex.consent_email)))
+const contact = Object.assign({ email: L.email, name: L.name, phone: L.phone, website: L.website, updated_at: iso, last_submission_at: iso }, consentFields)
 const fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,
-  nurture_status: 'ACTIVE', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '', stop_reason: '' }
+  nurture_status: hasConsent ? 'ACTIVE' : 'HELD', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '',
+  stop_reason: hasConsent ? '' : 'no_consent' }
+
 let row, sendEmail1 = false, reason, isNew = false
 if (!ex) {
-  isNew = true; sendEmail1 = true; reason = 'new_lead'
+  isNew = true; sendEmail1 = hasConsent; reason = hasConsent ? 'new_lead' : 'new_lead_held_no_consent'
   row = Object.assign({ lead_id: 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), created_at: iso,
     calendly_booked: 'FALSE', unsubscribe_status: 'FALSE', client_status: 'PROSPECT', loom_status: 'PENDING' }, contact, fresh)
 } else {
   const blocked = T(ex.unsubscribe_status) || T(ex.calendly_booked) || String(ex.client_status || '').toUpperCase() === 'ACTIVE'
+  const releaseHold = String(ex.nurture_status || '').toUpperCase() === 'HELD' && L.consent
   const start = new Date(ex.framework_delivered_at || ex.created_at)
   const ageDays = isNaN(start) ? 0 : (now - start) / 864e5
-  if (!blocked && ageDays > cfg.resendAfterDays) {
-    sendEmail1 = true; reason = 'resend_after_' + cfg.resendAfterDays + '_days'; row = Object.assign({}, contact, fresh)
+  if (!blocked && hasConsent && (releaseHold || ageDays > cfg.resendAfterDays)) {
+    sendEmail1 = true
+    reason = releaseHold ? 'hold_released_consent_given' : 'resend_after_' + cfg.resendAfterDays + '_days'
+    row = Object.assign({}, contact, fresh)
   } else {
-    reason = blocked ? 'existing_lead_blocked' : 'duplicate_within_window'; row = contact
+    reason = blocked ? 'existing_lead_blocked' : !hasConsent ? 'held_no_consent' : 'duplicate_within_window'
+    row = contact
   }
 }
 const lead = Object.assign({}, L, { lead_id: ex ? ex.lead_id : row.lead_id })
@@ -222,8 +234,9 @@ return [{ json: { sendEmail1, reason, isNew, row, lead } }]`), 5, 2)
   A(code('Build notify email', String.raw`const cfg = $('Config').first().json
 const d = $('Decide').first().json, L = d.lead
 const lines = ['Name: ' + L.name, 'Email: ' + L.email, 'Phone: ' + (L.phone || '-'), 'Website: ' + L.website,
-  'Interest: ' + L.interest + ' (path ' + L.nurture_path + ')', 'Budget: ' + (L.budget || '-'), 'Source: ' + (L.source || '-'), '', 'System action: ' + d.reason]
-const subject = (d.isNew ? 'New audit request: ' : 'Repeat audit request: ') + L.name + ' (' + L.website + ')'
+  'Interest: ' + L.interest + ' (path ' + L.nurture_path + ')', 'Budget: ' + (L.budget || '-'), 'Source: ' + (L.source || '-'),
+  'Consent box: ' + (L.consent ? 'ticked' : 'NOT ticked this time'), '', 'System action: ' + d.reason]
+const subject = (d.isNew ? 'New audit request: ' : 'Repeat audit request: ') + L.name + ' (' + L.website + ')' + (d.reason.indexOf('held') > -1 ? ' [HELD: no consent, no email sent]' : '')
 return [{ json: { sgBody: {
   personalizations: [{ to: [{ email: cfg.notifyEmail }], subject }],
   from: { email: cfg.fromEmail, name: 'BOXX system' },
@@ -299,6 +312,7 @@ for (const { json: r } of $input.all()) {
   if (T(r.unsubscribe_status)) stop = 'unsubscribed'
   else if (T(r.calendly_booked)) stop = 'booked'
   else if (cs === 'ACTIVE') stop = 'client_active'
+  else if (!T(r.consent_email)) stop = 'no_consent'
   if (stop) { out.push({ json: { action: 'stop', email: r.email, reason: stop } }); continue }
 
   const delivered = T(r.framework_delivered)
@@ -390,15 +404,27 @@ const se = pl.scheduled_event || {}
 return [{ json: {
   type: ev === 'invitee.created' ? 'created' : ev === 'invitee.canceled' ? 'canceled' : 'ignore',
   email: String(pl.email || '').toLowerCase().trim(), name: pl.name || '',
+  phone: String(pl.text_reminder_number || ''),
   eventUri: se.uri || pl.event || '', startTime: se.start_time || '',
 } }]`), 2, 1)
-  A(sheetsRead('Find lead by email', 'Config', 'Leads', 'email', "={{ $('Parse Calendly event').first().json.email }}"), 3, 1)
+  A(sheetsRead('Find lead by email', 'Config', 'Leads'), 3, 1)
   A(code('Decide booking', String.raw`const p = $('Parse Calendly event').first().json
 const rows = $input.all().map(i => i.json).filter(r => r && r.email)
-const ex = rows.find(r => String(r.email).toLowerCase().trim() === p.email)
 const T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'
 const iso = new Date().toISOString()
+const digits = s => String(s || '').replace(/\D/g, '').slice(-10)
 if (p.type === 'ignore' || !p.email) return [{ json: { action: 'ignore' } }]
+// Match by email, then by phone, then by name (only when exactly one lead matches).
+let ex = rows.find(r => String(r.email).toLowerCase().trim() === p.email)
+if (!ex && digits(p.phone).length === 10) {
+  const m = rows.filter(r => digits(r.phone) === digits(p.phone))
+  if (m.length === 1) ex = m[0]
+}
+if (!ex && p.name) {
+  const n = p.name.toLowerCase().trim()
+  const m = rows.filter(r => String(r.name || '').toLowerCase().trim() === n)
+  if (m.length === 1) ex = m[0]
+}
 if (!ex) return [{ json: { action: 'unmatched', p } }]
 const isClient = String(ex.client_status || '').toUpperCase() === 'ACTIVE'
 if (p.type === 'created') {
@@ -406,7 +432,7 @@ if (p.type === 'created') {
   const row = { email: ex.email, calendly_booked: 'TRUE', calendly_event_id: p.eventUri, call_date: p.startTime,
     nurture_status: 'STOPPED', stop_reason: 'booked', client_status: isClient ? 'ACTIVE' : 'CALL_BOOKED',
     reminder_24h_sent: 'FALSE', reminder_day_sent: 'FALSE', updated_at: iso }
-  return [{ json: { action: 'booked', row, lead_id: ex.lead_id, email: ex.email, first_name: String(ex.name || p.name || '').split(' ')[0], startTime: p.startTime } }]
+  return [{ json: { action: 'booked', row, lead_id: ex.lead_id, email: ex.email, sendTo: p.email, first_name: String(ex.name || p.name || '').split(' ')[0], startTime: p.startTime } }]
 }
 // Repeated polling of an already-cleared/old cancellation is a no-op.
 if (!T(ex.calendly_booked) || ex.calendly_event_id !== p.eventUri) return [{ json: { action: 'stale_cancel' } }]
@@ -422,10 +448,10 @@ const cfg = $('Config').first().json
 const d = $('Decide booking').first().json
 const callTime = new Date(d.startTime).toLocaleString('en-CA', { timeZone: 'America/Toronto', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 return [{ json: { sgBody: {
-  personalizations: [{ to: [{ email: d.email }], subject: cfg.bookingSubjects.confirm,
+  personalizations: [{ to: [{ email: d.sendTo || d.email }], subject: cfg.bookingSubjects.confirm,
     dynamic_template_data: Object.assign(baseData(cfg), { first_name: d.first_name, call_time: callTime, subject: cfg.bookingSubjects.confirm }) }],
   from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },
-  template_id: cfg.templates.confirm, asm: { group_id: cfg.asmGroupId },
+  template_id: cfg.templates.confirm, mail_settings: { bypass_unsubscribe_management: { enable: true } },
   categories: ['boxx-booking', 'confirmation'], custom_args: { lead_id: d.lead_id, email_type: 'booking-confirmation' },
 }, meta: { lead_id: d.lead_id, email: d.email, email_type: 'booking-confirmation' } } }]`), 8, 0)
   A(sendgrid('Send confirmation (SendGrid)', { errorOutput: true }), 9, 0)
@@ -481,7 +507,7 @@ return $input.all().map(({ json: it }) => {
     personalizations: [{ to: [{ email: it.email }], subject: subj,
       dynamic_template_data: Object.assign(baseData(cfg), { first_name: it.first_name, call_time: it.call_time, subject: subj }) }],
     from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },
-    template_id: tpl, asm: { group_id: cfg.asmGroupId },
+    template_id: tpl, mail_settings: { bypass_unsubscribe_management: { enable: true } },
     categories: ['boxx-booking', type], custom_args: { lead_id: it.lead_id, email_type: type },
   }, meta: { lead_id: it.lead_id, email: it.email, email_type: type, day } } }
 })`), 5, 7)
@@ -525,10 +551,47 @@ return { json: row }`, 'runOnceForEachItem'), 7, 6.6)
   return W
 }
 
+// ======================================================================
+// 4) BOXX SendGrid Events (unsubscribe / spam / bounce -> stop nurture)
+// ======================================================================
+function sendgridEvents() {
+  const W = workflow('BOXX - SendGrid Events')
+  const A = W.add
+  A({ name: 'SendGrid event webhook', type: 'n8n-nodes-base.webhook', typeVersion: 2, webhookId: uuid(),
+    parameters: { httpMethod: 'POST', path: 'boxx-sg-events-CHANGE-THIS-' + crypto.randomBytes(6).toString('hex'), responseMode: 'onReceived',
+      options: {} } }, 0, 1)
+  A(code('Config', CONFIG_JS), 1, 1)
+  A(code('Parse events', String.raw`const body = $('SendGrid event webhook').first().json.body
+const events = Array.isArray(body) ? body : []
+const iso = new Date().toISOString()
+const rank = { bounced: 1, unsubscribed: 2, spam_report: 3 }
+const byEmail = {}
+for (const e of events) {
+  const email = String(e.email || '').toLowerCase().trim()
+  if (!email) continue
+  let reason = ''
+  if (e.event === 'unsubscribe' || e.event === 'group_unsubscribe') reason = 'unsubscribed'
+  else if (e.event === 'spamreport') reason = 'spam_report'
+  else if (e.event === 'bounce' && String(e.type || 'bounce') !== 'blocked') reason = 'bounced'
+  if (!reason) continue
+  if (!byEmail[email] || rank[reason] > rank[byEmail[email].reason]) byEmail[email] = { reason }
+}
+return Object.keys(byEmail).map(email => {
+  const reason = byEmail[email].reason
+  const row = { email, nurture_status: 'STOPPED', stop_reason: reason, updated_at: iso }
+  if (reason !== 'bounced') row.unsubscribe_status = 'TRUE'
+  return { json: row }
+})`), 2, 1)
+  A(sheetsWrite('Stop lead', 'Config', 'Leads', 'appendOrUpdate', 'email'), 3, 1)
+  A(sticky('## BOXX - SendGrid Events\nReceives SendGrid Event Webhook posts. Unsubscribes, group unsubscribes, spam reports and hard bounces mark the lead STOPPED (unsubscribe_status = TRUE except for bounces).\n\n1. Change the random part of the webhook path, then activate.\n2. SendGrid > Settings > Mail Settings > Event Webhook: paste the PRODUCTION URL. Enable Unsubscribes, Group Unsubscribes, Spam Reports, Bounces.\n3. Optional: turn on Signed Event Webhook and verify the signature before going wide.\n\nWithout this workflow unsubscribe_status is never set and the Scheduler unsubscribe check never fires. Bookings and confirmations still send to unsubscribed leads (transactional).', 460, 330), 0, -2)
+  W.chain('SendGrid event webhook', 'Config', 'Parse events', 'Stop lead')
+  return W
+}
+
 // ---------------------------------------------------------------- write
 const outDir = path.join(__dirname, 'workflows')
 fs.mkdirSync(outDir, { recursive: true })
-for (const [file, wf] of [['1-boxx-lead-intake', intake()], ['2-boxx-nurture-scheduler', scheduler()], ['3-boxx-booking-exit', booking()]]) {
+for (const [file, wf] of [['1-boxx-lead-intake', intake()], ['2-boxx-nurture-scheduler', scheduler()], ['3-boxx-booking-exit', booking()], ['4-boxx-sendgrid-events', sendgridEvents()]]) {
   const json = { name: wf.name, nodes: wf.nodes, connections: wf.connections, active: false, settings: { executionOrder: 'v1' }, pinData: {} }
   fs.writeFileSync(path.join(outDir, file + '.json'), JSON.stringify(json, null, 2))
   console.log(file, wf.nodes.length, 'nodes')

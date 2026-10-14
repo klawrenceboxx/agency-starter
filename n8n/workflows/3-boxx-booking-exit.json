@@ -2,7 +2,7 @@
   "name": "BOXX - Booking Exit",
   "nodes": [
     {
-      "id": "4f872940-9b61-45d3-a0ac-d87551d47f48",
+      "id": "d549b738-1580-4fc2-9ff6-e5647c57f39d",
       "position": [
         -1300,
         200
@@ -12,11 +12,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\n// All five emails share one SendGrid template for now (content comes from dynamic data).\nconst fiveTemplates = Array(5).fill('d-0cd7bdd5623a46c8abc185880f02d4aa')\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
       }
     },
     {
-      "id": "aa984adb-7fe2-4342-9304-5c75cbfef867",
+      "id": "094ee1f2-e34e-478f-80f3-4743db1a42b5",
       "position": [
         520,
         200
@@ -26,11 +26,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const j = $input.first().json\nconst pl = j.payload || (j.body && j.body.payload) || {}\nconst ev = j.event || (j.body && j.body.event) || ''\nconst se = pl.scheduled_event || {}\nreturn [{ json: {\n  type: ev === 'invitee.created' ? 'created' : ev === 'invitee.canceled' ? 'canceled' : 'ignore',\n  email: String(pl.email || '').toLowerCase().trim(), name: pl.name || '',\n  eventUri: se.uri || pl.event || '', startTime: se.start_time || '',\n} }]"
+        "jsCode": "const j = $input.first().json\nconst pl = j.payload || (j.body && j.body.payload) || {}\nconst ev = j.event || (j.body && j.body.event) || ''\nconst se = pl.scheduled_event || {}\nreturn [{ json: {\n  type: ev === 'invitee.created' ? 'created' : ev === 'invitee.canceled' ? 'canceled' : 'ignore',\n  email: String(pl.email || '').toLowerCase().trim(), name: pl.name || '',\n  phone: String(pl.text_reminder_number || ''),\n  eventUri: se.uri || pl.event || '', startTime: se.start_time || '',\n} }]"
       }
     },
     {
-      "id": "b2e20a5c-9295-4635-af13-a8f0b0dfa18c",
+      "id": "ae27790a-c9ea-479a-b935-6f630b527784",
       "position": [
         780,
         200
@@ -58,19 +58,11 @@
           "mode": "name",
           "value": "Leads"
         },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "email",
-              "lookupValue": "={{ $('Parse Calendly event').first().json.email }}"
-            }
-          ]
-        },
         "options": {}
       }
     },
     {
-      "id": "b99846be-810b-4207-a5f0-261f82d4f567",
+      "id": "be768f5f-f0d2-433e-80d6-69a3afc69358",
       "position": [
         1040,
         200
@@ -80,11 +72,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const p = $('Parse Calendly event').first().json\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === p.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst iso = new Date().toISOString()\nif (p.type === 'ignore' || !p.email) return [{ json: { action: 'ignore' } }]\nif (!ex) return [{ json: { action: 'unmatched', p } }]\nconst isClient = String(ex.client_status || '').toUpperCase() === 'ACTIVE'\nif (p.type === 'created') {\n  if (ex.calendly_event_id === p.eventUri && T(ex.calendly_booked)) return [{ json: { action: 'duplicate' } }]\n  const row = { email: ex.email, calendly_booked: 'TRUE', calendly_event_id: p.eventUri, call_date: p.startTime,\n    nurture_status: 'STOPPED', stop_reason: 'booked', client_status: isClient ? 'ACTIVE' : 'CALL_BOOKED',\n    reminder_24h_sent: 'FALSE', reminder_day_sent: 'FALSE', updated_at: iso }\n  return [{ json: { action: 'booked', row, lead_id: ex.lead_id, email: ex.email, first_name: String(ex.name || p.name || '').split(' ')[0], startTime: p.startTime } }]\n}\n// Repeated polling of an already-cleared/old cancellation is a no-op.\nif (!T(ex.calendly_booked) || ex.calendly_event_id !== p.eventUri) return [{ json: { action: 'stale_cancel' } }]\nconst row = { email: ex.email, calendly_booked: 'FALSE', calendly_event_id: '', call_date: '', client_status: isClient ? 'ACTIVE' : 'CALL_CANCELLED', updated_at: iso }\nreturn [{ json: { action: 'canceled', row } }]"
+        "jsCode": "const p = $('Parse Calendly event').first().json\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst iso = new Date().toISOString()\nconst digits = s => String(s || '').replace(/\\D/g, '').slice(-10)\nif (p.type === 'ignore' || !p.email) return [{ json: { action: 'ignore' } }]\n// Match by email, then by phone, then by name (only when exactly one lead matches).\nlet ex = rows.find(r => String(r.email).toLowerCase().trim() === p.email)\nif (!ex && digits(p.phone).length === 10) {\n  const m = rows.filter(r => digits(r.phone) === digits(p.phone))\n  if (m.length === 1) ex = m[0]\n}\nif (!ex && p.name) {\n  const n = p.name.toLowerCase().trim()\n  const m = rows.filter(r => String(r.name || '').toLowerCase().trim() === n)\n  if (m.length === 1) ex = m[0]\n}\nif (!ex) return [{ json: { action: 'unmatched', p } }]\nconst isClient = String(ex.client_status || '').toUpperCase() === 'ACTIVE'\nif (p.type === 'created') {\n  if (ex.calendly_event_id === p.eventUri && T(ex.calendly_booked)) return [{ json: { action: 'duplicate' } }]\n  const row = { email: ex.email, calendly_booked: 'TRUE', calendly_event_id: p.eventUri, call_date: p.startTime,\n    nurture_status: 'STOPPED', stop_reason: 'booked', client_status: isClient ? 'ACTIVE' : 'CALL_BOOKED',\n    reminder_24h_sent: 'FALSE', reminder_day_sent: 'FALSE', updated_at: iso }\n  return [{ json: { action: 'booked', row, lead_id: ex.lead_id, email: ex.email, sendTo: p.email, first_name: String(ex.name || p.name || '').split(' ')[0], startTime: p.startTime } }]\n}\n// Repeated polling of an already-cleared/old cancellation is a no-op.\nif (!T(ex.calendly_booked) || ex.calendly_event_id !== p.eventUri) return [{ json: { action: 'stale_cancel' } }]\nconst row = { email: ex.email, calendly_booked: 'FALSE', calendly_event_id: '', call_date: '', client_status: isClient ? 'ACTIVE' : 'CALL_CANCELLED', updated_at: iso }\nreturn [{ json: { action: 'canceled', row } }]"
       }
     },
     {
-      "id": "1c597fe4-b166-4bb2-8dcf-6b65c3bfa36c",
+      "id": "557c09b0-3f09-42e8-be7b-926ce0d2d006",
       "position": [
         1300,
         200
@@ -104,7 +96,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "88e50aa0-aff6-447a-bda7-32f91111817b",
+                    "id": "6804639e-6b79-4bba-9e3d-31f1becb9f12",
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "booked",
                     "operator": {
@@ -127,7 +119,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "a57ebdba-4d58-40e2-9d2a-b287d91ff11e",
+                    "id": "b2dce0bb-a959-44f4-93d7-8db15a24663f",
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "canceled",
                     "operator": {
@@ -150,7 +142,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "017ec7ec-4901-489a-a1b3-808f24f2e36a",
+                    "id": "5bdd5c85-c456-4590-81c7-b06126bd5288",
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "unmatched",
                     "operator": {
@@ -172,7 +164,7 @@
       }
     },
     {
-      "id": "f5a6933f-28c8-4f19-8cc4-195c5a9af870",
+      "id": "f0befe25-bcbb-4d44-872d-6008b34e62bd",
       "position": [
         1560,
         0
@@ -186,7 +178,7 @@
       }
     },
     {
-      "id": "0d9f6ede-d2ba-4add-b49c-14bf00660cdb",
+      "id": "9d0f72d1-fb2c-4f2d-8d76-34b93c43c5c5",
       "position": [
         1820,
         0
@@ -228,7 +220,7 @@
       }
     },
     {
-      "id": "4ff09e3a-e680-46f7-9d7f-b1ba1615547a",
+      "id": "d37b6c72-43c9-4448-ae29-10d1da3bf28a",
       "position": [
         2080,
         0
@@ -238,11 +230,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config').first().json\nconst d = $('Decide booking').first().json\nconst callTime = new Date(d.startTime).toLocaleString('en-CA', { timeZone: 'America/Toronto', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: d.email }], subject: cfg.bookingSubjects.confirm,\n    dynamic_template_data: Object.assign(baseData(cfg), { first_name: d.first_name, call_time: callTime, subject: cfg.bookingSubjects.confirm }) }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  template_id: cfg.templates.confirm, asm: { group_id: cfg.asmGroupId },\n  categories: ['boxx-booking', 'confirmation'], custom_args: { lead_id: d.lead_id, email_type: 'booking-confirmation' },\n}, meta: { lead_id: d.lead_id, email: d.email, email_type: 'booking-confirmation' } } }]"
+        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config').first().json\nconst d = $('Decide booking').first().json\nconst callTime = new Date(d.startTime).toLocaleString('en-CA', { timeZone: 'America/Toronto', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: d.sendTo || d.email }], subject: cfg.bookingSubjects.confirm,\n    dynamic_template_data: Object.assign(baseData(cfg), { first_name: d.first_name, call_time: callTime, subject: cfg.bookingSubjects.confirm }) }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  template_id: cfg.templates.confirm, mail_settings: { bypass_unsubscribe_management: { enable: true } },\n  categories: ['boxx-booking', 'confirmation'], custom_args: { lead_id: d.lead_id, email_type: 'booking-confirmation' },\n}, meta: { lead_id: d.lead_id, email: d.email, email_type: 'booking-confirmation' } } }]"
       }
     },
     {
-      "id": "4c5af5bb-f2e8-4646-b22d-682dc1ef480c",
+      "id": "9bcf3170-7ab9-486b-8941-0566c5306983",
       "position": [
         2340,
         0
@@ -278,7 +270,7 @@
       }
     },
     {
-      "id": "5717f6ae-7bb5-45a0-bf62-27250a3d9251",
+      "id": "3962ab49-323f-4570-b8ed-c06a016694e4",
       "position": [
         2600,
         0
@@ -292,7 +284,7 @@
       }
     },
     {
-      "id": "b0d2ed0c-338a-4058-b003-a016166b9cb4",
+      "id": "2f5e77be-46f1-497a-a875-e4aa1fc30406",
       "position": [
         2860,
         0
@@ -332,7 +324,7 @@
       }
     },
     {
-      "id": "1bcc1b92-277b-43cc-9939-8398405c792c",
+      "id": "155cd5c3-4b79-4e42-91ba-f488586053b6",
       "position": [
         2600,
         200
@@ -346,7 +338,7 @@
       }
     },
     {
-      "id": "8492615c-5d13-4ea2-abcf-4b920a1b8fa0",
+      "id": "c2cf26ea-8ca4-4fb4-b7c7-500fb876993c",
       "position": [
         2860,
         200
@@ -386,7 +378,7 @@
       }
     },
     {
-      "id": "ab9a3efe-a3d6-4477-a197-7106c60d9be0",
+      "id": "a9330582-9791-4276-b715-443f728ba4ea",
       "position": [
         1560,
         400
@@ -400,7 +392,7 @@
       }
     },
     {
-      "id": "7ca1bd3f-c5ab-4d0a-adb8-b7066cfa6ee0",
+      "id": "0e38caea-80a9-4ae5-a6eb-8c605576a0fc",
       "position": [
         1820,
         400
@@ -442,7 +434,7 @@
       }
     },
     {
-      "id": "e5ab1be8-0174-4bf1-859a-2e324be68e03",
+      "id": "08be8bf2-d5ab-4153-b8b8-c9277a11721c",
       "position": [
         1560,
         600
@@ -456,7 +448,7 @@
       }
     },
     {
-      "id": "f6a8ab66-551b-4773-9b63-4074418d7fa9",
+      "id": "fb1c5cb4-e33a-4477-9c58-4674f26a05dd",
       "position": [
         1820,
         600
@@ -496,7 +488,7 @@
       }
     },
     {
-      "id": "36ad5009-6539-4379-99e2-6f641c709708",
+      "id": "fb1236bd-f607-410b-886f-e983e751ef1b",
       "position": [
         260,
         1200
@@ -506,11 +498,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\nconst fiveTemplates = ['d-REPLACE_1', 'd-REPLACE_2', 'd-REPLACE_3', 'd-REPLACE_4', 'd-REPLACE_5']\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'BOXX Automations',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
+        "jsCode": "// ====== EDIT THESE (placeholders only. Secrets live in n8n Credentials, not here) ======\n// Keep the same values in all three BOXX workflows.\n// All five emails share one SendGrid template for now (content comes from dynamic data).\nconst fiveTemplates = Array(5).fill('d-0cd7bdd5623a46c8abc185880f02d4aa')\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  frameworkUrl: 'https://boxxautomations.space/BOXX-Website-Conversion-Framework.pdf',\n  calendlyUrl: 'https://calendly.com/kaleellawrenceboxx/discovery-call',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  notifyEmail: 'kaleellawrenceboxx@gmail.com',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group ID (number)\n  calendlyPollLookbackDays: 30, // Past window; all future events are scanned too.\n  // Nurture timing: days after Email 1 for Emails 2,3,4,5. Change here only.\n  cadenceDays: [2, 4, 7, 10],\n  resendAfterDays: 30,\n  // Booked-call reminders (hours before the call)\n  dayBeforeHours: 24,\n  sameDayHours: 3,\n  completedAfterHours: 1,\n  // SendGrid dynamic template IDs. One 5-email list per path (can all point to the same 5 for now).\n  templates: {\n    WEBSITE: fiveTemplates.slice(),\n    EMAIL: fiveTemplates.slice(),\n    BOTH: fiveTemplates.slice(),\n    confirm: 'd-REPLACE_CONFIRM',\n    reminder24: 'd-REPLACE_REMINDER_24H',\n    reminderDay: 'd-REPLACE_REMINDER_SAMEDAY',\n  },\n  subjects: [\n    'Your BOXX Website Conversion Framework',\n    'Every page should ask for one thing',\n    'What fixing a homepage looks like',\n    'The proof I can show you right now',\n    'Straight answers before you decide',\n  ],\n  bookingSubjects: { confirm: 'You are booked: your BOXX call', reminder24: 'Reminder: your BOXX call is tomorrow', reminderDay: 'Your BOXX call is today' },\n} }]"
       }
     },
     {
-      "id": "0a8f45eb-2438-445d-abbb-216706eb99d2",
+      "id": "23609956-3a09-41bc-a162-edd62ef0e17f",
       "position": [
         520,
         1200
@@ -550,7 +542,7 @@
       }
     },
     {
-      "id": "ee39f111-48e5-489b-ba27-79938e004d3f",
+      "id": "4a7e28bc-2a03-4391-a264-2e4504448d95",
       "position": [
         780,
         1200
@@ -564,7 +556,7 @@
       }
     },
     {
-      "id": "cf8098f0-9a9f-4325-9411-e4565fe82eb4",
+      "id": "b839b964-9a06-4ea8-bf5d-e37b967245e3",
       "position": [
         1040,
         1200
@@ -582,7 +574,7 @@
           },
           "conditions": [
             {
-              "id": "cc260f61-558f-4485-815d-7d55a7c28c47",
+              "id": "5c1462e0-cd49-41a5-8043-1765d89955c8",
               "leftValue": "={{ $json.action }}",
               "rightValue": "completed",
               "operator": {
@@ -597,7 +589,7 @@
       }
     },
     {
-      "id": "6a3d45bd-9636-4de4-952b-8d942226df39",
+      "id": "c2a067e7-e88c-45d1-bc16-fd1880e065ed",
       "position": [
         1300,
         1000
@@ -611,7 +603,7 @@
       }
     },
     {
-      "id": "d5e5db51-ff28-4ce4-88ba-6778fb191359",
+      "id": "21c08a6f-4ba6-44c9-a3d1-1ff326ae0d45",
       "position": [
         1560,
         1000
@@ -653,7 +645,7 @@
       }
     },
     {
-      "id": "71223f9c-b491-4754-9442-18bd74da8cc7",
+      "id": "22a3b7ff-bdeb-4582-b950-e5119c9da719",
       "position": [
         1300,
         1400
@@ -663,11 +655,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config (reminders)').first().json\nreturn $input.all().map(({ json: it }) => {\n  const day = it.action === 'remindDay'\n  const tpl = day ? cfg.templates.reminderDay : cfg.templates.reminder24\n  const subj = day ? cfg.bookingSubjects.reminderDay : cfg.bookingSubjects.reminder24\n  const type = day ? 'reminder-sameday' : 'reminder-24h'\n  return { json: { sgBody: {\n    personalizations: [{ to: [{ email: it.email }], subject: subj,\n      dynamic_template_data: Object.assign(baseData(cfg), { first_name: it.first_name, call_time: it.call_time, subject: subj }) }],\n    from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n    template_id: tpl, asm: { group_id: cfg.asmGroupId },\n    categories: ['boxx-booking', type], custom_args: { lead_id: it.lead_id, email_type: type },\n  }, meta: { lead_id: it.lead_id, email: it.email, email_type: type, day } } }\n})"
+        "jsCode": "const rnd = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)\nconst baseData = cfg => ({ site_url: cfg.siteUrl, calendly_url: cfg.calendlyUrl, framework_url: cfg.frameworkUrl, mailing_address: cfg.mailingAddress })\nconst cfg = $('Config (reminders)').first().json\nreturn $input.all().map(({ json: it }) => {\n  const day = it.action === 'remindDay'\n  const tpl = day ? cfg.templates.reminderDay : cfg.templates.reminder24\n  const subj = day ? cfg.bookingSubjects.reminderDay : cfg.bookingSubjects.reminder24\n  const type = day ? 'reminder-sameday' : 'reminder-24h'\n  return { json: { sgBody: {\n    personalizations: [{ to: [{ email: it.email }], subject: subj,\n      dynamic_template_data: Object.assign(baseData(cfg), { first_name: it.first_name, call_time: it.call_time, subject: subj }) }],\n    from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n    template_id: tpl, mail_settings: { bypass_unsubscribe_management: { enable: true } },\n    categories: ['boxx-booking', type], custom_args: { lead_id: it.lead_id, email_type: type },\n  }, meta: { lead_id: it.lead_id, email: it.email, email_type: type, day } } }\n})"
       }
     },
     {
-      "id": "1d8820ec-1828-420a-bcd7-302c2ffbf0ad",
+      "id": "e9aa8237-dc3a-440e-bd91-7b3508e23c3b",
       "position": [
         1560,
         1400
@@ -703,7 +695,7 @@
       }
     },
     {
-      "id": "2b258fd2-6317-435e-b5e9-6e12b8df3e23",
+      "id": "468ccff7-6599-4312-b302-e9674df60ff4",
       "position": [
         1820,
         1320
@@ -717,7 +709,7 @@
       }
     },
     {
-      "id": "1b1163b2-9861-4aa1-aed2-43f538856879",
+      "id": "9f5ca43e-47e5-4b3f-b455-444e27284f4d",
       "position": [
         2080,
         1320
@@ -759,7 +751,7 @@
       }
     },
     {
-      "id": "22ac3f42-bf02-4eb1-9520-0fb5cb64c4b1",
+      "id": "2ce34ae5-e4ce-4bab-ae3a-57d5c09ef9b7",
       "position": [
         1820,
         1520
@@ -773,7 +765,7 @@
       }
     },
     {
-      "id": "ee739862-a8b2-4f63-87d4-9f67fec51946",
+      "id": "cdf92c23-a89c-4856-8217-a50fa8e687ec",
       "position": [
         2080,
         1520
@@ -813,7 +805,7 @@
       }
     },
     {
-      "id": "b790cddc-9cd5-4829-aab5-4338ed6ce3d8",
+      "id": "08184145-fc90-4c58-b1d6-cb493f4a87e7",
       "position": [
         1820,
         1720
@@ -827,7 +819,7 @@
       }
     },
     {
-      "id": "d9819360-e1c4-4094-8b6d-80cba5dda01e",
+      "id": "6fdff74e-31b1-4806-a5ba-348a544f8a69",
       "position": [
         2080,
         1720
@@ -867,7 +859,7 @@
       }
     },
     {
-      "id": "35db9f0d-a148-4dad-820b-5ff6d7a3886f",
+      "id": "cd9c3fbd-ac58-4daa-bd35-7153a2f3a891",
       "position": [
         -1560,
         -600
@@ -882,7 +874,7 @@
       }
     },
     {
-      "id": "1cc330fe-b57d-457f-8705-4a0268b72861",
+      "id": "ca0ffb75-8e0a-4eb2-b3ee-b071527153d8",
       "position": [
         -1560,
         200
@@ -902,7 +894,7 @@
       }
     },
     {
-      "id": "5156c0b1-52cd-4b49-8042-d255f826908f",
+      "id": "72b7cd0b-33b2-46ec-8486-92670e093a0e",
       "position": [
         -1040,
         200
@@ -934,7 +926,7 @@
       }
     },
     {
-      "id": "94c0bf4a-fc93-49ba-aabf-7b75ed896e70",
+      "id": "db40f5a8-8a49-4460-8383-c7da392f45a4",
       "position": [
         -780,
         200
@@ -988,7 +980,7 @@
       }
     },
     {
-      "id": "d8873b61-e329-4343-9f77-bd90fb4f307b",
+      "id": "de25330c-40f0-498b-9f34-276b793f0482",
       "position": [
         -520,
         200
@@ -1002,7 +994,7 @@
       }
     },
     {
-      "id": "8022d942-a375-450b-a7d3-c22cfb917653",
+      "id": "f382d9b8-d4a0-43bc-83dc-d19ef1498b8a",
       "position": [
         -260,
         200
@@ -1064,7 +1056,7 @@
       }
     },
     {
-      "id": "a9d39cc5-2bdb-495c-990e-a45dd8bc4f8b",
+      "id": "417fc114-02b5-44dd-affd-695d8c425f7d",
       "position": [
         0,
         200
@@ -1078,7 +1070,7 @@
       }
     },
     {
-      "id": "16a70d32-039e-4b9f-968b-bdf8d911a42e",
+      "id": "5319e1fb-cf59-4035-b046-48acecf6d809",
       "position": [
         0,
         0
@@ -1110,7 +1102,7 @@
       }
     },
     {
-      "id": "de40f6e6-01fb-49fa-a29d-eedd256a383f",
+      "id": "caf42cbe-6832-4edd-a9dd-d715ec1b5ac3",
       "position": [
         0,
         -200
@@ -1160,7 +1152,7 @@
       }
     },
     {
-      "id": "3c0902b8-1c06-4cc3-b34e-1ad09abb484b",
+      "id": "b63b860c-d803-4ede-ab68-ca3126fd0e6f",
       "position": [
         260,
         -200
@@ -1170,11 +1162,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const events = new Map($('Expand scheduled events').all().map(i => [i.json.uri, i.json]))\nconst state = $getWorkflowStaticData('global')\nconst seen = state.calendlyPollSeen || {}\nconst observations = new Map()\nfor (const page of $input.all()) {\n  if (!Array.isArray(page.json.collection)) throw new Error('Invalid Calendly invitee response')\n  for (const invitee of page.json.collection) {\n    const event = events.get(invitee.event)\n    if (!event || !invitee.uri || !invitee.email) throw new Error('Cannot associate Calendly invitee with its scheduled event')\n    const canceled = invitee.status === 'canceled' || event.status === 'canceled'\n    const type = canceled ? 'invitee.canceled' : invitee.status === 'active' ? 'invitee.created' : ''\n    if (!type) continue\n    const fingerprint = [type, invitee.updated_at || '', event.updated_at || ''].join('|')\n    if (seen[invitee.uri] && seen[invitee.uri].fingerprint === fingerprint) continue\n    observations.set(invitee.uri, {\n      event: type,\n      payload: { email: invitee.email, name: invitee.name, scheduled_event: { uri: event.uri, start_time: event.start_time } },\n      poll: { key: invitee.uri, fingerprint, createdAt: invitee.created_at || event.created_at || '' },\n    })\n  }\n}\n// Process cancellations before replacement bookings, then oldest-to-newest bookings.\nconst ordered = [...observations.values()].sort((a, b) => {\n  const cancelOrder = Number(b.event === 'invitee.canceled') - Number(a.event === 'invitee.canceled')\n  return cancelOrder || a.poll.createdAt.localeCompare(b.poll.createdAt)\n})\nreturn ordered.length ? ordered.map(json => ({ json })) : [{ json: { event: 'ignore', payload: {} } }]"
+        "jsCode": "const events = new Map($('Expand scheduled events').all().map(i => [i.json.uri, i.json]))\nconst state = $getWorkflowStaticData('global')\nconst seen = state.calendlyPollSeen || {}\nconst observations = new Map()\nfor (const page of $input.all()) {\n  if (!Array.isArray(page.json.collection)) throw new Error('Invalid Calendly invitee response')\n  for (const invitee of page.json.collection) {\n    const event = events.get(invitee.event)\n    if (!event || !invitee.uri || !invitee.email) throw new Error('Cannot associate Calendly invitee with its scheduled event')\n    const canceled = invitee.status === 'canceled' || event.status === 'canceled'\n    const type = canceled ? 'invitee.canceled' : invitee.status === 'active' ? 'invitee.created' : ''\n    if (!type) continue\n    const fingerprint = [type, invitee.updated_at || '', event.updated_at || ''].join('|')\n    if (seen[invitee.uri] && seen[invitee.uri].fingerprint === fingerprint) continue\n    observations.set(invitee.uri, {\n      event: type,\n      payload: { email: invitee.email, name: invitee.name, text_reminder_number: invitee.text_reminder_number || '', scheduled_event: { uri: event.uri, start_time: event.start_time } },\n      poll: { key: invitee.uri, fingerprint, createdAt: invitee.created_at || event.created_at || '' },\n    })\n  }\n}\n// Process cancellations before replacement bookings, then oldest-to-newest bookings.\nconst ordered = [...observations.values()].sort((a, b) => {\n  const cancelOrder = Number(b.event === 'invitee.canceled') - Number(a.event === 'invitee.canceled')\n  return cancelOrder || a.poll.createdAt.localeCompare(b.poll.createdAt)\n})\nreturn ordered.length ? ordered.map(json => ({ json })) : [{ json: { event: 'ignore', payload: {} } }]"
       }
     },
     {
-      "id": "e407dafe-0180-4b56-8866-5cb4b6a6d9cd",
+      "id": "2d2b719b-58b4-4f69-8d37-597aef7593ad",
       "position": [
         260,
         0
@@ -1188,7 +1180,7 @@
       }
     },
     {
-      "id": "584e95ba-0ffc-4ade-b0b7-48efa0618c01",
+      "id": "e5e46b02-17c5-49a5-a2e7-6c47b1688f57",
       "position": [
         3120,
         600

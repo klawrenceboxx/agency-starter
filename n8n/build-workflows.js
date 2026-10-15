@@ -164,7 +164,7 @@ if (!/^[^\s.\/]+(\.[^\s.\/]+)+(\/\S*)?$/.test(website)) errors.push('invalid_web
 const svc = (Array.isArray(b.services) ? b.services : []).map(s => clean(s).toLowerCase())
 const hasW = svc.includes('website'), hasE = svc.includes('emails')
 if (!hasW && !hasE) errors.push('unknown_interest')
-const budgets = ['under-1000', '1000-2500', '2500-plus']
+const budgets = ['under-1000', '1000-2500', '2500-plus', 'just-exploring']
 const lead = {
   email, name, first_name: name.split(' ')[0], website,
   phone: clean(b.phone).slice(0, 30),
@@ -208,7 +208,7 @@ if (L.sms_marketing_consent && !smsBlocked) Object.assign(consentFields, {
   sms_marketing_consent: 'TRUE', sms_consent_at: iso, sms_consent_source: L.source || 'audit form checkbox'
 })
 const hasConsent = !!(L.consent || (ex && T(ex.email_marketing_consent)))
-const contact = Object.assign({ email: L.email, name: L.name, phone: L.phone || (ex && ex.phone) || '', website: L.website, updated_at: iso, last_submission_at: iso }, consentFields)
+const contact = Object.assign({}, L.budget ? { budget: L.budget } : {}, { email: L.email, name: L.name, phone: L.phone || (ex && ex.phone) || '', website: L.website, updated_at: iso, last_submission_at: iso }, consentFields)
 const fresh = { interest: L.interest, budget: L.budget, source: L.source, nurture_path: L.nurture_path,
   nurture_status: hasConsent ? 'ACTIVE' : 'HELD', current_email: 0, framework_delivered: 'FALSE', next_email_due_at: '',
   stop_reason: hasConsent ? '' : 'no_consent' }

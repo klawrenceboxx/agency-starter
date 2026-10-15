@@ -63,7 +63,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
 
   async function submitLead(form) {
     const services = form.service === 'BOTH' ? ['website', 'emails'] : [form.service === 'AUTOMATED_EMAILS' ? 'emails' : 'website'];
-    const budgets = { 'Under $1,000': 'under-1000', '$1,000–$2,500': '1000-2500', '$2,500+': '2500-plus', 'Just exploring for now': '' };
+    const budgets = { 'Under $1,000': 'under-1000', '$1,000–$2,500': '1000-2500', '$2,500+': '2500-plus', 'Just exploring for now': 'just-exploring' };
     const submittedLead = { name: form.fullName.trim(), email: form.email.trim(), website: form.website.trim(), phone: normalizePhone(form.phone), services, budget: budgets[form.budget] || '', consent: form.emailConsent === true };
     const lead = submittedLead;
     setLead(submittedLead);
@@ -79,7 +79,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
         const response = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         if (!response.ok) throw new Error('Submission rejected')
         const result = await response.json()
-        if (result.ok === false) throw new Error('Submission rejected')
+        if (result?.ok !== true) throw new Error('Submission rejected')
       } catch {
         setSending(false)
         throw new Error("That didn’t send. Check your connection and try again.")

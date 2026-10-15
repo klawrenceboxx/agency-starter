@@ -45,3 +45,7 @@ The welcome SMS follows successful Email 1 acceptance and its CRM update. It als
 ## Verification limits
 
 Offline tests execute code nodes, consent combinations, opt-out/history guards, phone preflight, transactional fulfillment, event shapes, and connections without provider calls. CRM headers were verified through connected Google services. No live n8n workflow was edited/activated, no Twilio secret read or changed, and no SMS or email sent. Provider authentication, installed-version execution, sender ownership, booking-page availability, and actual delivery remain deployment checks.
+
+## Budget recording fix — 2026-10-15
+
+The form previously converted “Just exploring for now” to an empty budget, indistinguishable from skipping the question. It now sends `budget: "just-exploring"`; both repository intake validators accept that value and explicitly selected budgets also update existing leads within the duplicate window. Unselected budget stays empty and does not overwrite an existing budget on a routine duplicate. Apply the revised Validate & normalize and Decide nodes (or reviewed intake JSON) to live n8n to persist this value; no live workflow was changed by this fix.

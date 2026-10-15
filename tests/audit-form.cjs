@@ -8,6 +8,7 @@ Object.assign(global, { window: dom.window, document: dom.window.document, IS_RE
 const React = require('react')
 const { act } = React
 const { createRoot } = require('react-dom/client')
+const { flushSync } = require('react-dom')
 let modalOpen = true
 const context = { useAuditModal: () => ({ open: modalOpen, closeModal: () => { modalOpen = false } }) }
 const config = { CALENDLY_URL: 'https://calendly.com/kaleellawrenceboxx/discovery-call', LINKEDIN_URL: '#', SPOTS_OPEN: 2, TOTAL_SPOTS: 5 }
@@ -31,6 +32,28 @@ async function details(values={}) { for(const [k,v] of Object.entries({fullName:
 async function start(service='My website',inline=true,url) { await render(inline,url); await click(service); await click('Continue') }
 async function ready(service='My website',inline=true) { await start(service,inline); await details(inline?{}:{phone:''}) }
 ;(async()=>{
+  // Flush the click update before the browser default action, matching the reported race.
+  for (const inline of [true,false]) {
+    let requests=0, payload, acknowledge;
+    global.fetch=async(u,o)=>{requests++;payload=JSON.parse(o.body);return new Promise(resolve=>{acknowledge=resolve})};
+    await start('My website',inline);
+    check(requests===0&&document.body.textContent.includes('Where should I send your free audit?'),'First Continue advances without sending or showing success');
+    await click('Continue');
+    check(requests===0&&document.querySelector('[role="alert"]'),'Intermediate step validates without sending');
+    await act(async()=>{document.querySelector('[name="email_marketing_consent"]').click();document.querySelector('[name="sms_marketing_consent"]').click()});
+    const flushClick = () => flushSync(()=>{});
+    document.addEventListener('click',flushClick);
+    try { await details(); } finally { document.removeEventListener('click',flushClick); }
+    check(requests===0&&document.body.textContent.includes('What budget would you be comfortable with?'),'Continue cannot submit when React flushes before browser default action');
+    check(!document.querySelector('.audit-submit-spinner')&&!document.querySelector('.done'),'No loading or success before final submission');
+    await click('Just exploring');
+    check(requests===0,'Choosing budget does not submit');
+    await click('Send My Free Audit');
+    check(requests===1&&payload.budget==='just-exploring'&&payload.email_marketing_consent===true&&payload.sms_marketing_consent===true,'Only final Submit sends the complete budget and consent payload');
+    check(document.querySelector('.audit-submit-spinner')&&!document.querySelector('.done'),'Loading waits for webhook acknowledgement');
+    await act(async()=>acknowledge({ok:true,json:async()=>({ok:true})}));
+    check(document.querySelector('.done'),'Success follows explicit successful webhook acknowledgement');
+  }
   await render(); check(document.body.textContent.includes('What would you like to improve?')&&!document.querySelector('input'),'Service comes first'); await click('Continue'); check(document.querySelector('[role="alert"]'),'Service required')
   await start(); check(document.querySelector('input[type="checkbox"]').checked===false,'Consent starts unchecked'); check(document.querySelectorAll('input[type="checkbox"]').length===2,'Separate SMS consent available'); await details({fullName:'',email:'',website:'',phone:''}); check(document.querySelectorAll('[aria-invalid="true"]').length===3,'Audit requires name, email and website; phone optional')
   for(const [k,v] of [['fullName','X'],['email','bad'],['website','bad'],['phone','123']]) {await start();await details({[k]:v});check(document.querySelector(`[name="${k}"]`).getAttribute('aria-invalid')==='true',`${k} validates`)}
@@ -38,7 +61,7 @@ async function ready(service='My website',inline=true) { await start(service,inl
   for(const [service,services,path] of [['My website',['website'],'website'],['My email follow-ups',['emails'],'emails'],['Both website',['website','emails'],'both']]){
     await ready(service);let payload;global.fetch=async(url,opts)=>{check(url==='https://example.test/webhook','Existing handler URL');payload=JSON.parse(opts.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(document.body.textContent.includes("You're in, BOXX."),'Existing success state');assert.deepEqual(payload.services,services);check(payload.path===path,'Routing preserved');check(payload.budget===''&&payload.source==='networking','Optional budget and source preserved');check(payload.consent===false&&payload.consent_text==='','Unchecked consent preserved');check(payload.email_marketing_consent===false&&payload.sms_marketing_consent===false,'Explicit unchecked consent booleans')
   }
-  for(const [label,value] of [['Under $1,000','under-1000'],['$1,000\u2013$2,500','1000-2500'],['$2,500+','2500-plus'],['Just exploring','']]) {await ready();await click(label);let p;global.fetch=async(u,o)=>{p=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(p.budget===value,`${label} maps to backend`)}
+  for(const [label,value] of [['Under $1,000','under-1000'],['$1,000\u2013$2,500','1000-2500'],['$2,500+','2500-plus'],['Just exploring','just-exploring']]) {await ready();await click(label);let p;global.fetch=async(u,o)=>{p=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(p.budget===value,`${label} maps to backend`)}
   await ready();await click('Under $1,000');await click('Under $1,000');check(!document.querySelector('[aria-pressed="true"]'),'Budget can be cleared')
   await start();await act(async()=>document.querySelector('input[type="checkbox"]').click());await details();await click('Back');check(document.querySelector('input[type="checkbox"]').checked,'Consent survives Back');await click('Continue');let p;global.fetch=async(u,o)=>{p=JSON.parse(o.body);return{ok:true,json:async()=>({ok:true})}};await click('Send My Free Audit');check(p.consent===true&&p.consent_text==='Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.','Consent wording unchanged')
   for (const [emailConsent, smsConsent] of [[false,false],[true,false],[false,true],[true,true]]) {
@@ -67,7 +90,7 @@ async function ready(service='My website',inline=true) { await start(service,inl
     check(payload.phone===expected,'Phone normalization preserves contact and formats recognized numbers');
     check(payload.email_marketing_consent===false&&payload.sms_marketing_consent===false,'Phone supplied never implies consent');
   }
-  for(const failure of ['network','http','validation']) {await ready();global.fetch=async()=>{if(failure==='network')throw Error('offline');return{ok:failure!=='http',json:async()=>({ok:false})}};await click('Send My Free Audit');check(document.querySelector('[role="alert"]')&&!document.querySelector('.done'),`${failure} fails without success`);check(![...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My')).disabled,'Retry enabled');global.fetch=async()=>({ok:true,json:async()=>({ok:true})});await click('Send My Free Audit');check(document.querySelector('.done'),'Retry succeeds after failure')}
+  for(const failure of ['network','http','validation','missing-ack']) {await ready();global.fetch=async()=>{if(failure==='network')throw Error('offline');return{ok:failure!=='http',json:async()=>failure==='missing-ack'?{}:({ok:false})}};await click('Send My Free Audit');check(document.querySelector('[role="alert"]')&&!document.querySelector('.done'),`${failure} fails without success`);check(![...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My')).disabled,'Retry enabled');global.fetch=async()=>({ok:true,json:async()=>({ok:true})});await click('Send My Free Audit');check(document.querySelector('.done'),'Retry succeeds after failure')}
   await start('My website',true,'');await details();await click('Send My Free Audit');check(document.body.textContent.includes('temporarily unavailable'),'Missing webhook fails closed')
   await ready();let resolve,count=0;global.fetch=()=>{count++;return new Promise(r=>resolve=r)};const button=[...document.querySelectorAll('button')].find(e=>e.textContent.startsWith('Send My'));await act(async()=>{button.click();button.click();button.form.requestSubmit();button.form.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}))});check(count===1&&button.disabled,'Double-clicks and repeated form/implicit submissions blocked');check(button.textContent==='Submitting…'&&button.querySelector('.audit-submit-spinner')&&button.getAttribute('aria-busy')==='true','Loading text, spinner and busy state visible');check([...document.querySelectorAll('button')].find(e=>e.textContent.includes('Back')).disabled,'Back disabled while sending');await act(async()=>resolve({ok:true,json:async()=>({ok:true})}))
   await start('My email follow-ups',false);

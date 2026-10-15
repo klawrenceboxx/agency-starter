@@ -60,6 +60,9 @@ for (const bad of [undefined, null, '', 'true', 'false', 1]) {
   check(!d.emailConsent && !d.smsConsent && !d.sendSMS1, 'Nonboolean/missing consent fails closed, no legacy inference')
 }
 const old = {email:base.email,lead_id:'ld_old',created_at:'2025-01-01',framework_delivered_at:'2025-01-01',framework_delivered:'TRUE',sms_marketing_consent:'TRUE',phone:'+14165551234'}
+check(validate({budget:'just-exploring'}).lead.budget === 'just-exploring', 'Exploring budget survives intake normalization')
+check(decide({budget:'just-exploring'},{...old,budget:'under-1000'}).row.budget === 'just-exploring', 'Explicit updated budget reaches CRM for an existing lead')
+check(validate({budget:''}).lead.budget === '', 'Skipped budget remains empty')
 const optedIn = {email_marketing_consent:true,sms_marketing_consent:true}
 for (const stop of [{sms_opt_out:'TRUE'}, {sms_opted_out:'TRUE'}, {sms_status:'unsubscribed'}, {sms_opt_out_date:'2026-01-01'}]) {
   check(!decide(optedIn,{...old,...stop}).sendSMS1, 'Every existing opt-out representation blocks welcome')

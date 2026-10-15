@@ -98,6 +98,10 @@ ok('Unchecked resubmission does not overwrite existing consent or welcome histor
 
 ok('Blank optional phone preserves existing CRM phone', repeated.row.phone === '+14165551234')
 
+const exploring = decideBody({budget:'just-exploring'},existing())
+ok('Explicit exploring budget passes normalization and updates duplicate lead', exploring.row.budget === 'just-exploring')
+ok('Missing budget remains distinct from exploring', validate({...base,budget:'',services:['website']}).lead.budget === '')
+
 // ---- scheduler: Plan sends
 const plan = rows => run(W.sched, 'Plan sends', { input: rows, nodes: { Config: [cfg] } })
 const lead = (over = {}) => ({ lead_id: 'ld_1', email: 'a@b.com', name: 'Alice Smith', website: 'acme.com', nurture_path: 'WEBSITE', nurture_status: 'ACTIVE',

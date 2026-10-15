@@ -76,6 +76,12 @@ check(decide({phone:''},old).row.phone === old.phone, 'Blank optional phone pres
 const request = run('Build Email 1 request', {}, {Config:cfg, Decide:decide()})
 check(!request.sgBody.template_id && !request.sgBody.asm && !request.sgBody.content[0].value.includes(cfg.calendlyUrl), 'Transactional content excludes marketing template and promotion')
 check(request.sgBody.content[0].value.includes(cfg.frameworkUrl), 'Framework link retained')
+const htmlEmail = request.sgBody.content.find(part => part.type === 'text/html').value
+check(htmlEmail.includes('<a href="' + cfg.frameworkUrl + '">Get your framework</a>'), 'HTML framework link uses readable label and existing PDF URL')
+check(request.sgBody.content[0].type === 'text/plain', 'Plain-text alternative retained first')
+check(request.sgBody.tracking_settings.click_tracking.enable && request.sgBody.tracking_settings.click_tracking.enable_text, 'Click tracking retained for HTML and plain text')
+const escapedEmail = run('Build Email 1 request', {}, {Config:cfg, Decide:{...decide(),lead:{...decide().lead,first_name:'<Kaleel & Co>'}}})
+check(escapedEmail.sgBody.content[1].value.includes('Hey &lt;Kaleel &amp; Co&gt;,'), 'HTML personalization escapes submitted text')
 check(request.sgBody.mail_settings.bypass_unsubscribe_management.enable, 'Fulfillment retains transactional bypass')
 const d = decide(optedIn)
 for (const [phone, expected] of [['(416) 555-1234','+14165551234'], ['+44 20 7183 8750','+442071838750']]) {

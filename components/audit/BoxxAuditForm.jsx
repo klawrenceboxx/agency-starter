@@ -141,6 +141,7 @@ export default function BoxxAuditForm({
                   {fieldErrors[field.key] && <span id={`error-${field.key}`} style={{ color: '#FFB8C0', fontSize: 13 }}>{fieldErrors[field.key]}</span>}
                 </label>)}
                 <div className="audit-consents">
+                  <p style={{ fontSize: 13, color: '#CDBCD8', margin: 0 }}>Read our <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>Terms of Service</a>.</p>
                   <label style={{ display: 'flex', gap: 11, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5, color: '#CDBCD8' }}>
                     <input className="audit-consent-checkbox" name="email_marketing_consent" type="checkbox" checked={form.emailConsent} onChange={(e) => update('emailConsent', e.target.checked)} style={{ accentColor: PURPLE, width: 18, height: 18, flexShrink: 0 }} />
                     Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.

@@ -13,6 +13,8 @@ export default function Footer() {
             <Link key={href} href={href}>{label}</Link>
           ))}
           <Link href="/blog">Blog</Link>
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms of Service</Link>
         </nav>
       </div>
     </footer>

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+.website-legal { max-width: 820px; padding-top: 64px; padding-bottom: 96px; overflow-wrap: anywhere; }
+.website-legal section { padding: 0; margin: 32px 0; }
+.website-legal h2 { font-size: 1.4rem; margin-bottom: 12px; }
+.website-legal p { margin: 12px 0; line-height: 1.75; }
+.website-legal a { text-decoration: underline; text-underline-offset: 3px; }
+
 /* ============ TOKENS ============ */
 :root {
   --p: #9c16f4;

@@ -1,0 +1,45 @@
+.hero { display: grid; justify-items: start; gap: 24px; }
+.jumpLinks { display: flex; flex-wrap: wrap; gap: 16px 28px; font-size: 14px; }
+.jumpLinks a { color: var(--on-dark-muted); text-underline-offset: 5px; }
+.category, .experience, .supporting, .flagship { padding: 80px 0; scroll-margin-top: 100px; }
+.sectionIntro { display: grid; gap: 16px; margin-bottom: 32px; }
+.tableScroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-lg); }
+.comparison { width: 100%; min-width: 880px; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
+.caption { text-align: left; padding: 16px 20px; color: var(--muted); background: var(--tint); }
+.comparison th, .comparison td { padding: 18px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+.comparison th:first-child { width: 23%; }
+.comparison thead th { padding-top: 28px; }
+.comparison thead th:first-child { vertical-align: bottom; }
+.comparison thead p { color: var(--muted); font-size: 14px; line-height: 1.6; font-weight: 400; margin: 12px 0 0; }
+.comparison tbody th { font-weight: 500; }
+.comparison tfoot th, .comparison tfoot td { border-bottom: 0; vertical-align: middle; }
+.popular { background: var(--tint); border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+.badge { display: inline-block; background: var(--p); color: #fff; border-radius: 100px; padding: 7px 12px; font-size: 12px; font-weight: 700; margin-bottom: 16px; }
+.tier { display: block; font-size: 24px; letter-spacing: -.02em; margin-bottom: 10px; }
+.packageTitle { display: block; font-size: 15px; }
+.call { text-align: center; line-height: 1.35; }
+.comparison .call { font-size: 13px; padding: 12px; width: 100%; }
+.flagshipHeading { display: grid; grid-template-columns: 1.6fr 1fr; gap: 40px; align-items: center; }
+.flagshipHeading .lead { margin-top: 20px; }
+.flagshipHeading > div:last-child { justify-self: end; }
+.flagship > div > p { color: var(--on-dark-muted); margin: 32px 0; max-width: 75ch; line-height: 1.7; }
+.inclusions { columns: 2; column-gap: 64px; padding-left: 20px; margin: 0; }
+.inclusions li { padding: 7px 0; break-inside: avoid; line-height: 1.5; }
+.experienceGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
+.experienceItem { padding: 28px 0; border-top: 1px solid var(--line); }
+.experienceGrid p { color: var(--muted); line-height: 1.7; margin: 14px 0 0; max-width: 72ch; }
+.guarantee { grid-column: 1 / -1; padding: 32px; margin: 12px 0 32px; border: 2px solid var(--p); border-radius: var(--r-lg); background: var(--tint); }
+.supporting { background: var(--tint); }
+.supporting .lead { margin-top: 16px; }
+.supporting ul { display: flex; flex-wrap: wrap; gap: 16px 40px; padding-left: 20px; margin: 28px 0; }
+.note { color: var(--muted); max-width: 70ch; line-height: 1.6; margin: 0 0 28px; }
+.price { font-size: 26px !important; font-weight: 700 !important; }
+.price small { display: block; font-size: 13px; line-height: 1.5; font-weight: 400; margin: 8px 0 20px; }
+@media (max-width: 700px) {
+  .category, .experience, .supporting, .flagship { padding: 52px 0; }
+  .flagshipHeading, .experienceGrid { grid-template-columns: 1fr; gap: 20px; }
+  .flagshipHeading > div:last-child { justify-self: start; }
+  .inclusions { columns: 1; }
+  .guarantee { padding: 24px; }
+  .supporting ul { display: grid; gap: 14px; }
+}

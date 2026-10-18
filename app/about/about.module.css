@@ -9,7 +9,7 @@
 .journeyIntro { text-align: center; margin-bottom: 28px; }
 .journeyIntro p { color: var(--about-muted); line-height: 1.75; font-size: 16px; margin: 20px auto 0; max-width: 70ch; }
 .carousel { --card-width: clamp(340px, 36vw, 420px); }
-.viewport { position: relative; -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); }
+.viewport { position: relative; -webkit-mask-image: linear-gradient(to right, transparent, #000 1.5%, #000 98.5%, transparent); mask-image: linear-gradient(to right, transparent, #000 1.5%, #000 98.5%, transparent); }
 .track { display: flex; gap: 24px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; padding: 4px calc((100% - var(--card-width)) / 2) 20px; scrollbar-width: none; cursor: grab; user-select: none; -webkit-user-select: none; }
 .track::-webkit-scrollbar { display: none; }
 .track[data-dragging] { cursor: grabbing; }
@@ -65,7 +65,7 @@
   .journeyIntro h2 { font-size: 30px; }
   .carousel { --card-width: max(240px, calc(100vw - 112px)); }
   .track { gap: 16px; }
-  .viewport { -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent); }
+  .viewport { -webkit-mask-image: linear-gradient(to right, transparent, #000 1%, #000 99%, transparent); mask-image: linear-gradient(to right, transparent, #000 1%, #000 99%, transparent); }
   .milestoneCopy { padding: 24px 20px; }
   .milestone h3 { font-size: 23px; }
   .milestone li { font-size: 14px; }

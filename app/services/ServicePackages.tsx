@@ -1,5 +1,7 @@
 'use client'
 
+import AnimatedDetails from './AnimatedDetails'
+
 import { useRef, useState } from 'react'
 import { scopeNote, serviceCategories } from './service-data'
 import styles from './services.module.css'
@@ -30,8 +32,8 @@ export default function ServicePackages() {
               {category.packages.map((pkg, tier) => <article key={pkg.name} className={`${styles.card} ${tier === 2 ? styles.premium : ''}`}>
                 <PackageIcon tier={tier} />
                 <h3>{pkg.name}</h3><p className={styles.positioning}>{pkg.positioning}</p>
-                <ul className={styles.deliverables}>{pkg.included.map(deliverable => <li key={deliverable.label}><details><summary><span aria-hidden="true" className={styles.check}>✓</span><span>{deliverable.label}</span><span className={styles.expand} aria-hidden="true">+</span></summary><p>{deliverable.detail}</p></details></li>)}</ul>
-                <details className={styles.fullDetails}><summary>View Full Details<span aria-hidden="true" className={styles.expand}>+</span></summary><div>{pkg.excluded && <p><strong>Not included:</strong> {pkg.excluded}</p>}<p>Premium Client Experience is included, tailored to your purchased services.</p><p>{scopeNote}</p></div></details>
+                <ul className={styles.deliverables}>{pkg.included.map(deliverable => <li key={deliverable.label}><AnimatedDetails><summary><span aria-hidden="true" className={styles.check}>✓</span><span>{deliverable.label}</span><span className={styles.expand} aria-hidden="true">+</span></summary><p>{deliverable.detail}</p></AnimatedDetails></li>)}</ul>
+                <AnimatedDetails className={styles.fullDetails}><summary>View Full Details<span aria-hidden="true" className={styles.expand}>+</span></summary><div>{pkg.excluded && <p><strong>Not included:</strong> {pkg.excluded}</p>}<p>Premium Client Experience is included, tailored to your purchased services.</p><p>{scopeNote}</p></div></AnimatedDetails>
               </article>)}
             </div>
           </div>)}

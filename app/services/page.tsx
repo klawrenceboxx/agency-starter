@@ -1,3 +1,4 @@
+import AnimatedDetails from './AnimatedDetails'
 import Image from 'next/image'
 import { CALENDLY_URL } from '@/lib/site-config'
 import ServicePackages from './ServicePackages'
@@ -39,7 +40,7 @@ export default function ServicesPage() {
             <span className={styles.connector} aria-hidden="true">+</span>
             <article className={`${styles.systemCard} ${styles.experienceCard}`}>
               <div className={styles.experienceHeading}><span className={styles.systemIcon} aria-hidden="true">◇</span><div><h3>Premium Client Experience</h3><p>Clear communication, complete ownership, and 120-day technical protection.</p></div></div>
-              <details className={styles.experienceDetails}><summary>Explore all seven inclusions<span className={styles.expand} aria-hidden="true">+</span></summary><ol>{clientExperience.map(([title, description], index) => <li key={title} className={index === 3 ? styles.guarantee : undefined}><details><summary>{title}<span className={styles.expand} aria-hidden="true">+</span></summary><p>{description}</p></details></li>)}</ol></details>
+              <AnimatedDetails className={styles.experienceDetails}><summary>Explore all seven inclusions<span className={styles.expand} aria-hidden="true">+</span></summary><ol>{clientExperience.map(([title, description], index) => <li key={title} className={index === 3 ? styles.guarantee : undefined}><AnimatedDetails><summary>{title}<span className={styles.expand} aria-hidden="true">+</span></summary><p>{description}</p></AnimatedDetails></li>)}</ol></AnimatedDetails>
             </article>
           </div>
         </div>

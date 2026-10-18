@@ -1,0 +1,28 @@
+.contact { background: #10071b; color: #fff; padding-bottom: 64px; }
+.container { max-width: 1080px; }
+.intro { margin-bottom: 28px; }
+.intro h1 { font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; }
+.intro p { color: #c3b8ce; max-width: 75ch; margin-top: 16px; font-size: 17px; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.card { display: flex; flex-direction: column; padding: 28px; background: #1b102b; border: 1px solid #493058; border-radius: 16px; }
+.primary { background: #241233; border-color: #8650a7; }
+.icon { display: block; width: 26px; height: 26px; flex-shrink: 0; color: #c183f3; }
+.card h2, .linkedin h2 { font-size: 21px; line-height: 1.35; letter-spacing: -.02em; margin: 22px 0 12px; }
+.card p { color: #c3b8ce; font-size: 16px; line-height: 1.65; margin: 0 0 28px; max-width: 46ch; }
+.card .action { margin-top: auto; width: 100%; min-height: 56px; line-height: 1.4; text-align: center; }
+.card .secondary { background: #382344; color: #fff; border-color: #382344; }
+.card .secondary:hover { background: #493058; }
+.linkedin { display: flex; align-items: center; gap: 20px; border: 1px solid #493058; border-radius: 16px; margin-top: 20px; padding: 22px 28px; }
+.linkedin h2 { font-size: 19px; margin: 0 0 6px; }
+.linkedin p { color: #c3b8ce; font-size: 14px; line-height: 1.6; margin: 0; }
+.linkedin .profile { color: #fff; border-color: #78518e; margin-left: auto; min-height: 50px; white-space: nowrap; }
+.linkedin .profile:hover { background: #241233; }
+.contact a:focus-visible { outline: 3px solid #d3a0ff; outline-offset: 4px; }
+@media (max-width: 700px) {
+  .contact { padding-bottom: 40px; }
+  .cards { grid-template-columns: 1fr; gap: 16px; }
+  .card { padding: 24px; }
+  .linkedin { flex-wrap: wrap; gap: 16px; padding: 24px; margin-top: 16px; }
+  .linkedin > div { flex: 1; min-width: 0; }
+  .linkedin .profile { width: 100%; margin-left: 0; }
+}

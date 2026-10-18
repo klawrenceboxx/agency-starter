@@ -21,7 +21,7 @@ export const milestones: Milestone[] = [
   {
     label: 'Sports & fitness', title: 'Built Through Discipline',
     bullets: ['I played sports throughout childhood.', 'I developed a lasting passion for fitness.', 'I progressed into half-marathon and marathon running.', 'I learned the value of consistency, preparation, and discipline.'],
-    placeholder: 'Toronto running photograph',
+    image: { src: '/about/running.webp', alt: 'Kaleel running in a Toronto road race', position: 'center 28%' },
   },
   {
     label: '2019–2025', title: 'Mechanical Engineering',

@@ -9,6 +9,7 @@ export default function JourneyTimeline({ milestones }: { milestones: Milestone[
   const track = useRef<HTMLDivElement>(null)
   const cards = useRef<(HTMLElement | null)[]>([])
   const [active, setActive] = useState(0)
+  const drag = useRef<{ id: number; x: number; scrollLeft: number } | null>(null)
 
   const navigate = useCallback((index: number, instant = false) => {
     const target = Math.max(0, Math.min(milestones.length - 1, index))
@@ -40,16 +41,53 @@ export default function JourneyTimeline({ milestones }: { milestones: Milestone[
         setActive(nearest)
       })
     }
+    // Horizontal wheel gestures do not advance milestones; vertical scrolling stays natural.
+    function wheel(event: WheelEvent) {
+      if (!event.deltaX) return
+      event.preventDefault()
+      const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1
+      window.scrollBy({ top: event.deltaY * scale, behavior: 'instant' })
+    }
+    container.addEventListener('wheel', wheel, { passive: false })
     container.addEventListener('scroll', updateActive, { passive: true })
     const observer = new ResizeObserver(updateActive)
     observer.observe(container)
     updateActive()
-    return () => { container.removeEventListener('scroll', updateActive); observer.disconnect(); cancelAnimationFrame(frame) }
+  return () => { container.removeEventListener('wheel', wheel); container.removeEventListener('scroll', updateActive); observer.disconnect(); cancelAnimationFrame(frame) }
   }, [])
 
+  function finishDrag() {
+    const container = track.current
+    if (!container || !drag.current) return
+    drag.current = null
+    delete container.dataset.dragging
+    container.style.scrollSnapType = ''
+    const center = container.getBoundingClientRect().left + container.clientWidth / 2
+    let nearest = 0
+    let distance = Infinity
+    cards.current.forEach((card, index) => {
+      if (!card) return
+      const rect = card.getBoundingClientRect()
+      const delta = Math.abs(rect.left + rect.width / 2 - center)
+      if (delta < distance) { nearest = index; distance = delta }
+    })
+    navigate(nearest)
+  }
+
   return (
-    <div className={styles.carousel} role="region" aria-roledescription="carousel" aria-label="Kaleel’s journey">
-      <div className={styles.track} ref={track} id="journey-track" tabIndex={0} aria-label="Journey milestones. Use left and right arrow keys to navigate." onKeyDown={event => {
+    <div className={`wrap ${styles.carousel}`} role="region" aria-roledescription="carousel" aria-label="Kaleel’s journey">
+      <div className={styles.viewport}><div className={styles.track} ref={track} id="journey-track" tabIndex={0} onPointerDown={event => {
+        if (event.pointerType !== 'mouse' || event.button !== 0) return
+        const container = event.currentTarget
+        drag.current = { id: event.pointerId, x: event.clientX, scrollLeft: container.scrollLeft }
+        container.setPointerCapture(event.pointerId)
+        container.style.scrollSnapType = 'none'
+        container.dataset.dragging = 'true'
+        container.focus({ preventScroll: true })
+      }} onPointerMove={event => {
+        if (!drag.current || event.pointerId !== drag.current.id) return
+        event.currentTarget.scrollLeft = drag.current.scrollLeft - (event.clientX - drag.current.x)
+      }} onPointerUp={finishDrag} onPointerCancel={finishDrag} onLostPointerCapture={finishDrag} aria-label="Journey milestones. Use left and right arrow keys to navigate." onKeyDown={event => {
         if (event.target !== event.currentTarget) return
         if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
           event.preventDefault()
@@ -58,12 +96,12 @@ export default function JourneyTimeline({ milestones }: { milestones: Milestone[
       }}>
         {milestones.map((milestone, index) => <article key={milestone.title} ref={element => { cards.current[index] = element }} className={`${styles.milestone} ${index === active ? styles.active : ''}`} role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${milestones.length}: ${milestone.title}`}>
           <div className={styles.milestoneImage}>
-            {milestone.image ? <Image src={milestone.image.src} alt={milestone.image.alt} fill sizes="(max-width: 700px) 86vw, 680px" style={{ objectFit: 'cover', objectPosition: milestone.image.position }} /> : <div className={styles.placeholder}><span>{milestone.placeholder}</span><small>Photo to come</small></div>}
+            {milestone.image ? <Image src={milestone.image.src} alt={milestone.image.alt} fill draggable={false} sizes="(max-width: 700px) 80vw, 420px" style={{ objectFit: 'cover', objectPosition: milestone.image.position }} /> : <div className={styles.placeholder}><span>{milestone.placeholder}</span><small>Photo to come</small></div>}
           </div>
           <div className={styles.milestoneCopy}><span className={styles.label}>{milestone.label}</span><h3>{milestone.title}</h3><ul>{milestone.bullets.map(bullet => <li key={bullet}>{bullet}</li>)}</ul></div>
         </article>)}
-      </div>
-      <div className={`wrap ${styles.controls}`}>
+      </div></div>
+      <div className={styles.controls}>
         <button type="button" className={styles.arrow} onClick={() => navigate(active - 1)} disabled={active === 0} aria-label="Previous milestone" aria-controls="journey-track"><span aria-hidden="true">←</span></button>
         <div className={styles.progress}>
           <span className={styles.counter} aria-live="polite" aria-atomic="true">{active + 1} / {milestones.length}</span>

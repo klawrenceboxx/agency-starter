@@ -14,10 +14,10 @@ export default function AboutPage() {
     <div className={styles.page}>
       <section className={styles.hero} aria-labelledby="about-title">
         <Image className={styles.heroImage} src="/about/founder-hero.png" alt="Kaleel Lawrence-Boxx in a purple-lit workspace, with his signature beside him" fill priority sizes="100vw" />
-        <div className={`wrap ${styles.heroCopy}`}><p className={styles.eyebrow}>About BOXX Automations</p><h1 className="h1" id="about-title">About BOXX Automations</h1></div>
+        <div className={`wrap ${styles.heroCopy}`}><p className={styles.eyebrow}>About BOXX Automations</p><h1 className="h1" id="about-title">About BOXX Automations</h1><p className={styles.heroIntro}>I&rsquo;m Kaleel Lawrence-Boxx. Engineer, developer, and founder of BOXX Automations. Here&rsquo;s a little about the experiences that shaped how I think, work, and approach solving problems.</p></div>
       </section>
       <section className={styles.journey} aria-labelledby="journey-title">
-        <div className={`wrap ${styles.journeyIntro}`}><h2 className="h2" id="journey-title">The journey behind BOXX.</h2><p>I&rsquo;m Kaleel Lawrence-Boxx. Engineer, developer, and founder of BOXX Automations. Here&rsquo;s a little about the experiences that shaped how I think, work, and approach solving problems.</p></div>
+        <div className={`wrap ${styles.journeyIntro}`}><h2 className="h2" id="journey-title">The Journey</h2></div>
         <JourneyTimeline milestones={milestones} />
       </section>
       <section className={styles.why} aria-labelledby="why-title">

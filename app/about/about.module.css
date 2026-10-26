@@ -22,7 +22,8 @@
 .milestoneCopy { padding: 22px 24px 26px; }
 .label { color: #cd90fb; font-size: 12px; letter-spacing: .04em; }
 .milestone h3 { font-size: 24px; line-height: 1.25; letter-spacing: -.02em; margin: 12px 0 18px; }
-.milestone ul { margin: 0; padding-left: 18px; }
+.milestone ul { margin: 0; padding-left: 20px; list-style: disc; }
+.imageBackdrop { filter: blur(18px) brightness(0.55); transform: scale(1.15); }
 .milestone li { color: var(--about-muted); font-size: 14px; line-height: 1.7; margin: 8px 0; padding-left: 4px; }
 .milestone li::marker { color: #bd77ed; }
 .controls { display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 24px; }

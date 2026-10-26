@@ -1,4 +1,4 @@
-// Local SEO content: service pages (/services/<slug>) and blog posts (/blog/<slug>).
+// Local SEO content: service pages (/services/<slug>). Blog posts live in lib/blog-posts.ts.
 // Keyword targets are validated with Semrush (Canada database, Oct 2026). See notes per entry.
 // Copy rules (BUSINESS.md): plain language, one CTA ("Get Your Free Audit"), no invented stats or testimonials.
 
@@ -15,16 +15,6 @@ export type LocalPage = {
   sections: Section[]
   faq: Faq[]
   related: string[]
-}
-
-export type Post = {
-  slug: string
-  metaTitle: string
-  metaDescription: string
-  h1: string
-  lead: string
-  published: string
-  sections: Section[]
 }
 
 export const LOCAL_PAGES: LocalPage[] = [
@@ -283,103 +273,8 @@ export const LOCAL_PAGES: LocalPage[] = [
   },
 ]
 
-export const POSTS: Post[] = [
-  {
-    // target: "how much does a website cost in canada" (110/mo, KD 7), secondary "how much does a website cost" (260/mo, KD 43)
-    slug: 'how-much-does-a-website-cost-in-canada',
-    metaTitle: 'How Much Does a Website Cost in Canada? What Drives the Price',
-    metaDescription:
-      'What drives the cost of a small business website in Canada, and how to avoid paying for a site that does not bring in customers.',
-    h1: 'How much does a website cost in Canada?',
-    lead:
-      'There is no single price, and anyone who gives you one without seeing your business is guessing. What matters is what drives the cost, and whether the site will earn its keep.',
-    published: '2026-10-12',
-    sections: [
-      {
-        h: 'What drives the price',
-        items: [
-          'Size. A five-page service site and an online store with hundreds of products are very different projects.',
-          'Custom or template. Custom builds cost more up front. You get speed and control.',
-          'Content. Writing, photos, and copy take real time.',
-          'Connections. Booking, email, CRM, and payments all add work.',
-          'Search and speed. Doing these right at launch saves you from paying to fix them later.',
-        ],
-      },
-      {
-        h: 'The cost most people forget',
-        p: [
-          'A cheap site that does not bring in customers is expensive. If you already pay for ads, social media, or networking, a site that loses visitors wastes that money every month.',
-        ],
-      },
-      {
-        h: 'How to get a real number',
-        items: [
-          'Start with an audit of your current site. You may only need fixes, not a rebuild.',
-          'Ask for a quote based on your goal, not a menu of packages.',
-          'Ask what happens if you are not happy. At Boxx, websites have a 30-day money-back guarantee.',
-        ],
-      },
-    ],
-  },
-  {
-    slug: 'website-conversion-checklist-small-business',
-    metaTitle: 'Website Conversion Checklist for Small Businesses',
-    metaDescription:
-      'A simple checklist to find out why your website visitors are not becoming customers, and what to fix first.',
-    h1: 'A website conversion checklist for small businesses.',
-    lead: 'Your site gets visitors, but few become customers. Go through this list from top to bottom.',
-    published: '2026-10-12',
-    sections: [
-      {
-        h: 'The first five seconds',
-        items: [
-          'Can a stranger tell what you do and who it is for?',
-          'Is there one clear action at the top of the page?',
-        ],
-      },
-      {
-        h: 'Trust',
-        items: [
-          'Real projects or real reviews are easy to find',
-          'Your guarantee is stated in plain words',
-          'Your name, your face, and where you are based are visible',
-        ],
-      },
-      {
-        h: 'Action',
-        items: [
-          'Buttons say what happens next',
-          'Forms are short',
-          'Your phone number can be tapped on a phone',
-        ],
-      },
-      {
-        h: 'Speed and mobile',
-        items: ['The page loads fast on a phone', 'Text is easy to read and nothing overlaps'],
-      },
-      {
-        h: 'Follow-up',
-        items: [
-          'Every inquiry gets a quick reply',
-          'People who are not ready get a welcome or nurture email',
-          'Past customers get win-back emails',
-        ],
-      },
-      {
-        h: 'Search basics',
-        items: [
-          'Each service has its own clear page',
-          'Page titles and descriptions are written for the person searching',
-          'Your Google Business Profile matches your website name, phone, and web address',
-        ],
-      },
-      {
-        h: 'How to read your results',
-        p: ['If you missed three or more, start with the first five seconds. That is where most visitors decide to stay or leave.'],
-      },
-    ],
-  },
-]
-
 export const getPage = (slug: string) => LOCAL_PAGES.find((p) => p.slug === slug)
-export const getPost = (slug: string) => POSTS.find((p) => p.slug === slug)
+
+// Blog posts moved to their own file; re-exported so existing imports keep working.
+export { POSTS, getPost } from './blog-posts'
+export type { Post } from './blog-posts'

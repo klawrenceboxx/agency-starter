@@ -96,7 +96,7 @@ export default function JourneyTimeline({ milestones }: { milestones: Milestone[
       }}>
         {milestones.map((milestone, index) => <article key={milestone.title} ref={element => { cards.current[index] = element }} className={`${styles.milestone} ${index === active ? styles.active : ''}`} role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${milestones.length}: ${milestone.title}`}>
           <div className={styles.milestoneImage}>
-            {milestone.image ? <Image src={milestone.image.src} alt={milestone.image.alt} fill draggable={false} sizes="(max-width: 700px) 80vw, 420px" style={{ objectFit: 'cover', objectPosition: milestone.image.position }} /> : <div className={styles.placeholder}><span>{milestone.placeholder}</span><small>Photo to come</small></div>}
+            {milestone.image ? (milestone.image.fit === 'contain' ? <><Image src={milestone.image.src} alt="" aria-hidden="true" fill draggable={false} sizes="(max-width: 700px) 80vw, 420px" className={styles.imageBackdrop} style={{ objectFit: 'cover' }} /><Image src={milestone.image.src} alt={milestone.image.alt} fill draggable={false} sizes="(max-width: 700px) 80vw, 420px" style={{ objectFit: 'contain' }} /></> : <Image src={milestone.image.src} alt={milestone.image.alt} fill draggable={false} sizes="(max-width: 700px) 80vw, 420px" style={{ objectFit: 'cover', objectPosition: milestone.image.position }} />) : <div className={styles.placeholder}><span>{milestone.placeholder}</span><small>Photo to come</small></div>}
           </div>
           <div className={styles.milestoneCopy}><span className={styles.label}>{milestone.label}</span><h3>{milestone.title}</h3><ul>{milestone.bullets.map(bullet => <li key={bullet}>{bullet}</li>)}</ul></div>
         </article>)}

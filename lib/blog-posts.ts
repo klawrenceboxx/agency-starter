@@ -6,6 +6,8 @@
 // 10 Vaughan Chamber of Commerce member homepages (businesses not named) and his own Semrush pulls.
 // Inline marks in any string: **bold** and [label](href).
 
+import { MORE_POSTS } from './blog-posts-more'
+
 export type Table = { caption: string; head: string[]; rows: string[][]; note?: string }
 export type Block = { h: string; answer?: string; p?: string[]; items?: string[]; ordered?: boolean; table?: Table; after?: string[] }
 export type Faq = { q: string; a: string }
@@ -33,7 +35,7 @@ const GODADDY = 'https://www.godaddy.com/resources/ca/launch/how-much-does-it-co
 const STORYTELLER = 'https://storytellermedia.ca/seo-cost-canada/'
 const AHREFS = 'https://ahrefs.com/blog/seo-pricing/'
 
-export const POSTS: Post[] = [
+const BASE_POSTS: Post[] = [
   {
     // primary: "how much does a website cost in canada" (110/mo, KD 4)
     // cluster: "how much does a website cost" (260, KD 43), "website design cost" (210, KD 23), "web design cost" (110, KD 44),
@@ -659,5 +661,7 @@ export const POSTS: Post[] = [
     next: 'how-much-does-a-website-cost-in-canada',
   },
 ]
+
+export const POSTS: Post[] = [...BASE_POSTS, ...MORE_POSTS]
 
 export const getPost = (slug: string) => POSTS.find((p) => p.slug === slug)

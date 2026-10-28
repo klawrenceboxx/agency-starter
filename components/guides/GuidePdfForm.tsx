@@ -10,10 +10,10 @@ import { attributionPayload } from '@/lib/attribution'
 export const GUIDE_CONSENT_TEXT =
   'Send me the PDF and the weekly BOXX Automations email. I can unsubscribe anytime.'
 
-type Props = { slug: string; resource: string }
+type Props = { slug: string; resource: string; pdfUrl: string }
 
 // Soft gate: the prompts stay on the page. This only emails the PDF.
-export default function GuidePdfForm({ slug, resource }: Props) {
+export default function GuidePdfForm({ slug, resource, pdfUrl }: Props) {
   const [email, setEmail] = useState('')
   const [consent, setConsent] = useState(false)
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
@@ -70,6 +70,14 @@ export default function GuidePdfForm({ slug, resource }: Props) {
     return (
       <div className={styles.pdfDone} role="status">
         <strong>Check your inbox.</strong> The PDF is on its way to {email.trim()}.
+        <span className={styles.pdfHint}>
+          Not there in a minute? Check spam or promotions and mark it &ldquo;Not spam&rdquo; so the next one
+          lands in your inbox. Or{' '}
+          <a href={`${pdfUrl}?resource=${resource}&channel=page-fallback`} target="_blank" rel="noopener noreferrer">
+            download the PDF now
+          </a>
+          .
+        </span>
       </div>
     )
   }

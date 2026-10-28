@@ -147,6 +147,8 @@
 }
 .pdfDone { color: var(--g-muted); }
 .pdfDone strong { color: #fff; }
+.pdfHint { display: block; margin-top: 10px; font-size: 14px; line-height: 1.55; }
+.pdfHint a { color: var(--g-lav); font-weight: 600; }
 .pdfLabel { display: block; font-weight: 700; font-size: 18px; margin-bottom: 14px; }
 .pdfRow { display: flex; gap: 12px; }
 .pdfRow input {

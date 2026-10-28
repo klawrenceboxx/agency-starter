@@ -114,7 +114,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       {/* SOFT GATE */}
       <section id="pdf" className={styles.gate}>
         <div className="wrap">
-          <GuidePdfForm slug={g.slug} resource={g.guide_number} />
+          <GuidePdfForm slug={g.slug} resource={g.guide_number} pdfUrl={g.pdf_url} />
         </div>
       </section>
 

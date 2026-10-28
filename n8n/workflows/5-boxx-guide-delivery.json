@@ -2,7 +2,7 @@
   "name": "BOXX - Guide Delivery",
   "nodes": [
     {
-      "id": "2591725a-df85-4bd4-8415-be8c920fb898",
+      "id": "69895bcd-042e-43dc-87fe-ded5f2f7d966",
       "position": [
         0,
         200
@@ -10,7 +10,7 @@
       "name": "Guide form webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "webhookId": "c76ae897-6794-4080-a18f-76c7ca0908ac",
+      "webhookId": "8a2b2076-e536-43b6-b85f-881560228b47",
       "parameters": {
         "httpMethod": "POST",
         "path": "boxx-guide",
@@ -21,7 +21,7 @@
       }
     },
     {
-      "id": "e36d5878-ba79-4d7d-8b00-68de75a0eec2",
+      "id": "6c0470aa-c754-4c8e-9c8c-a47faa4e0784",
       "position": [
         260,
         200
@@ -35,7 +35,7 @@
       }
     },
     {
-      "id": "f329a72d-f71b-496b-ad90-477d547d21cd",
+      "id": "f1eb1ad1-aa88-4172-b14a-530bfc358964",
       "position": [
         520,
         200
@@ -49,7 +49,7 @@
       }
     },
     {
-      "id": "1b591ff7-4552-4371-9bb0-c14d1c928059",
+      "id": "dec17d6f-4043-4016-b5be-f22145b9198b",
       "position": [
         780,
         200
@@ -67,7 +67,7 @@
           },
           "conditions": [
             {
-              "id": "5f390de0-591f-476c-a460-7944a2392d8d",
+              "id": "8f4bf21e-02dd-4755-8299-5bbca26fe753",
               "leftValue": "={{ $json.ok }}",
               "rightValue": true,
               "operator": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "3c712077-b387-489b-91a1-89f57b2cc243",
+      "id": "90d8a25f-38eb-484c-8bb6-8420e134fad9",
       "position": [
         1040,
         400
@@ -96,7 +96,7 @@
       }
     },
     {
-      "id": "84a56bcc-a833-4b31-82af-e4e6918ed6be",
+      "id": "f2680036-a136-4105-a12e-15a6d5fa6027",
       "position": [
         1300,
         400
@@ -138,7 +138,7 @@
       }
     },
     {
-      "id": "dbb97621-a2cf-492a-aea9-031cc79a9251",
+      "id": "f9cc21f3-8a20-4c5b-9b61-8c1cb194688e",
       "position": [
         1560,
         400
@@ -163,7 +163,7 @@
       }
     },
     {
-      "id": "98a115c9-78de-4f34-abf4-f14e5944ccea",
+      "id": "7672c841-c16f-4252-b2a1-f8aeb6bda7ab",
       "position": [
         1040,
         200
@@ -203,7 +203,7 @@
       }
     },
     {
-      "id": "265f798e-5d14-4d3e-a843-3ebc6adb37a2",
+      "id": "38039c6d-ed11-4055-9472-130028667368",
       "position": [
         1300,
         200
@@ -217,7 +217,7 @@
       }
     },
     {
-      "id": "d9bf86d4-cc07-4e43-ab79-243c0aba2453",
+      "id": "e0e49514-5c0b-4232-863a-9b205cf131ed",
       "position": [
         1560,
         200
@@ -231,7 +231,7 @@
       }
     },
     {
-      "id": "025e4b1b-89aa-49ba-ac90-7b309d93dd3c",
+      "id": "bf931897-de78-4349-9a44-1b62f51207bf",
       "position": [
         1820,
         200
@@ -275,7 +275,7 @@
       }
     },
     {
-      "id": "65c816e2-5ccd-4a00-9b7d-9e94a809bd87",
+      "id": "ba3930c5-3db0-481d-a586-8fe723810a9a",
       "position": [
         2080,
         200
@@ -300,7 +300,7 @@
       }
     },
     {
-      "id": "50a4bf41-d922-488a-85c3-571a28a79e1e",
+      "id": "506aafcc-773c-4012-b530-4ffc07a38847",
       "position": [
         2340,
         200
@@ -318,7 +318,7 @@
           },
           "conditions": [
             {
-              "id": "5069b88c-77c6-46d8-b9f9-aeb3d2d7eb56",
+              "id": "4dba85b9-8b5d-4c1f-bd61-e18979f29b85",
               "leftValue": "={{ $('Decide').first().json.send }}",
               "rightValue": true,
               "operator": {
@@ -333,7 +333,7 @@
       }
     },
     {
-      "id": "3a083d76-c678-4cd3-bf2e-cb1b06b9db8e",
+      "id": "25bf6461-490f-4381-b167-f83b2f36ea49",
       "position": [
         2600,
         200
@@ -343,11 +343,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nconst g = cfg.guides[L.slug]\nconst esc = v => String(v).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]))\n// Angus-style tags: guide number, which link, and a unique ID for this send (dlv).\nconst dlv = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)\nconst tags = (channel, content) => 'resource=' + g.number + '&channel=' + channel + '&utm_source=guide-delivery&utm_medium=email&utm_campaign=' + L.slug + '&utm_content=' + content + '&dlv=' + dlv\nconst pdfUrl = cfg.siteUrl + g.pdfPath + '?' + tags('email', 'pdf-button')\nconst auditUrl = cfg.siteUrl + '/audit?' + tags('email-cta', 'audit-button')\nconst coverUrl = g.cover ? cfg.siteUrl + g.cover : ''\nconst subject = \"Here's \" + g.title\nconst unsub = '<%asm_group_unsubscribe_raw_url%>'\nconst text = [\n  'BOXX AUTOMATIONS / FREE GUIDE',\n  g.title + '.',\n  \"Thanks for grabbing the guide. Here's the PDF you asked for.\",\n  '',\n  'Download the PDF: ' + pdfUrl,\n  '',\n  \"Don't want to build it yourself?\",\n  \"I'll set it up for your business. Start with a free audit and I'll show you where your leads are slipping through.\",\n  'Get Your Free Audit: ' + auditUrl,\n  '',\n  \"If you get stuck on anything, just reply here. It comes straight to me.\",\n  'Kaleel',\n  '',\n  'BOXX Automations · ' + cfg.mailingAddress,\n  \"You're getting this because you asked for this guide on boxxautomations.space.\",\n  \"You'll also get a weekly email from BOXX. Unsubscribe: \" + unsub,\n].join('\\n')\nconst btn = (href, label, bg, border) => '<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"border-radius:10px;background:' + bg + ';border:1px solid ' + border + '\"><a href=\"' + esc(href) + '\" style=\"display:inline-block;padding:16px 26px;font:700 16px/1 Inter,Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;border-radius:10px\">' + label + '</a></td></tr></table>'\nconst html = '<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"color-scheme\" content=\"dark light\"><title>' + esc(subject) + '</title></head>'\n + '<body style=\"margin:0;padding:0;background:#10071b\">'\n + '<div style=\"display:none;max-height:0;overflow:hidden\">' + esc(g.promise) + '</div>'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background:#10071b\"><tr><td align=\"center\" style=\"padding:32px 16px\">'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width:580px;font-family:Inter,Arial,Helvetica,sans-serif;color:#ffffff\">'\n + '<tr><td style=\"font:700 11px/1.4 Menlo,Consolas,monospace;letter-spacing:2px;color:#d3a0ff;padding:0 0 14px\">BOXX AUTOMATIONS / FREE GUIDE</td></tr>'\n + '<tr><td style=\"font:800 32px/1.1 Inter,Arial,Helvetica,sans-serif;letter-spacing:-0.5px;padding:0 0 12px\">' + esc(g.title) + '<span style=\"color:#9c16f4\">.</span></td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 24px\">Thanks for grabbing the guide. Here&#39;s the PDF you asked for.</td></tr>'\n + '<tr><td style=\"background:#1b102b;border:1px solid #493058;border-radius:16px;padding:20px\">'\n +   '<div style=\"font:700 10px/1.4 Menlo,Consolas,monospace;letter-spacing:1.5px;color:#d3a0ff;padding:0 0 10px\">FREE GUIDE · ' + g.prompts + ' PROMPTS · BUILT WITH ' + esc(g.builtWith) + '</div>'\n +   '<div style=\"font:700 20px/1.3 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">' + esc(g.title) + '</div>'\n +   '<div style=\"font:400 15px/1.55 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 ' + (coverUrl ? '16px' : '0') + '\">' + esc(g.promise) + '</div>'\n +   (coverUrl ? '<a href=\"' + esc(pdfUrl) + '\"><img src=\"' + esc(coverUrl) + '\" width=\"180\" alt=\"' + esc(g.title) + '\" style=\"display:block;width:180px;max-width:100%;border-radius:10px;border:0\"></a>' : '')\n + '</td></tr>'\n + '<tr><td style=\"padding:20px 0 8px\">' + btn(pdfUrl, 'Download the PDF &#8599;', '#382344', '#78518e') + '</td></tr>'\n + '<tr><td style=\"font:400 13px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:0 0 28px\">Button not working? Copy this link:<br><a href=\"' + esc(pdfUrl) + '\" style=\"color:#d3a0ff;word-break:break-all\">' + esc(pdfUrl) + '</a></td></tr>'\n + '<tr><td style=\"background:#370857;border-radius:16px;padding:24px\">'\n +   '<div style=\"font:800 20px/1.25 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">Don&#39;t want to build it yourself?</div>'\n +   '<div style=\"font:400 15px/1.6 Inter,Arial,Helvetica,sans-serif;color:#d6c6e8;padding:0 0 18px\">I&#39;ll set it up for your business. Start with a free audit and I&#39;ll show you where your leads are slipping through.</div>'\n +   btn(auditUrl, 'Get Your Free Audit &#8599;', '#9c16f4', '#9c16f4')\n + '</td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#ffffff;padding:28px 0 0\">If you get stuck on anything, just reply here. It comes straight to me.<br>Kaleel</td></tr>'\n + '<tr><td style=\"font:400 12px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:32px 0 0;border-top:1px solid #2c1a3c\">'\n +   'BOXX Automations · ' + esc(cfg.mailingAddress) + '<br>You&#39;re getting this because you asked for this guide on boxxautomations.space.<br>'\n +   'You&#39;ll also get a weekly email from BOXX. <a href=\"' + unsub + '\" style=\"color:#d3a0ff\">Unsubscribe</a>'\n + '</td></tr></table></td></tr></table></body></html>'\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  content: [{ type: 'text/plain', value: text }, { type: 'text/html', value: html }],\n  asm: { group_id: cfg.asmGroupId, groups_to_display: [cfg.asmGroupId] },\n  tracking_settings: { click_tracking: { enable: true, enable_text: false } },\n  categories: ['boxx-guide', L.slug],\n  custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug, resource: g.number, dlv },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug, resource: g.number, dlv } } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nconst g = cfg.guides[L.slug]\nconst esc = v => String(v).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]))\n// Angus-style tags: guide number, which link, and a unique ID for this send (dlv).\nconst dlv = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)\nconst tags = (channel, content) => 'resource=' + g.number + '&channel=' + channel + '&utm_source=guide-delivery&utm_medium=email&utm_campaign=' + L.slug + '&utm_content=' + content + '&dlv=' + dlv\nconst pdfUrl = cfg.siteUrl + g.pdfPath + '?' + tags('email', 'pdf-button')\nconst auditUrl = cfg.siteUrl + '/audit?' + tags('email-cta', 'audit-button')\n// Shown as text: short and clean. The href keeps the tags.\nconst pdfDisplay = cfg.siteUrl.replace('https://', '') + g.pdfPath\nconst subject = \"Here's \" + g.title\nconst unsub = '<%asm_group_unsubscribe_raw_url%>'\nconst text = [\n  'BOXX AUTOMATIONS / FREE GUIDE',\n  g.title + '.',\n  \"Thanks for grabbing the guide. Here's the PDF you asked for.\",\n  \"Tip: add \" + cfg.fromEmail + \" to your contacts so the next one lands in your inbox.\",\n  '',\n  'Download the PDF: ' + pdfUrl,\n  '',\n  \"Don't want to build it yourself?\",\n  \"I'll set it up for your business. Start with a free audit and I'll show you where your leads are slipping through.\",\n  'Get Your Free Audit: ' + auditUrl,\n  '',\n  \"If you get stuck on anything, just reply here. It comes straight to me.\",\n  'Kaleel',\n  '',\n  'BOXX Automations · ' + cfg.mailingAddress,\n  \"You're getting this because you asked for this guide on boxxautomations.space.\",\n  \"You'll also get a weekly email from BOXX. Unsubscribe: \" + unsub,\n].join('\\n')\nconst btn = (href, label, bg, border) => '<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"border-radius:10px;background:' + bg + ';border:1px solid ' + border + '\"><a href=\"' + esc(href) + '\" style=\"display:inline-block;padding:16px 26px;font:700 16px/1 Inter,Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;border-radius:10px\">' + label + '</a></td></tr></table>'\nconst html = '<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"color-scheme\" content=\"dark light\"><title>' + esc(subject) + '</title></head>'\n + '<body style=\"margin:0;padding:0;background:#10071b\">'\n + '<div style=\"display:none;max-height:0;overflow:hidden\">' + esc(g.promise) + '</div>'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background:#10071b\"><tr><td align=\"center\" style=\"padding:32px 16px\">'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width:580px;font-family:Inter,Arial,Helvetica,sans-serif;color:#ffffff\">'\n + '<tr><td style=\"font:700 11px/1.4 Menlo,Consolas,monospace;letter-spacing:2px;color:#d3a0ff;padding:0 0 14px\">BOXX AUTOMATIONS / FREE GUIDE</td></tr>'\n + '<tr><td style=\"font:800 32px/1.1 Inter,Arial,Helvetica,sans-serif;letter-spacing:-0.5px;padding:0 0 12px\">' + esc(g.title) + '<span style=\"color:#9c16f4\">.</span></td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 24px\">Thanks for grabbing the guide. Here&#39;s the PDF you asked for.<br><span style=\"font-size:13px;color:#8d7f9c\">Tip: add ' + esc(cfg.fromEmail) + ' to your contacts so the next one lands in your inbox.</span></td></tr>'\n + '<tr><td style=\"background:#1b102b;border:1px solid #493058;border-radius:16px;padding:20px\">'\n +   '<div style=\"font:700 10px/1.4 Menlo,Consolas,monospace;letter-spacing:1.5px;color:#d3a0ff;padding:0 0 10px\">FREE GUIDE · ' + g.prompts + ' PROMPTS · BUILT WITH ' + esc(g.builtWith) + '</div>'\n +   '<div style=\"font:700 20px/1.3 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">' + esc(g.title) + '</div>'\n +   '<div style=\"font:400 15px/1.55 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce\">' + esc(g.promise) + '</div>'\n + '</td></tr>'\n + '<tr><td style=\"padding:20px 0 8px\">' + btn(pdfUrl, 'Download the PDF &#8599;', '#382344', '#78518e') + '</td></tr>'\n + '<tr><td style=\"font:400 13px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:0 0 28px\">Button not working? Copy this link:<br><a href=\"' + esc(pdfUrl) + '\" style=\"color:#d3a0ff;word-break:break-all\">' + esc(pdfDisplay) + '</a></td></tr>'\n + '<tr><td style=\"background:#370857;border-radius:16px;padding:24px\">'\n +   '<div style=\"font:800 20px/1.25 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">Don&#39;t want to build it yourself?</div>'\n +   '<div style=\"font:400 15px/1.6 Inter,Arial,Helvetica,sans-serif;color:#d6c6e8;padding:0 0 18px\">I&#39;ll set it up for your business. Start with a free audit and I&#39;ll show you where your leads are slipping through.</div>'\n +   btn(auditUrl, 'Get Your Free Audit &#8599;', '#9c16f4', '#9c16f4')\n + '</td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#ffffff;padding:28px 0 0\">If you get stuck on anything, just reply here. It comes straight to me.<br>Kaleel</td></tr>'\n + '<tr><td style=\"font:400 12px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:32px 0 0;border-top:1px solid #2c1a3c\">'\n +   'BOXX Automations · ' + esc(cfg.mailingAddress) + '<br>You&#39;re getting this because you asked for this guide on boxxautomations.space.<br>'\n +   'You&#39;ll also get a weekly email from BOXX. <a href=\"' + unsub + '\" style=\"color:#d3a0ff\">Unsubscribe</a>'\n + '</td></tr></table></td></tr></table></body></html>'\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  content: [{ type: 'text/plain', value: text }, { type: 'text/html', value: html }],\n  asm: { group_id: cfg.asmGroupId, groups_to_display: [cfg.asmGroupId] },\n  // Our own tags (resource/channel/dlv) do the tracking. SendGrid click tracking would rewrite every\n  // link to a sendgrid.net address, which spam filters distrust when link branding isn't set up.\n  tracking_settings: { click_tracking: { enable: false, enable_text: false } },\n  categories: ['boxx-guide', L.slug],\n  custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug, resource: g.number, dlv },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug, resource: g.number, dlv } } }]"
       }
     },
     {
-      "id": "cd9d04b7-58a0-45d5-a6d7-845bc6ee6448",
+      "id": "c660f188-e5f9-4f2b-95b2-95071e0a0048",
       "position": [
         2860,
         200
@@ -383,7 +383,7 @@
       }
     },
     {
-      "id": "59a2559f-d912-42b4-b2c1-d8fea51b77b3",
+      "id": "a886c75c-73a1-4bd4-b77a-b2787a3b84f5",
       "position": [
         3120,
         0
@@ -397,7 +397,7 @@
       }
     },
     {
-      "id": "065adcde-94be-467b-8366-9928b3c5f342",
+      "id": "f4bcb77a-f252-4faa-be7d-e45a2befcf25",
       "position": [
         3380,
         0
@@ -439,7 +439,7 @@
       }
     },
     {
-      "id": "19722507-6e8d-4c8d-adc9-01fd0e0a0db7",
+      "id": "00b0b45c-ad7a-442f-b94d-78c462f98df3",
       "position": [
         3120,
         400
@@ -453,7 +453,7 @@
       }
     },
     {
-      "id": "cdb50939-cd22-43e8-b7bd-c0406a1d0472",
+      "id": "a6058d77-44d1-4ba5-be3c-52e1825f2375",
       "position": [
         3380,
         400
@@ -495,7 +495,7 @@
       }
     },
     {
-      "id": "46bb6266-c3ef-40bd-9fac-31145e4943ef",
+      "id": "474cf3bc-d517-43f5-a92d-392b4b668608",
       "position": [
         0,
         0

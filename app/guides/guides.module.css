@@ -77,7 +77,7 @@
 }
 .btnSecondary { background: #382344; color: #fff; border: 1px solid #382344; }
 .btnSecondary:hover { background: #493058; border-color: #493058; }
-.btnSecondary:disabled { opacity: 0.6; cursor: progress; }
+.btnSecondary:disabled { opacity: 0.45; cursor: not-allowed; }
 .btnGhost { background: transparent; color: #fff; border: 1px solid #78518e; }
 .btnGhost:hover { background: var(--g-card-2); }
 

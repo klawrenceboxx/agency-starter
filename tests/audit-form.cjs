@@ -12,10 +12,12 @@ const { flushSync } = require('react-dom')
 let modalOpen = true
 const context = { useAuditModal: () => ({ open: modalOpen, closeModal: () => { modalOpen = false } }) }
 const config = { CALENDLY_URL: 'https://calendly.com/kaleellawrenceboxx/discovery-call', LINKEDIN_URL: '#', SPOTS_OPEN: 2, TOTAL_SPOTS: 5 }
+// Bare /audit (the business-card QR code) carries no tags, so source stays "networking".
+const attribution = { tagsFromUrl: () => ({}), attributionPayload: () => ({ resource: '', channel: '', dlv: '', utm_source: '', utm_medium: '', utm_campaign: '', utm_content: '', first_touch: '' }) }
 function load(file) {
   const code = babel.transformSync(fs.readFileSync(file, 'utf8'), { presets: ['@babel/preset-react'], plugins: ['@babel/plugin-transform-modules-commonjs'] }).code
   const mod = { exports: {} }
-  vm.runInNewContext(code, { React, module: mod, exports: mod.exports, require: name => name === 'react' ? React : name === './BoxxAuditForm' ? { default: load('components/audit/BoxxAuditForm.jsx'), __esModule: true } : name === 'next/link' ? (({children,...props}) => React.createElement('a', props, children)) : name.includes('AuditModalContext') ? context : config, document, window, fetch: (...args) => global.fetch(...args), setTimeout, clearTimeout, Date })
+  vm.runInNewContext(code, { React, module: mod, exports: mod.exports, require: name => name === 'react' ? React : name === './BoxxAuditForm' ? { default: load('components/audit/BoxxAuditForm.jsx'), __esModule: true } : name === 'next/link' ? (({children,...props}) => React.createElement('a', props, children)) : name.includes('AuditModalContext') ? context : name.includes('attribution') ? attribution : config, document, window, fetch: (...args) => global.fetch(...args), setTimeout, clearTimeout, Date })
   return mod.exports.default
 }
 const Audit = load('components/audit/AuditModal.jsx')

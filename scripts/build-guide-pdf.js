@@ -13,7 +13,8 @@ const root = path.join(__dirname, '..')
 const g = JSON.parse(fs.readFileSync(path.join(root, 'content/guides', `${slug}.json`), 'utf8'))
 const SITE = 'https://boxxautomations.space'
 const pageUrl = `${SITE}/guides/${g.slug}`
-const auditUrl = `${SITE}/audit?utm_source=pdf&utm_medium=guide&utm_campaign=${g.slug}`
+const tags = (channel, content) => `resource=${g.guide_number}&channel=${channel}&utm_source=guide-pdf&utm_medium=pdf&utm_campaign=${g.slug}&utm_content=${content}`
+const auditUrl = `${SITE}/audit?${tags('pdf-cta', 'audit-button')}`
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
 const brackets = (s) => esc(s).replace(/(\[[^\]]+\])/g, '<mark>$1</mark>')
@@ -111,7 +112,7 @@ ${notes.length ? `<section><h2>Build notes</h2><p class="muted">What I learned t
   <h2>Don't want to build it yourself?</h2>
   <p>I'll set it up for your business. Start with a free audit and I'll show you where your leads are slipping through.</p>
   <a class="btn" href="${esc(auditUrl)}">Get Your Free Audit</a>
-  <p class="small" style="color:#d6c6e8">BOXX Automations · Vaughan, Ontario · <a style="color:#d3a0ff" href="${SITE}/guides">More free guides</a></p>
+  <p class="small" style="color:#d6c6e8">BOXX Automations · Vaughan, Ontario · <a style="color:#d3a0ff" href="${SITE}/guides?${tags('pdf', 'more-guides')}">More free guides</a></p>
 </div>
 </body></html>`
 

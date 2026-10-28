@@ -2,7 +2,7 @@
   "name": "BOXX - Guide Delivery",
   "nodes": [
     {
-      "id": "8b82d81f-2bc7-41cd-9521-3953e320f305",
+      "id": "2591725a-df85-4bd4-8415-be8c920fb898",
       "position": [
         0,
         200
@@ -10,7 +10,7 @@
       "name": "Guide form webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "webhookId": "17b5bf4f-f50f-4346-abfd-3f87c10c9a0b",
+      "webhookId": "c76ae897-6794-4080-a18f-76c7ca0908ac",
       "parameters": {
         "httpMethod": "POST",
         "path": "boxx-guide",
@@ -21,7 +21,7 @@
       }
     },
     {
-      "id": "a0529570-bff8-46b7-8954-1899157237ee",
+      "id": "e36d5878-ba79-4d7d-8b00-68de75a0eec2",
       "position": [
         260,
         200
@@ -31,11 +31,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== BOXX GUIDE DELIVERY CONFIG (secrets live in n8n Credentials, not here) ======\n// Same sheet, sender and unsubscribe group as the other BOXX workflows.\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group. Unsubscribes here also stop the weekly email.\n  resendWindowMinutes: 10, // Same email + same guide inside this window: no second send.\n  // Generated from content/guides/*.json by n8n/build-guide-workflow.js\n  guides: {\n    \"networking-follow-up\": {\n      \"title\": \"The Networking Follow-Up System\",\n      \"promise\": \"Turn a stack of business cards into personal follow-up emails and LinkedIn messages in about 5 minutes.\",\n      \"prompts\": 3,\n      \"builtWith\": \"CLAUDE + GMAIL\",\n      \"pdfPath\": \"/guides/pdf/networking-follow-up.pdf\",\n      \"cover\": \"/guides/networking-follow-up-cover.jpg\"\n    }\n  },\n} }]"
+        "jsCode": "// ====== BOXX GUIDE DELIVERY CONFIG (secrets live in n8n Credentials, not here) ======\n// Same sheet, sender and unsubscribe group as the other BOXX workflows.\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group. Unsubscribes here also stop the weekly email.\n  resendWindowMinutes: 10, // Same email + same guide inside this window: no second send.\n  // Generated from content/guides/*.json by n8n/build-guide-workflow.js\n  guides: {\n    \"networking-follow-up\": {\n      \"number\": \"002\",\n      \"title\": \"The Networking Follow-Up System\",\n      \"promise\": \"Turn a stack of business cards into personal follow-up emails and LinkedIn messages in about 5 minutes.\",\n      \"prompts\": 3,\n      \"builtWith\": \"CLAUDE + GMAIL\",\n      \"pdfPath\": \"/guides/pdf/networking-follow-up.pdf\",\n      \"cover\": \"/guides/networking-follow-up-cover.jpg\"\n    }\n  },\n} }]"
       }
     },
     {
-      "id": "41979ef4-22c4-4fc0-9536-7d97b7e8f089",
+      "id": "f329a72d-f71b-496b-ad90-477d547d21cd",
       "position": [
         520,
         200
@@ -45,11 +45,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst b = $('Guide form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst slug = clean(b.slug).toLowerCase()\nif (!cfg.guides[slug]) errors.push('unknown_guide')\nif (clean(b.company)) errors.push('honeypot') // bots fill the hidden field\nconst lead = {\n  email, slug,\n  email_marketing_consent: b.email_marketing_consent === true,\n  consent_text: clean(b.consent_text).slice(0, 300),\n  source: clean(b.source).slice(0, 60) || 'guide-page',\n  page: clean(b.page).slice(0, 300),\n  utm_source: clean(b.utm_source).slice(0, 60),\n  utm_medium: clean(b.utm_medium).slice(0, 60),\n  utm_campaign: clean(b.utm_campaign).slice(0, 80),\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst b = $('Guide form webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nconst slug = clean(b.slug).toLowerCase()\nif (!cfg.guides[slug]) errors.push('unknown_guide')\nif (clean(b.company)) errors.push('honeypot') // bots fill the hidden field\nconst lead = {\n  email, slug,\n  email_marketing_consent: b.email_marketing_consent === true,\n  consent_text: clean(b.consent_text).slice(0, 300),\n  source: clean(b.source).slice(0, 60) || 'guide-page',\n  page: clean(b.page).slice(0, 300),\n  utm_source: clean(b.utm_source).slice(0, 60),\n  utm_medium: clean(b.utm_medium).slice(0, 60),\n  utm_campaign: clean(b.utm_campaign).slice(0, 80),\n  utm_content: clean(b.utm_content).slice(0, 80),\n  resource: clean(b.resource).slice(0, 10),\n  channel: clean(b.channel).slice(0, 40),\n  dlv: clean(b.dlv).slice(0, 60), // set when they arrived from one of our emails\n  first_touch: clean(b.first_touch).slice(0, 600),\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
       }
     },
     {
-      "id": "6ae00989-f41f-4f48-88f3-f038224ca499",
+      "id": "1b591ff7-4552-4371-9bb0-c14d1c928059",
       "position": [
         780,
         200
@@ -67,7 +67,7 @@
           },
           "conditions": [
             {
-              "id": "2508a9da-f4ed-4292-bb22-7e88be51f9da",
+              "id": "5f390de0-591f-476c-a460-7944a2392d8d",
               "leftValue": "={{ $json.ok }}",
               "rightValue": true,
               "operator": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "2225fe48-949b-421f-ba9f-357a2e01d2e6",
+      "id": "3c712077-b387-489b-91a1-89f57b2cc243",
       "position": [
         1040,
         400
@@ -96,7 +96,7 @@
       }
     },
     {
-      "id": "7ba1c9b0-505d-429f-9c79-e5aaab79a7e8",
+      "id": "84a56bcc-a833-4b31-82af-e4e6918ed6be",
       "position": [
         1300,
         400
@@ -138,7 +138,7 @@
       }
     },
     {
-      "id": "993c1c69-0bc2-4e9e-9188-fca22ffb1ccb",
+      "id": "dbb97621-a2cf-492a-aea9-031cc79a9251",
       "position": [
         1560,
         400
@@ -163,7 +163,7 @@
       }
     },
     {
-      "id": "0866d445-dac9-4c47-9ebf-79ce7b86795f",
+      "id": "98a115c9-78de-4f34-abf4-f14e5944ccea",
       "position": [
         1040,
         200
@@ -203,7 +203,7 @@
       }
     },
     {
-      "id": "b04e22be-c402-4941-a16e-61ae21b2e2af",
+      "id": "265f798e-5d14-4d3e-a843-3ebc6adb37a2",
       "position": [
         1300,
         200
@@ -213,11 +213,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Validate & normalize').first().json.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\nconst guides = ex && ex.guides ? String(ex.guides).split(',').map(s => s.trim()).filter(Boolean) : []\n// Duplicate guard: same guide requested again within the window gets no second email.\nconst last = ex && ex.last_request_at ? new Date(ex.last_request_at) : null\nconst recentSame = !!(ex && ex.last_guide === L.slug && last && !isNaN(last) && (now - last) < cfg.resendWindowMinutes * 60000)\n// Consent only grows here. An unticked box never erases earlier consent; opt-outs come from SendGrid.\nconst consent = L.email_marketing_consent || !!(ex && T(ex.email_marketing_consent))\nconst row = {\n  email: L.email,\n  lead_id: ex && ex.lead_id ? ex.lead_id : 'gl_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),\n  first_seen_at: ex && ex.first_seen_at ? ex.first_seen_at : iso,\n  last_request_at: iso,\n  last_guide: L.slug,\n  guides: Array.from(new Set(guides.concat(L.slug))).join(', '),\n  request_count: (Number(ex && ex.request_count) || 0) + 1,\n  email_marketing_consent: consent ? 'TRUE' : 'FALSE',\n  source: L.source, last_page: L.page,\n  utm_source: L.utm_source, utm_medium: L.utm_medium, utm_campaign: L.utm_campaign,\n  updated_at: iso,\n}\nif (L.email_marketing_consent) {\n  row.email_consent_at = iso\n  row.email_consent_source = 'BOXX guide page: ' + L.slug\n  row.consent_text = L.consent_text\n}\nreturn [{ json: { row, lead: Object.assign({}, L, { lead_id: row.lead_id }), send: !recentSame, reason: recentSame ? 'duplicate_within_window' : 'send_pdf' } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Validate & normalize').first().json.lead\nconst rows = $input.all().map(i => i.json).filter(r => r && r.email)\nconst ex = rows.find(r => String(r.email).toLowerCase().trim() === L.email)\nconst T = x => String(x == null ? '' : x).toUpperCase() === 'TRUE'\nconst now = new Date(), iso = now.toISOString()\nconst guides = ex && ex.guides ? String(ex.guides).split(',').map(s => s.trim()).filter(Boolean) : []\n// Duplicate guard: same guide requested again within the window gets no second email.\nconst last = ex && ex.last_request_at ? new Date(ex.last_request_at) : null\nconst recentSame = !!(ex && ex.last_guide === L.slug && last && !isNaN(last) && (now - last) < cfg.resendWindowMinutes * 60000)\n// Consent only grows here. An unticked box never erases earlier consent; opt-outs come from SendGrid.\nconst consent = L.email_marketing_consent || !!(ex && T(ex.email_marketing_consent))\nconst row = {\n  email: L.email,\n  lead_id: ex && ex.lead_id ? ex.lead_id : 'gl_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),\n  first_seen_at: ex && ex.first_seen_at ? ex.first_seen_at : iso,\n  last_request_at: iso,\n  last_guide: L.slug,\n  guides: Array.from(new Set(guides.concat(L.slug))).join(', '),\n  request_count: (Number(ex && ex.request_count) || 0) + 1,\n  email_marketing_consent: consent ? 'TRUE' : 'FALSE',\n  source: L.source, last_page: L.page,\n  utm_source: L.utm_source, utm_medium: L.utm_medium, utm_campaign: L.utm_campaign, utm_content: L.utm_content,\n  resource: L.resource || cfg.guides[L.slug].number, channel: L.channel, arrived_from_dlv: L.dlv,\n  updated_at: iso,\n}\nif (!ex) row.first_touch = L.first_touch\nif (L.email_marketing_consent) {\n  row.email_consent_at = iso\n  row.email_consent_source = 'BOXX guide page: ' + L.slug\n  row.consent_text = L.consent_text\n}\nreturn [{ json: { row, lead: Object.assign({}, L, { lead_id: row.lead_id }), send: !recentSame, reason: recentSame ? 'duplicate_within_window' : 'send_pdf' } }]"
       }
     },
     {
-      "id": "6db86c1c-210b-4765-9644-17fd608ff9f9",
+      "id": "d9bf86d4-cc07-4e43-ab79-243c0aba2453",
       "position": [
         1560,
         200
@@ -231,7 +231,7 @@
       }
     },
     {
-      "id": "b0fa2b45-ddc7-4b0a-8a8d-c2413e60d016",
+      "id": "025e4b1b-89aa-49ba-ac90-7b309d93dd3c",
       "position": [
         1820,
         200
@@ -275,7 +275,7 @@
       }
     },
     {
-      "id": "4103dca9-8c40-47e3-b64f-437a69158b20",
+      "id": "65c816e2-5ccd-4a00-9b7d-9e94a809bd87",
       "position": [
         2080,
         200
@@ -300,7 +300,7 @@
       }
     },
     {
-      "id": "4a4ee47d-b6f4-4d3e-bcd0-80c405292c39",
+      "id": "50a4bf41-d922-488a-85c3-571a28a79e1e",
       "position": [
         2340,
         200
@@ -318,7 +318,7 @@
           },
           "conditions": [
             {
-              "id": "d6f52c03-9d1e-46c8-87a4-e858238b8c48",
+              "id": "5069b88c-77c6-46d8-b9f9-aeb3d2d7eb56",
               "leftValue": "={{ $('Decide').first().json.send }}",
               "rightValue": true,
               "operator": {
@@ -333,7 +333,7 @@
       }
     },
     {
-      "id": "61efd14a-ab66-4fe0-9697-248f5dfc306b",
+      "id": "3a083d76-c678-4cd3-bf2e-cb1b06b9db8e",
       "position": [
         2600,
         200
@@ -343,11 +343,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nconst g = cfg.guides[L.slug]\nconst esc = v => String(v).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]))\nconst pdfUrl = cfg.siteUrl + g.pdfPath\nconst auditUrl = cfg.siteUrl + '/audit?utm_source=sendgrid&utm_medium=email&utm_campaign=' + L.slug\nconst coverUrl = g.cover ? cfg.siteUrl + g.cover : ''\nconst subject = \"Here's \" + g.title\nconst unsub = '<%asm_group_unsubscribe_raw_url%>'\nconst text = [\n  'BOXX AUTOMATIONS / FREE GUIDE',\n  g.title + '.',\n  \"Thanks for grabbing the guide. Here's the PDF you asked for.\",\n  '',\n  'Download the PDF: ' + pdfUrl,\n  '',\n  \"Don't want to build it yourself?\",\n  \"I'll set it up for your business. Start with a free audit and I'll show you where your leads are slipping through.\",\n  'Get Your Free Audit: ' + auditUrl,\n  '',\n  \"If you get stuck on anything, just reply here. It comes straight to me.\",\n  'Kaleel',\n  '',\n  'BOXX Automations · ' + cfg.mailingAddress,\n  \"You're getting this because you asked for this guide on boxxautomations.space.\",\n  \"You'll also get a weekly email from BOXX if you ticked the box. Unsubscribe: \" + unsub,\n].join('\\n')\nconst btn = (href, label, bg, border) => '<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"border-radius:10px;background:' + bg + ';border:1px solid ' + border + '\"><a href=\"' + esc(href) + '\" style=\"display:inline-block;padding:16px 26px;font:700 16px/1 Inter,Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;border-radius:10px\">' + label + '</a></td></tr></table>'\nconst html = '<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"color-scheme\" content=\"dark light\"><title>' + esc(subject) + '</title></head>'\n + '<body style=\"margin:0;padding:0;background:#10071b\">'\n + '<div style=\"display:none;max-height:0;overflow:hidden\">' + esc(g.promise) + '</div>'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background:#10071b\"><tr><td align=\"center\" style=\"padding:32px 16px\">'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width:580px;font-family:Inter,Arial,Helvetica,sans-serif;color:#ffffff\">'\n + '<tr><td style=\"font:700 11px/1.4 Menlo,Consolas,monospace;letter-spacing:2px;color:#d3a0ff;padding:0 0 14px\">BOXX AUTOMATIONS / FREE GUIDE</td></tr>'\n + '<tr><td style=\"font:800 32px/1.1 Inter,Arial,Helvetica,sans-serif;letter-spacing:-0.5px;padding:0 0 12px\">' + esc(g.title) + '<span style=\"color:#9c16f4\">.</span></td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 24px\">Thanks for grabbing the guide. Here&#39;s the PDF you asked for.</td></tr>'\n + '<tr><td style=\"background:#1b102b;border:1px solid #493058;border-radius:16px;padding:20px\">'\n +   '<div style=\"font:700 10px/1.4 Menlo,Consolas,monospace;letter-spacing:1.5px;color:#d3a0ff;padding:0 0 10px\">FREE GUIDE · ' + g.prompts + ' PROMPTS · BUILT WITH ' + esc(g.builtWith) + '</div>'\n +   '<div style=\"font:700 20px/1.3 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">' + esc(g.title) + '</div>'\n +   '<div style=\"font:400 15px/1.55 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 ' + (coverUrl ? '16px' : '0') + '\">' + esc(g.promise) + '</div>'\n +   (coverUrl ? '<a href=\"' + esc(pdfUrl) + '\"><img src=\"' + esc(coverUrl) + '\" width=\"180\" alt=\"' + esc(g.title) + '\" style=\"display:block;width:180px;max-width:100%;border-radius:10px;border:0\"></a>' : '')\n + '</td></tr>'\n + '<tr><td style=\"padding:20px 0 8px\">' + btn(pdfUrl, 'Download the PDF &#8599;', '#382344', '#78518e') + '</td></tr>'\n + '<tr><td style=\"font:400 13px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:0 0 28px\">Button not working? Copy this link:<br><a href=\"' + esc(pdfUrl) + '\" style=\"color:#d3a0ff;word-break:break-all\">' + esc(pdfUrl) + '</a></td></tr>'\n + '<tr><td style=\"background:#370857;border-radius:16px;padding:24px\">'\n +   '<div style=\"font:800 20px/1.25 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">Don&#39;t want to build it yourself?</div>'\n +   '<div style=\"font:400 15px/1.6 Inter,Arial,Helvetica,sans-serif;color:#d6c6e8;padding:0 0 18px\">I&#39;ll set it up for your business. Start with a free audit and I&#39;ll show you where your leads are slipping through.</div>'\n +   btn(auditUrl, 'Get Your Free Audit &#8599;', '#9c16f4', '#9c16f4')\n + '</td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#ffffff;padding:28px 0 0\">If you get stuck on anything, just reply here. It comes straight to me.<br>Kaleel</td></tr>'\n + '<tr><td style=\"font:400 12px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:32px 0 0;border-top:1px solid #2c1a3c\">'\n +   'BOXX Automations · ' + esc(cfg.mailingAddress) + '<br>You&#39;re getting this because you asked for this guide on boxxautomations.space.<br>'\n +   'You&#39;ll also get a weekly email from BOXX if you ticked the box. <a href=\"' + unsub + '\" style=\"color:#d3a0ff\">Unsubscribe</a>'\n + '</td></tr></table></td></tr></table></body></html>'\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  content: [{ type: 'text/plain', value: text }, { type: 'text/html', value: html }],\n  asm: { group_id: cfg.asmGroupId, groups_to_display: [cfg.asmGroupId] },\n  tracking_settings: { click_tracking: { enable: true, enable_text: false } },\n  categories: ['boxx-guide', L.slug],\n  custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug } } }]"
+        "jsCode": "const cfg = $('Config').first().json\nconst L = $('Decide').first().json.lead\nconst g = cfg.guides[L.slug]\nconst esc = v => String(v).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]))\n// Angus-style tags: guide number, which link, and a unique ID for this send (dlv).\nconst dlv = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)\nconst tags = (channel, content) => 'resource=' + g.number + '&channel=' + channel + '&utm_source=guide-delivery&utm_medium=email&utm_campaign=' + L.slug + '&utm_content=' + content + '&dlv=' + dlv\nconst pdfUrl = cfg.siteUrl + g.pdfPath + '?' + tags('email', 'pdf-button')\nconst auditUrl = cfg.siteUrl + '/audit?' + tags('email-cta', 'audit-button')\nconst coverUrl = g.cover ? cfg.siteUrl + g.cover : ''\nconst subject = \"Here's \" + g.title\nconst unsub = '<%asm_group_unsubscribe_raw_url%>'\nconst text = [\n  'BOXX AUTOMATIONS / FREE GUIDE',\n  g.title + '.',\n  \"Thanks for grabbing the guide. Here's the PDF you asked for.\",\n  '',\n  'Download the PDF: ' + pdfUrl,\n  '',\n  \"Don't want to build it yourself?\",\n  \"I'll set it up for your business. Start with a free audit and I'll show you where your leads are slipping through.\",\n  'Get Your Free Audit: ' + auditUrl,\n  '',\n  \"If you get stuck on anything, just reply here. It comes straight to me.\",\n  'Kaleel',\n  '',\n  'BOXX Automations · ' + cfg.mailingAddress,\n  \"You're getting this because you asked for this guide on boxxautomations.space.\",\n  \"You'll also get a weekly email from BOXX. Unsubscribe: \" + unsub,\n].join('\\n')\nconst btn = (href, label, bg, border) => '<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"border-radius:10px;background:' + bg + ';border:1px solid ' + border + '\"><a href=\"' + esc(href) + '\" style=\"display:inline-block;padding:16px 26px;font:700 16px/1 Inter,Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;border-radius:10px\">' + label + '</a></td></tr></table>'\nconst html = '<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"color-scheme\" content=\"dark light\"><title>' + esc(subject) + '</title></head>'\n + '<body style=\"margin:0;padding:0;background:#10071b\">'\n + '<div style=\"display:none;max-height:0;overflow:hidden\">' + esc(g.promise) + '</div>'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background:#10071b\"><tr><td align=\"center\" style=\"padding:32px 16px\">'\n + '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width:580px;font-family:Inter,Arial,Helvetica,sans-serif;color:#ffffff\">'\n + '<tr><td style=\"font:700 11px/1.4 Menlo,Consolas,monospace;letter-spacing:2px;color:#d3a0ff;padding:0 0 14px\">BOXX AUTOMATIONS / FREE GUIDE</td></tr>'\n + '<tr><td style=\"font:800 32px/1.1 Inter,Arial,Helvetica,sans-serif;letter-spacing:-0.5px;padding:0 0 12px\">' + esc(g.title) + '<span style=\"color:#9c16f4\">.</span></td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 24px\">Thanks for grabbing the guide. Here&#39;s the PDF you asked for.</td></tr>'\n + '<tr><td style=\"background:#1b102b;border:1px solid #493058;border-radius:16px;padding:20px\">'\n +   '<div style=\"font:700 10px/1.4 Menlo,Consolas,monospace;letter-spacing:1.5px;color:#d3a0ff;padding:0 0 10px\">FREE GUIDE · ' + g.prompts + ' PROMPTS · BUILT WITH ' + esc(g.builtWith) + '</div>'\n +   '<div style=\"font:700 20px/1.3 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">' + esc(g.title) + '</div>'\n +   '<div style=\"font:400 15px/1.55 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 ' + (coverUrl ? '16px' : '0') + '\">' + esc(g.promise) + '</div>'\n +   (coverUrl ? '<a href=\"' + esc(pdfUrl) + '\"><img src=\"' + esc(coverUrl) + '\" width=\"180\" alt=\"' + esc(g.title) + '\" style=\"display:block;width:180px;max-width:100%;border-radius:10px;border:0\"></a>' : '')\n + '</td></tr>'\n + '<tr><td style=\"padding:20px 0 8px\">' + btn(pdfUrl, 'Download the PDF &#8599;', '#382344', '#78518e') + '</td></tr>'\n + '<tr><td style=\"font:400 13px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:0 0 28px\">Button not working? Copy this link:<br><a href=\"' + esc(pdfUrl) + '\" style=\"color:#d3a0ff;word-break:break-all\">' + esc(pdfUrl) + '</a></td></tr>'\n + '<tr><td style=\"background:#370857;border-radius:16px;padding:24px\">'\n +   '<div style=\"font:800 20px/1.25 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px\">Don&#39;t want to build it yourself?</div>'\n +   '<div style=\"font:400 15px/1.6 Inter,Arial,Helvetica,sans-serif;color:#d6c6e8;padding:0 0 18px\">I&#39;ll set it up for your business. Start with a free audit and I&#39;ll show you where your leads are slipping through.</div>'\n +   btn(auditUrl, 'Get Your Free Audit &#8599;', '#9c16f4', '#9c16f4')\n + '</td></tr>'\n + '<tr><td style=\"font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#ffffff;padding:28px 0 0\">If you get stuck on anything, just reply here. It comes straight to me.<br>Kaleel</td></tr>'\n + '<tr><td style=\"font:400 12px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:32px 0 0;border-top:1px solid #2c1a3c\">'\n +   'BOXX Automations · ' + esc(cfg.mailingAddress) + '<br>You&#39;re getting this because you asked for this guide on boxxautomations.space.<br>'\n +   'You&#39;ll also get a weekly email from BOXX. <a href=\"' + unsub + '\" style=\"color:#d3a0ff\">Unsubscribe</a>'\n + '</td></tr></table></td></tr></table></body></html>'\nreturn [{ json: { sgBody: {\n  personalizations: [{ to: [{ email: L.email }], subject }],\n  from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },\n  content: [{ type: 'text/plain', value: text }, { type: 'text/html', value: html }],\n  asm: { group_id: cfg.asmGroupId, groups_to_display: [cfg.asmGroupId] },\n  tracking_settings: { click_tracking: { enable: true, enable_text: false } },\n  categories: ['boxx-guide', L.slug],\n  custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug, resource: g.number, dlv },\n}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug, resource: g.number, dlv } } }]"
       }
     },
     {
-      "id": "f2e1f0d7-51a2-4569-b67f-78ef16b627f5",
+      "id": "cd9d04b7-58a0-45d5-a6d7-845bc6ee6448",
       "position": [
         2860,
         200
@@ -383,7 +383,7 @@
       }
     },
     {
-      "id": "b2b7671c-9992-4fe8-a853-02422361e1c0",
+      "id": "59a2559f-d912-42b4-b2c1-d8fea51b77b3",
       "position": [
         3120,
         0
@@ -393,11 +393,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const res = $input.item.json\nconst src = $('Build PDF email').item.json\nreturn { json: { event_id: 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  lead_id: src.meta.lead_id, email: src.meta.email, email_type: src.meta.email_type, template_id: '',\n  sent_at: new Date().toISOString(), message_id: (res.headers || {})['x-message-id'] || '', status: 'sent' } }"
+        "jsCode": "const res = $input.item.json\nconst src = $('Build PDF email').item.json\nreturn { json: { event_id: 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),\n  lead_id: src.meta.lead_id, email: src.meta.email, email_type: src.meta.email_type, template_id: '',\n  sent_at: new Date().toISOString(), message_id: (res.headers || {})['x-message-id'] || '', status: 'sent',\n  resource: src.meta.resource, dlv: src.meta.dlv } }"
       }
     },
     {
-      "id": "49aa8db5-de02-4420-9a45-da3a1fa953ad",
+      "id": "065adcde-94be-467b-8366-9928b3c5f342",
       "position": [
         3380,
         0
@@ -439,7 +439,7 @@
       }
     },
     {
-      "id": "f4a6b471-b4c4-4936-9354-d39f683eb5cb",
+      "id": "19722507-6e8d-4c8d-adc9-01fd0e0a0db7",
       "position": [
         3120,
         400
@@ -453,7 +453,7 @@
       }
     },
     {
-      "id": "ef4feb13-5281-48e3-b203-fd372898dbe4",
+      "id": "cdb50939-cd22-43e8-b7bd-c0406a1d0472",
       "position": [
         3380,
         400
@@ -495,7 +495,7 @@
       }
     },
     {
-      "id": "cf985c3e-5afb-4cac-8059-94bdae7e0700",
+      "id": "46bb6266-c3ef-40bd-9fac-31145e4943ef",
       "position": [
         0,
         0
@@ -506,7 +506,7 @@
       "parameters": {
         "width": 460,
         "height": 300,
-        "content": "## BOXX - Guide Delivery\nWebhook `POST /webhook/boxx-guide` receives the soft-gated PDF form on `/guides/[slug]`.\n\n**Before activating**\n1. Create a tab **Guide Leads** in the BOXX CRM sheet with headers:\n`email, lead_id, first_seen_at, last_request_at, last_guide, guides, request_count, email_marketing_consent, email_consent_at, email_consent_source, consent_text, source, last_page, utm_source, utm_medium, utm_campaign, updated_at`\n2. Select the existing **Google Sheets** and **SendGrid** credentials on the Sheets/SendGrid nodes.\n3. Activate, then submit the form on the live page with your own email.\n\nGuide leads stay out of the **Leads** tab so a later audit request still gets Email 1. The PDF email uses unsubscribe group 42909, so anyone who unsubscribed from BOXX emails will not get it.\n\nNew guide: add `content/guides/<slug>.json` in the site repo, run `node n8n/build-guide-workflow.js`, paste the new Config node."
+        "content": "## BOXX - Guide Delivery\nWebhook `POST /webhook/boxx-guide` receives the soft-gated PDF form on `/guides/[slug]`.\n\n**Before activating**\n1. Create a tab **Guide Leads** in the BOXX CRM sheet with headers:\n`email, lead_id, first_seen_at, last_request_at, last_guide, guides, request_count, email_marketing_consent, email_consent_at, email_consent_source, consent_text, source, last_page, resource, channel, utm_source, utm_medium, utm_campaign, utm_content, arrived_from_dlv, first_touch, updated_at`\n   Add `resource, dlv` at the end of the **Email Events** header row.\n2. Select the existing **Google Sheets** and **SendGrid** credentials on the Sheets/SendGrid nodes.\n3. Activate, then submit the form on the live page with your own email.\n\nGuide leads stay out of the **Leads** tab so a later audit request still gets Email 1. The PDF email uses unsubscribe group 42909, so anyone who unsubscribed from BOXX emails will not get it.\n\nNew guide: add `content/guides/<slug>.json` in the site repo, run `node n8n/build-guide-workflow.js`, paste the new Config node."
       }
     }
   ],

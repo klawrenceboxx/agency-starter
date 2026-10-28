@@ -19,6 +19,7 @@ const guides = {}
 for (const f of fs.readdirSync(guideDir).filter((f) => f.endsWith('.json'))) {
   const g = JSON.parse(fs.readFileSync(path.join(guideDir, f), 'utf8'))
   guides[g.slug] = {
+    number: g.guide_number,
     title: g.title,
     promise: g.promise,
     prompts: g.steps.length,
@@ -105,6 +106,11 @@ const lead = {
   utm_source: clean(b.utm_source).slice(0, 60),
   utm_medium: clean(b.utm_medium).slice(0, 60),
   utm_campaign: clean(b.utm_campaign).slice(0, 80),
+  utm_content: clean(b.utm_content).slice(0, 80),
+  resource: clean(b.resource).slice(0, 10),
+  channel: clean(b.channel).slice(0, 40),
+  dlv: clean(b.dlv).slice(0, 60), // set when they arrived from one of our emails
+  first_touch: clean(b.first_touch).slice(0, 600),
 }
 return [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]`), 2, 1)
 
@@ -141,9 +147,11 @@ const row = {
   request_count: (Number(ex && ex.request_count) || 0) + 1,
   email_marketing_consent: consent ? 'TRUE' : 'FALSE',
   source: L.source, last_page: L.page,
-  utm_source: L.utm_source, utm_medium: L.utm_medium, utm_campaign: L.utm_campaign,
+  utm_source: L.utm_source, utm_medium: L.utm_medium, utm_campaign: L.utm_campaign, utm_content: L.utm_content,
+  resource: L.resource || cfg.guides[L.slug].number, channel: L.channel, arrived_from_dlv: L.dlv,
   updated_at: iso,
 }
+if (!ex) row.first_touch = L.first_touch
 if (L.email_marketing_consent) {
   row.email_consent_at = iso
   row.email_consent_source = 'BOXX guide page: ' + L.slug
@@ -160,8 +168,11 @@ A(code('Build PDF email', String.raw`const cfg = $('Config').first().json
 const L = $('Decide').first().json.lead
 const g = cfg.guides[L.slug]
 const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
-const pdfUrl = cfg.siteUrl + g.pdfPath
-const auditUrl = cfg.siteUrl + '/audit?utm_source=sendgrid&utm_medium=email&utm_campaign=' + L.slug
+// Angus-style tags: guide number, which link, and a unique ID for this send (dlv).
+const dlv = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)
+const tags = (channel, content) => 'resource=' + g.number + '&channel=' + channel + '&utm_source=guide-delivery&utm_medium=email&utm_campaign=' + L.slug + '&utm_content=' + content + '&dlv=' + dlv
+const pdfUrl = cfg.siteUrl + g.pdfPath + '?' + tags('email', 'pdf-button')
+const auditUrl = cfg.siteUrl + '/audit?' + tags('email-cta', 'audit-button')
 const coverUrl = g.cover ? cfg.siteUrl + g.cover : ''
 const subject = "Here's " + g.title
 const unsub = '<%asm_group_unsubscribe_raw_url%>'
@@ -181,7 +192,7 @@ const text = [
   '',
   'BOXX Automations · ' + cfg.mailingAddress,
   "You're getting this because you asked for this guide on boxxautomations.space.",
-  "You'll also get a weekly email from BOXX if you ticked the box. Unsubscribe: " + unsub,
+  "You'll also get a weekly email from BOXX. Unsubscribe: " + unsub,
 ].join('\n')
 const btn = (href, label, bg, border) => '<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-radius:10px;background:' + bg + ';border:1px solid ' + border + '"><a href="' + esc(href) + '" style="display:inline-block;padding:16px 26px;font:700 16px/1 Inter,Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;border-radius:10px">' + label + '</a></td></tr></table>'
 const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>' + esc(subject) + '</title></head>'
@@ -208,7 +219,7 @@ const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
  + '<tr><td style="font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#ffffff;padding:28px 0 0">If you get stuck on anything, just reply here. It comes straight to me.<br>Kaleel</td></tr>'
  + '<tr><td style="font:400 12px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:32px 0 0;border-top:1px solid #2c1a3c">'
  +   'BOXX Automations · ' + esc(cfg.mailingAddress) + '<br>You&#39;re getting this because you asked for this guide on boxxautomations.space.<br>'
- +   'You&#39;ll also get a weekly email from BOXX if you ticked the box. <a href="' + unsub + '" style="color:#d3a0ff">Unsubscribe</a>'
+ +   'You&#39;ll also get a weekly email from BOXX. <a href="' + unsub + '" style="color:#d3a0ff">Unsubscribe</a>'
  + '</td></tr></table></td></tr></table></body></html>'
 return [{ json: { sgBody: {
   personalizations: [{ to: [{ email: L.email }], subject }],
@@ -217,8 +228,8 @@ return [{ json: { sgBody: {
   asm: { group_id: cfg.asmGroupId, groups_to_display: [cfg.asmGroupId] },
   tracking_settings: { click_tracking: { enable: true, enable_text: false } },
   categories: ['boxx-guide', L.slug],
-  custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug },
-}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug } } }]`), 10, 1)
+  custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug, resource: g.number, dlv },
+}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug, resource: g.number, dlv } } }]`), 10, 1)
 
 A({ name: 'Send PDF email (SendGrid)', type: 'n8n-nodes-base.httpRequest', typeVersion: 4.2, credentials: CRED_SG,
   retryOnFail: true, maxTries: 3, waitBetweenTries: 2000, onError: 'continueErrorOutput',
@@ -229,7 +240,8 @@ A(code('Row: email event', String.raw`const res = $input.item.json
 const src = $('Build PDF email').item.json
 return { json: { event_id: 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
   lead_id: src.meta.lead_id, email: src.meta.email, email_type: src.meta.email_type, template_id: '',
-  sent_at: new Date().toISOString(), message_id: (res.headers || {})['x-message-id'] || '', status: 'sent' } }`, 'runOnceForEachItem'), 12, 0)
+  sent_at: new Date().toISOString(), message_id: (res.headers || {})['x-message-id'] || '', status: 'sent',
+  resource: src.meta.resource, dlv: src.meta.dlv } }`, 'runOnceForEachItem'), 12, 0)
 A(sheetsWrite('Log email event', 'Email Events', 'append'), 13, 0)
 A(code('Row: email error', String.raw`const res = $input.item.json
 const src = $('Build PDF email').item.json
@@ -243,7 +255,8 @@ Webhook \`POST /webhook/boxx-guide\` receives the soft-gated PDF form on \`/guid
 
 **Before activating**
 1. Create a tab **Guide Leads** in the BOXX CRM sheet with headers:
-\`email, lead_id, first_seen_at, last_request_at, last_guide, guides, request_count, email_marketing_consent, email_consent_at, email_consent_source, consent_text, source, last_page, utm_source, utm_medium, utm_campaign, updated_at\`
+\`email, lead_id, first_seen_at, last_request_at, last_guide, guides, request_count, email_marketing_consent, email_consent_at, email_consent_source, consent_text, source, last_page, resource, channel, utm_source, utm_medium, utm_campaign, utm_content, arrived_from_dlv, first_touch, updated_at\`
+   Add \`resource, dlv\` at the end of the **Email Events** header row.
 2. Select the existing **Google Sheets** and **SendGrid** credentials on the Sheets/SendGrid nodes.
 3. Activate, then submit the form on the live page with your own email.
 

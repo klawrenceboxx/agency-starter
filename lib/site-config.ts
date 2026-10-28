@@ -19,6 +19,10 @@ export const PHASES: [string, string, string][] = [
   ['Phase 10', 'Measurement & optimization', "Analytics plan: what gets tracked after launch and how it's improved."],
 ]
 
+// n8n workflow "BOXX - Guide Delivery" (n8n/workflows/5-boxx-guide-delivery.json).
+export const GUIDE_WEBHOOK_URL =
+  process.env.NEXT_PUBLIC_GUIDE_WEBHOOK_URL || 'https://n8n.boxxautomations.space/webhook/boxx-guide'
+
 export const CALENDLY_URL = 'https://calendly.com/kaleellawrenceboxx/discovery-call'
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/klawrenceboxx'
 

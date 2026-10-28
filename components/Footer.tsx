@@ -12,6 +12,7 @@ export default function Footer() {
           {NAV_LINKS.map(({ href, label }) => (
             <Link key={href} href={href}>{label}</Link>
           ))}
+          <Link href="/guides">Free Guides</Link>
           <Link href="/blog">Blog</Link>
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms of Service</Link>

@@ -7,6 +7,7 @@ export type GuideTool = {
   name: string
   role: string
   used_in_video: boolean
+  required?: boolean // default true
   alternatives: string[]
   link: string
 }

@@ -212,7 +212,40 @@
   text-transform: uppercase;
   color: #fff;
 }
-.alt { font-size: 13px; color: var(--g-muted); }
+.pillMuted {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--g-line);
+  font: 600 11px/1 var(--g-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--g-muted);
+}
+.options { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--g-muted); }
+.option { padding: 4px 10px; border-radius: 10px; background: var(--g-bg); border: 1px solid var(--g-line); color: #fff; }
+.promptWrap { position: relative; }
+.promptCollapsed .prompt { max-height: 230px; overflow: hidden; }
+.promptCollapsed::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 90px;
+  background: linear-gradient(transparent, var(--g-bg));
+  pointer-events: none;
+}
+.expandBtn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-top: 1px solid var(--g-line);
+  background: var(--g-card-2);
+  color: var(--g-lav);
+  font: 600 14px/1 var(--font);
+  cursor: pointer;
+}
+.expandBtn:hover { color: #fff; }
 
 /* inputs */
 .markInline,

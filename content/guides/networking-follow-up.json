@@ -4,10 +4,10 @@
   "keyword": "CARDS",
   "title": "The Networking Follow-Up System",
   "promise": "Turn a stack of business cards into personal follow-up emails and LinkedIn messages in about 5 minutes.",
-  "video_url": "",
+  "video_url": "https://www.instagram.com/reel/DfCVHqLtnR9/",
   "pdf_url": "/guides/pdf/networking-follow-up.pdf",
   "cover": "/guides/networking-follow-up-cover.jpg",
-  "published": "",
+  "published": "2026-10-28",
   "seo": {
     "meta_title": "Follow Up After Networking Events with Claude | BOXX",
     "meta_description": "Turn business cards into personal follow-up emails and LinkedIn messages with Claude and Gmail. 3 free copy-paste prompts, about 5 minutes.",
@@ -19,6 +19,7 @@
       "name": "Claude (mobile app)",
       "role": "Reads the cards, matches your notes, writes every email and LinkedIn message.",
       "used_in_video": true,
+      "required": true,
       "alternatives": [],
       "link": "https://claude.ai"
     },
@@ -27,6 +28,7 @@
       "name": "Gmail (connected to Claude)",
       "role": "Holds the drafts until you review and send them.",
       "used_in_video": true,
+      "required": true,
       "alternatives": [],
       "link": ""
     },
@@ -35,6 +37,7 @@
       "name": "Your phone's keyboard mic",
       "role": "Lets you talk your notes instead of typing.",
       "used_in_video": true,
+      "required": false,
       "alternatives": ["Typing"],
       "link": ""
     }

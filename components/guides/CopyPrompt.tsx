@@ -6,6 +6,9 @@ import styles from '@/app/guides/guides.module.css'
 // Shows a prompt with its [BRACKETS] highlighted. Copies the raw text, brackets intact.
 export default function CopyPrompt({ text, label }: { text: string; label: string }) {
   const [copied, setCopied] = useState(false)
+  // Long prompts start collapsed (like Angus's "Expand full prompt"). Copy always grabs the full text.
+  const long = text.split('\n').length > 9 || text.length > 520
+  const [open, setOpen] = useState(!long)
 
   async function copy() {
     try {
@@ -33,11 +36,18 @@ export default function CopyPrompt({ text, label }: { text: string; label: strin
           {copied ? 'Copied ✓' : 'Copy prompt'}
         </button>
       </div>
-      <pre className={styles.prompt}>
-        {parts.map((p, i) =>
-          /^\[[^\]]+\]$/.test(p) ? <mark key={i}>{p}</mark> : <span key={i}>{p}</span>
-        )}
-      </pre>
+      <div className={`${styles.promptWrap} ${open ? '' : styles.promptCollapsed}`}>
+        <pre className={styles.prompt}>
+          {parts.map((p, i) =>
+            /^\[[^\]]+\]$/.test(p) ? <mark key={i}>{p}</mark> : <span key={i}>{p}</span>
+          )}
+        </pre>
+      </div>
+      {long && (
+        <button type="button" className={styles.expandBtn} onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+          {open ? 'Collapse prompt' : 'Expand full prompt'}
+        </button>
+      )}
     </div>
   )
 }

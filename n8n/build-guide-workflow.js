@@ -157,7 +157,9 @@ if (L.email_marketing_consent) {
   row.email_consent_source = 'BOXX guide page: ' + L.slug
   row.consent_text = L.consent_text
 }
-return [{ json: { row, lead: Object.assign({}, L, { lead_id: row.lead_id }), send: !recentSame, reason: recentSame ? 'duplicate_within_window' : 'send_pdf' } }]`), 5, 1)
+return [{ json: { row, lead: Object.assign({}, L, { lead_id: row.lead_id }), send: !recentSame, reason: recentSame ? 'duplicate_within_window' : 'send_pdf',
+  // First request ever (no Guide Leads row yet): also send the one-time welcome email.
+  welcome: !ex } }]`), 5, 1)
 
 A(code('Row only', "return [{ json: $input.first().json.row }]"), 6, 1)
 A(sheetsWrite('Save guide lead (upsert by email)', 'Guide Leads', 'appendOrUpdate', 'email'), 7, 1)
@@ -222,17 +224,63 @@ const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
  +   'BOXX Automations · ' + esc(cfg.mailingAddress) + '<br>You&#39;re getting this because you asked for this guide on boxxautomations.space.<br>'
  +   'You&#39;ll also get a weekly email from BOXX. <a href="' + unsub + '" style="color:#d3a0ff">Unsubscribe</a>'
  + '</td></tr></table></td></tr></table></body></html>'
-return [{ json: { sgBody: {
-  personalizations: [{ to: [{ email: L.email }], subject }],
+const common = {
   from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },
-  content: [{ type: 'text/plain', value: text }, { type: 'text/html', value: html }],
   asm: { group_id: cfg.asmGroupId, groups_to_display: [cfg.asmGroupId] },
   // Our own tags (resource/channel/dlv) do the tracking. SendGrid click tracking would rewrite every
   // link to a sendgrid.net address, which spam filters distrust when link branding isn't set up.
   tracking_settings: { click_tracking: { enable: false, enable_text: false } },
+}
+const items = [{ json: { sgBody: Object.assign({
+  personalizations: [{ to: [{ email: L.email }], subject }],
+  content: [{ type: 'text/plain', value: text }, { type: 'text/html', value: html }],
   categories: ['boxx-guide', L.slug],
   custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug, resource: g.number, dlv },
-}, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug, resource: g.number, dlv } } }]`), 10, 1)
+}, common), meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug, resource: g.number, dlv } } }]
+
+// ---- F1: one-time welcome email, first request only, scheduled ~5 minutes after the PDF (like Angus's) ----
+if ($('Decide').first().json.welcome) {
+  const wdlv = 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)
+  const wAudit = cfg.siteUrl + '/audit?resource=' + g.number + '&channel=welcome-email&utm_source=guide-welcome&utm_medium=email&utm_campaign=' + L.slug + '&utm_content=audit-link&dlv=' + wdlv
+  const wSubject = "You're in. Here's what to expect."
+  const wText = [
+    "Hey, it's Kaleel. Glad you're here.",
+    '',
+    "I run BOXX Automations in Vaughan. I build simple systems that help small businesses follow up with leads, so fewer people slip away between \"interested\" and \"booked.\"",
+    '',
+    "Once a week I'll send you one of them: a system I built with AI, what worked, what didn't, and the prompts so you can copy it. No code needed.",
+    '',
+    "Rather have me set one up for your business? Start with a free audit: " + wAudit,
+    '',
+    "Reply and tell me what you're working on. I read every reply.",
+    'Kaleel',
+    '',
+    'BOXX Automations · ' + cfg.mailingAddress,
+    "You're getting this because you asked for a guide on boxxautomations.space and said yes to the weekly email.",
+    'Unsubscribe: ' + unsub,
+  ].join('\n')
+  const p = s => '<p style="margin:0 0 16px;font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#ffffff">' + s + '</p>'
+  const wHtml = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(wSubject) + '</title></head>'
+   + '<body style="margin:0;padding:0;background:#10071b">'
+   + '<div style="display:none;max-height:0;overflow:hidden">One system a week, with the prompts. Here is how it works.</div>'
+   + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#10071b"><tr><td align="center" style="padding:32px 16px">'
+   + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px"><tr><td>'
+   + p('Hey, it&#39;s Kaleel. Glad you&#39;re here.')
+   + p('I run BOXX Automations in Vaughan. I build simple systems that help small businesses follow up with leads, so fewer people slip away between &ldquo;interested&rdquo; and &ldquo;booked.&rdquo;')
+   + p('Once a week I&#39;ll send you one of them: a system I built with AI, what worked, what didn&#39;t, and the prompts so you can copy it. No code needed.')
+   + p('Rather have me set one up for your business? <a href="' + esc(wAudit) + '" style="color:#d3a0ff;font-weight:700">Start with a free audit</a>.')
+   + p('Reply and tell me what you&#39;re working on. I read every reply.<br>Kaleel')
+   + '<p style="margin:24px 0 0;padding-top:16px;border-top:1px solid #2c1a3c;font:400 12px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c">BOXX Automations · ' + esc(cfg.mailingAddress) + '<br>You&#39;re getting this because you asked for a guide on boxxautomations.space and said yes to the weekly email. <a href="' + unsub + '" style="color:#d3a0ff">Unsubscribe</a></p>'
+   + '</td></tr></table></td></tr></table></body></html>'
+  items.push({ json: { sgBody: Object.assign({
+    personalizations: [{ to: [{ email: L.email }], subject: wSubject }],
+    content: [{ type: 'text/plain', value: wText }, { type: 'text/html', value: wHtml }],
+    send_at: Math.floor(Date.now() / 1000) + 300, // SendGrid holds it for 5 minutes
+    categories: ['boxx-guide-welcome'],
+    custom_args: { lead_id: L.lead_id, email_type: 'guide-welcome', guide: L.slug, resource: g.number, dlv: wdlv },
+  }, common), meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-welcome', resource: g.number, dlv: wdlv } } })
+}
+return items`), 10, 1)
 
 A({ name: 'Send PDF email (SendGrid)', type: 'n8n-nodes-base.httpRequest', typeVersion: 4.2, credentials: CRED_SG,
   retryOnFail: true, maxTries: 3, waitBetweenTries: 2000, onError: 'continueErrorOutput',

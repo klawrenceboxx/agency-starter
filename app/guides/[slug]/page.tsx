@@ -142,11 +142,20 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
                 </h3>
                 <p className={styles.muted}>{t.role}</p>
                 <div className={styles.tags}>
-                  {t.used_in_video && <span className={styles.pill}>Used in video</span>}
-                  {t.alternatives.length > 0 && (
-                    <span className={styles.alt}>Or: {t.alternatives.join(', ')}</span>
-                  )}
+                  <span className={t.required === false ? styles.pillMuted : styles.pill}>
+                    {t.required === false ? 'Optional' : 'Required'}
+                  </span>
+                  {t.used_in_video && <span className={styles.pillMuted}>Used in video</span>}
                 </div>
+                {t.alternatives.length > 0 && (
+                  <div className={styles.options}>
+                    <span>Options:</span>
+                    <span className={styles.option}>{t.name.replace(/\s*\(.*\)\s*/, '')}</span>
+                    {t.alternatives.map((a) => (
+                      <span key={a} className={styles.option}>{a}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -173,13 +173,15 @@ const dlv = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 
 const tags = (channel, content) => 'resource=' + g.number + '&channel=' + channel + '&utm_source=guide-delivery&utm_medium=email&utm_campaign=' + L.slug + '&utm_content=' + content + '&dlv=' + dlv
 const pdfUrl = cfg.siteUrl + g.pdfPath + '?' + tags('email', 'pdf-button')
 const auditUrl = cfg.siteUrl + '/audit?' + tags('email-cta', 'audit-button')
-const coverUrl = g.cover ? cfg.siteUrl + g.cover : ''
+// Shown as text: short and clean. The href keeps the tags.
+const pdfDisplay = cfg.siteUrl.replace('https://', '') + g.pdfPath
 const subject = "Here's " + g.title
 const unsub = '<%asm_group_unsubscribe_raw_url%>'
 const text = [
   'BOXX AUTOMATIONS / FREE GUIDE',
   g.title + '.',
   "Thanks for grabbing the guide. Here's the PDF you asked for.",
+  "Tip: add " + cfg.fromEmail + " to your contacts so the next one lands in your inbox.",
   '',
   'Download the PDF: ' + pdfUrl,
   '',
@@ -202,15 +204,14 @@ const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
  + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;font-family:Inter,Arial,Helvetica,sans-serif;color:#ffffff">'
  + '<tr><td style="font:700 11px/1.4 Menlo,Consolas,monospace;letter-spacing:2px;color:#d3a0ff;padding:0 0 14px">BOXX AUTOMATIONS / FREE GUIDE</td></tr>'
  + '<tr><td style="font:800 32px/1.1 Inter,Arial,Helvetica,sans-serif;letter-spacing:-0.5px;padding:0 0 12px">' + esc(g.title) + '<span style="color:#9c16f4">.</span></td></tr>'
- + '<tr><td style="font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 24px">Thanks for grabbing the guide. Here&#39;s the PDF you asked for.</td></tr>'
+ + '<tr><td style="font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 24px">Thanks for grabbing the guide. Here&#39;s the PDF you asked for.<br><span style="font-size:13px;color:#8d7f9c">Tip: add ' + esc(cfg.fromEmail) + ' to your contacts so the next one lands in your inbox.</span></td></tr>'
  + '<tr><td style="background:#1b102b;border:1px solid #493058;border-radius:16px;padding:20px">'
  +   '<div style="font:700 10px/1.4 Menlo,Consolas,monospace;letter-spacing:1.5px;color:#d3a0ff;padding:0 0 10px">FREE GUIDE · ' + g.prompts + ' PROMPTS · BUILT WITH ' + esc(g.builtWith) + '</div>'
  +   '<div style="font:700 20px/1.3 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px">' + esc(g.title) + '</div>'
- +   '<div style="font:400 15px/1.55 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 ' + (coverUrl ? '16px' : '0') + '">' + esc(g.promise) + '</div>'
- +   (coverUrl ? '<a href="' + esc(pdfUrl) + '"><img src="' + esc(coverUrl) + '" width="180" alt="' + esc(g.title) + '" style="display:block;width:180px;max-width:100%;border-radius:10px;border:0"></a>' : '')
+ +   '<div style="font:400 15px/1.55 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce">' + esc(g.promise) + '</div>'
  + '</td></tr>'
  + '<tr><td style="padding:20px 0 8px">' + btn(pdfUrl, 'Download the PDF &#8599;', '#382344', '#78518e') + '</td></tr>'
- + '<tr><td style="font:400 13px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:0 0 28px">Button not working? Copy this link:<br><a href="' + esc(pdfUrl) + '" style="color:#d3a0ff;word-break:break-all">' + esc(pdfUrl) + '</a></td></tr>'
+ + '<tr><td style="font:400 13px/1.6 Inter,Arial,Helvetica,sans-serif;color:#8d7f9c;padding:0 0 28px">Button not working? Copy this link:<br><a href="' + esc(pdfUrl) + '" style="color:#d3a0ff;word-break:break-all">' + esc(pdfDisplay) + '</a></td></tr>'
  + '<tr><td style="background:#370857;border-radius:16px;padding:24px">'
  +   '<div style="font:800 20px/1.25 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px">Don&#39;t want to build it yourself?</div>'
  +   '<div style="font:400 15px/1.6 Inter,Arial,Helvetica,sans-serif;color:#d6c6e8;padding:0 0 18px">I&#39;ll set it up for your business. Start with a free audit and I&#39;ll show you where your leads are slipping through.</div>'
@@ -226,7 +227,9 @@ return [{ json: { sgBody: {
   from: { email: cfg.fromEmail, name: cfg.fromName }, reply_to: { email: cfg.replyTo },
   content: [{ type: 'text/plain', value: text }, { type: 'text/html', value: html }],
   asm: { group_id: cfg.asmGroupId, groups_to_display: [cfg.asmGroupId] },
-  tracking_settings: { click_tracking: { enable: true, enable_text: false } },
+  // Our own tags (resource/channel/dlv) do the tracking. SendGrid click tracking would rewrite every
+  // link to a sendgrid.net address, which spam filters distrust when link branding isn't set up.
+  tracking_settings: { click_tracking: { enable: false, enable_text: false } },
   categories: ['boxx-guide', L.slug],
   custom_args: { lead_id: L.lead_id, email_type: 'guide-pdf', guide: L.slug, resource: g.number, dlv },
 }, meta: { lead_id: L.lead_id, email: L.email, email_type: 'guide-pdf:' + L.slug, resource: g.number, dlv } } }]`), 10, 1)

@@ -1,0 +1,73 @@
+{
+  "slug": "networking-follow-up",
+  "guide_number": "002",
+  "keyword": "CARDS",
+  "title": "The Networking Follow-Up System",
+  "promise": "Turn a stack of business cards into personal follow-up emails and LinkedIn messages in about 5 minutes.",
+  "video_url": "",
+  "pdf_url": "/guides/pdf/networking-follow-up.pdf",
+  "cover": "/guides/networking-follow-up-cover.jpg",
+  "published": "",
+  "seo": {
+    "meta_title": "Follow Up After Networking Events with Claude | BOXX",
+    "meta_description": "Turn business cards into personal follow-up emails and LinkedIn messages with Claude and Gmail. 3 free copy-paste prompts, about 5 minutes.",
+    "primary_search_phrase": "follow up after networking event"
+  },
+  "tools": [
+    {
+      "job": "Assistant",
+      "name": "Claude (mobile app)",
+      "role": "Reads the cards, matches your notes, writes every email and LinkedIn message.",
+      "used_in_video": true,
+      "alternatives": [],
+      "link": "https://claude.ai"
+    },
+    {
+      "job": "Email",
+      "name": "Gmail (connected to Claude)",
+      "role": "Holds the drafts until you review and send them.",
+      "used_in_video": true,
+      "alternatives": [],
+      "link": ""
+    },
+    {
+      "job": "Voice notes",
+      "name": "Your phone's keyboard mic",
+      "role": "Lets you talk your notes instead of typing.",
+      "used_in_video": true,
+      "alternatives": ["Typing"],
+      "link": ""
+    }
+  ],
+  "inputs_needed": [
+    "[YOUR NAME] (e.g. Sam Lee)",
+    "[YOUR BUSINESS] (e.g. Lee Bookkeeping)",
+    "[WHAT YOU DO] (e.g. I help small businesses keep clean books)",
+    "[EVENT NAME] (e.g. Vaughan Chamber mixer)",
+    "[YOUR ASK] (e.g. a 15-minute coffee chat)"
+  ],
+  "steps": [
+    {
+      "number": "01",
+      "phase": "Set up",
+      "title": "Tell Claude who you are and connect Gmail",
+      "prompt": "I just got back from a networking event and I want to follow up with everyone I met. We'll do this in 3 prompts:\nPrompt 1: Set up\nPrompt 2: I send photos of the business cards and you read them\nPrompt 3: I tell you about each person and you write the emails and LinkedIn messages\n\nMy details:\n- My name: [YOUR NAME]\n- My business: [YOUR BUSINESS]\n- What I do, in one sentence: [WHAT YOU DO]\n- The event: [EVENT NAME]\n- What I want to ask people for: [YOUR ASK]\n\nIf any of my details above still has square brackets, ask me for the missing ones in one short message. Don't guess.\n\nThen check that you can save emails to my Gmail drafts. If Gmail isn't connected, tell me how to connect it in simple steps, then wait for me.\n\nRules for this whole chat:\n- Never send anything. Only save drafts.\n- Keep your replies short.\n- Only ask me a question if you truly can't continue.\n- End every reply with one bold line that starts with \"NEXT:\" and tells me exactly what to do. When it's time for the next prompt, just say \"Paste Prompt 2\" or \"Paste Prompt 3\" and what to attach. Don't write the prompt for me.",
+      "check": "You'll know it worked when Claude confirms Gmail is connected, repeats your details back, and says \"Paste Prompt 2\"."
+    },
+    {
+      "number": "02",
+      "phase": "Build",
+      "title": "Photograph and read the cards",
+      "prompt": "I've attached photos of my business cards, fronts and backs, in the order I met people.\n\nMake a table: Card #, Name, Company, Email, Phone.\n\nUse whatever email and phone are printed on the card, even generic ones like info@. Don't ask if there's a better email.\n\nIf a name or email is too blurry to read, mark it UNSURE and don't guess. Only ask me about UNSURE names and emails. Don't ask about anything else.",
+      "check": "You'll know it worked when you see a table with one row per card and every name and email is filled in or marked UNSURE."
+    },
+    {
+      "number": "03",
+      "phase": "Test and turn on",
+      "title": "Talk your notes, get your drafts",
+      "prompt": "Below, I'll tell you what I remember about each person, using the mic on my keyboard. My words might be misspelled because of voice typing, so always use the spelling on the card. Don't add anything I didn't say.\n\nThen do all of this:\n1. For each person, write a short email, under 100 words, in plain words. Mention the event and only what I told you about them. End with my ask from Prompt 1. If we already agreed on a next step, confirm it instead of asking again. Sign it with my name and business. Save it to my Gmail drafts.\n2. Show me every email right here in the chat, with who it's to.\n3. Write a LinkedIn message for each person, under 60 words, all in one list I can copy.\n4. Tell me who was skipped because they had no email, and which emails are generic inboxes like info@.\n5. Finish with 3 short steps: open Gmail Drafts, check the emails are there, and send each one when I'm ready. Remind me nothing has been sent.\n\nDon't re-open the drafts in Gmail to check them. Just show me what you saved.\n\nMy notes:",
+      "check": "You'll know it worked when every email shows in the chat and the same emails are sitting in your Gmail Drafts."
+    }
+  ],
+  "build_notes": "Started at 5 prompts and cut to 3: the checking steps were extra work Claude can do in one go.\nOne message for notes: paste Prompt 3, tap the keyboard mic and just talk. Voice typing misspells names, so Claude uses the card's spelling.\nCard order isn't critical: I talked about people out of order and Claude still matched them by name.\nRe-reading drafts from Gmail hit rate limits, so Claude shows the emails in the chat instead.\nIf you leave the brackets blank, Claude asks for all of them in one message instead of guessing."
+}

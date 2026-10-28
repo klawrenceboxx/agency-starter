@@ -5,6 +5,15 @@ import Link from 'next/link'
 import BoxxAuditForm from './BoxxAuditForm'
 import { useAuditModal } from './AuditModalContext'
 import { CALENDLY_URL, LINKEDIN_URL } from '@/lib/site-config'
+import { attributionPayload, tagsFromUrl } from '@/lib/attribution'
+
+// Bare /audit is the QR code on printed business cards, so it stays "networking".
+// Any tagged link (email, PDF, guide page) records the real page and tags instead.
+function auditSource(inline) {
+  if (typeof window === 'undefined') return ''
+  const tagged = Object.values(tagsFromUrl()).some(Boolean)
+  return inline && !tagged ? 'networking' : window.location.href
+}
 
 const CONSENT_TEXT = 'Yes, email me my audit follow-ups and occasional tips from BOXX Automations. I can unsubscribe at any time.'
 
@@ -69,7 +78,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
     setLead(submittedLead);
     setSending(true)
     const path = lead.services.length === 2 ? 'both' : lead.services[0]
-    const payload = { ...lead, email_marketing_consent: form.emailConsent === true, sms_marketing_consent: form.smsConsent === true, consent: lead.consent === true, consent_text: lead.consent ? CONSENT_TEXT : '', path, submittedAt: new Date().toISOString(), source: inline ? 'networking' : (typeof window !== 'undefined' ? window.location.href : '') }
+    const payload = { ...lead, email_marketing_consent: form.emailConsent === true, sms_marketing_consent: form.smsConsent === true, consent: lead.consent === true, consent_text: lead.consent ? CONSENT_TEXT : '', path, submittedAt: new Date().toISOString(), source: auditSource(inline), ...attributionPayload() }
     if (!webhookUrl) {
       setSending(false)
       throw new Error("The audit form is temporarily unavailable. Please try again shortly.")

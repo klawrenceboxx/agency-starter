@@ -1,7 +1,11 @@
 import AuditTrigger from '@/components/audit/AuditTrigger'
 import { PHASES } from '@/lib/site-config'
 
-export const metadata = { title: 'How It Works', alternates: { canonical: '/how-it-works' } }
+export const metadata = {
+  title: 'How It Works',
+  description: 'See the 11-phase conversion framework Boxx Automations uses to plan, build and measure websites and automated email follow-up, with the real deliverable from each step.',
+  alternates: { canonical: '/how-it-works' },
+}
 
 export default function HowItWorksPage() {
   return (

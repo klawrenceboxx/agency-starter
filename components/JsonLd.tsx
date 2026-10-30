@@ -1,5 +1,5 @@
 type Props = {
-  type: 'Organization' | 'WebSite' | 'Service' | 'Article' | 'FAQPage'
+  type: 'Organization' | 'ProfessionalService' | 'WebSite' | 'Service' | 'Article' | 'FAQPage'
   data: Record<string, unknown>
 }
 

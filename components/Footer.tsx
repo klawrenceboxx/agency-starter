@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { NAV_LINKS } from '@/lib/site-config'
+import { CHAMBER_LISTING_URL, GOOGLE_PROFILE_URL, NAV_LINKS } from '@/lib/site-config'
 import { FOOTER_BLOG_LINKS, FOOTER_SERVICE_LINKS } from '@/lib/internal-links'
 
 export default function Footer() {
@@ -17,6 +17,8 @@ export default function Footer() {
           <Link href="/blog">Blog</Link>
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms of Service</Link>
+          <a href={CHAMBER_LISTING_URL} target="_blank" rel="noopener noreferrer">Vaughan Chamber of Commerce member</a>
+          <a href={GOOGLE_PROFILE_URL} target="_blank" rel="noopener noreferrer">Google Business Profile</a>
         </nav>
       </div>
       <div className="wrap footer-more">

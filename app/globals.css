@@ -2515,3 +2515,117 @@ main:has(.networking-audit) { min-height: 100vh; background: #15091f; }
   font-weight: 700;
   color: var(--link);
 }
+
+/* MISSED-LEAD CALCULATOR */
+.calc {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 0 24px;
+}
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+@media (max-width: 640px) {
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.calc-field label,
+.calc-email > label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.calc-field input,
+.calc-row input[type='email'] {
+  width: 100%;
+  box-sizing: border-box;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  font: 500 16px/1 var(--font);
+}
+.calc-field input:focus,
+.calc-row input:focus {
+  outline: 2px solid var(--p);
+  outline-offset: 1px;
+}
+.calc-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted, #6b7280);
+}
+.calc-result {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.calc-big {
+  margin: 0;
+  font-size: clamp(36px, 8vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--p);
+}
+.calc-big span {
+  font-size: 0.4em;
+  font-weight: 600;
+  color: inherit;
+}
+.calc-sub {
+  margin: 8px 0 0;
+}
+.calc-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--muted, #6b7280);
+}
+.calc-next {
+  margin-top: 24px;
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.calc-next p {
+  margin: 0;
+}
+.calc-email {
+  width: 100%;
+  margin-top: 8px;
+}
+.calc-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.calc-row input[type='email'] {
+  flex: 1 1 240px;
+}
+.calc-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 12px;
+  font-size: 14px;
+}
+.calc-error {
+  margin-top: 8px;
+  color: #b42318;
+}
+.calc-done {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.calc-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}

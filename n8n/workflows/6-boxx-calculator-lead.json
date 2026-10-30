@@ -1,0 +1,365 @@
+{
+  "name": "BOXX - Calculator Lead",
+  "nodes": [
+    {
+      "id": "5c17d9f9-a0cb-4a40-ae2a-3929f249bccb",
+      "position": [
+        0,
+        200
+      ],
+      "name": "Calculator webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "82c38371-6f01-4226-9d73-8b0fd4f07a1b",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "boxx-calculator",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://boxxautomations.space"
+        }
+      }
+    },
+    {
+      "id": "1251b3b3-ff5b-475a-8f28-c86ec2b05383",
+      "position": [
+        260,
+        200
+      ],
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "// ====== BOXX CALCULATOR LEAD CONFIG (secrets live in n8n Credentials, not here) ======\nreturn [{ json: { sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g', siteUrl: 'https://boxxautomations.space' } }]"
+      }
+    },
+    {
+      "id": "6497bcd9-26f9-40b1-9b93-9cab48b2a5df",
+      "position": [
+        520,
+        200
+      ],
+      "name": "Validate & normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const b = $('Calculator webhook').first().json.body || {}\nconst clean = s => String(s == null ? '' : s).replace(/[\\u0000-\\u001f\\u007f<>]/g, '').trim()\nconst num = (v, min, max) => { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : NaN }\nconst errors = []\nconst email = clean(b.email).toLowerCase()\nif (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)) errors.push('invalid_email')\nif (clean(b.company)) errors.push('honeypot')\nif (b.email_marketing_consent !== true) errors.push('no_consent')\nconst leads = num(b.leads_per_month, 0, 100000), missed = num(b.missed_pct, 0, 100)\nconst close = num(b.close_pct, 0, 100), value = num(b.job_value, 0, 10000000)\nif ([leads, missed, close, value].some(n => Number.isNaN(n))) errors.push('bad_numbers')\nconst now = new Date().toISOString()\nconst lead = {\n  email,\n  email_marketing_consent: b.email_marketing_consent === true ? 'TRUE' : 'FALSE',\n  email_consent_at: now,\n  consent_text: clean(b.consent_text).slice(0, 300),\n  leads_per_month: leads, missed_pct: missed, close_pct: close, job_value: value,\n  lost_monthly: Math.round(leads * missed / 100 * close / 100 * value),\n  lost_yearly: Math.round(leads * missed / 100 * close / 100 * value * 12),\n  source: clean(b.source).slice(0, 60) || 'missed-lead-calculator',\n  page: clean(b.page).slice(0, 300),\n  utm_source: clean(b.utm_source).slice(0, 60), utm_medium: clean(b.utm_medium).slice(0, 60),\n  utm_campaign: clean(b.utm_campaign).slice(0, 80), utm_content: clean(b.utm_content).slice(0, 80),\n  resource: clean(b.resource).slice(0, 10), channel: clean(b.channel).slice(0, 40),\n  arrived_from_dlv: clean(b.dlv).slice(0, 60), first_touch: clean(b.first_touch).slice(0, 600),\n  updated_at: now,\n}\nreturn [{ json: { ok: errors.length === 0, errors, lead, raw: JSON.stringify(b).slice(0, 1500) } }]"
+      }
+    },
+    {
+      "id": "5f1d2908-7a18-4bab-a61f-98fbde427191",
+      "position": [
+        780,
+        200
+      ],
+      "name": "Valid submission?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "8f0d6862-c81d-418c-a250-001064540407",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5f9ccf1b-07f1-47a0-a38e-2ca119e51b62",
+      "position": [
+        1040,
+        400
+      ],
+      "name": "Error row: invalid submission",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const v = $input.first().json\nreturn [{ json: { error_id: 'err_' + Date.now().toString(36), timestamp: new Date().toISOString(),\n  workflow: 'BOXX - Calculator Lead', email: v.lead.email, error_message: 'invalid_submission: ' + v.errors.join(','), payload: v.raw } }]"
+      }
+    },
+    {
+      "id": "400a23d6-dcc7-4f0e-a9f7-5191b27165e8",
+      "position": [
+        1300,
+        400
+      ],
+      "name": "Log invalid submission",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Error Log"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      }
+    },
+    {
+      "id": "064bcb05-e2d2-4f28-b3e2-d993753e32af",
+      "position": [
+        1560,
+        400
+      ],
+      "name": "Respond 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, errors: $('Validate & normalize').first().json.errors }) }}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://boxxautomations.space"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "64659871-607d-4ef4-80bd-0644f6592e63",
+      "position": [
+        1040,
+        200
+      ],
+      "name": "Row only",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return [{ json: $('Validate & normalize').first().json.lead }]"
+      }
+    },
+    {
+      "id": "a6ae21c6-b4d7-4477-93cd-098900743187",
+      "position": [
+        1300,
+        200
+      ],
+      "name": "Save calculator lead (upsert by email)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_ME",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "parameters": {
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Config').first().json.sheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Calculator Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      }
+    },
+    {
+      "id": "1499c91a-ec52-4c47-b6b4-ebfcd54b6ff4",
+      "position": [
+        1560,
+        200
+      ],
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://boxxautomations.space"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "332365c4-7fdb-42ae-8d91-9c604d3c1b81",
+      "position": [
+        0,
+        420
+      ],
+      "name": "Setup notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "parameters": {
+        "width": 640,
+        "height": 320,
+        "content": "## BOXX - Calculator Lead\n1. Add a \"Calculator Leads\" tab to the CRM sheet with these headers (row 1):\n`email, email_marketing_consent, email_consent_at, consent_text, leads_per_month, missed_pct, close_pct, job_value, lost_monthly, lost_yearly, source, page, utm_source, utm_medium, utm_campaign, utm_content, resource, channel, arrived_from_dlv, first_touch, updated_at`\n2. Select your Google Sheets credential on both Sheets nodes.\n3. Activate, then set `NEXT_PUBLIC_CALCULATOR_WEBHOOK_URL` in Vercel to this workflow's production URL (…/webhook/boxx-calculator). The email box on /tools/missed-lead-calculator only appears once that env var is set.\n4. Consent is required: submissions without `email_marketing_consent: true` are rejected and logged."
+      }
+    }
+  ],
+  "connections": {
+    "Calculator webhook": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Validate & normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & normalize": {
+      "main": [
+        [
+          {
+            "node": "Valid submission?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid submission?": {
+      "main": [
+        [
+          {
+            "node": "Row only",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error row: invalid submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error row: invalid submission": {
+      "main": [
+        [
+          {
+            "node": "Log invalid submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log invalid submission": {
+      "main": [
+        [
+          {
+            "node": "Respond 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row only": {
+      "main": [
+        [
+          {
+            "node": "Save calculator lead (upsert by email)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save calculator lead (upsert by email)": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

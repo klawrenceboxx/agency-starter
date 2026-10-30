@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { track } from '@/lib/analytics'
 
 type Ctx = { open: boolean; openModal: () => void; closeModal: () => void }
 
@@ -10,6 +11,7 @@ export function AuditModalProvider({ children }: { children: React.ReactNode }) 
   const [open, setOpen] = useState(false)
 
   const openModal = useCallback(() => {
+    track('audit_cta_click')
     setOpen(true)
     document.body.classList.add('modal-open')
     document.body.style.overflow = 'hidden'

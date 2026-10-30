@@ -17,6 +17,7 @@ type SiteSettings = {
   companyName?: string
   email?: string
   linkedinUrl?: string
+  googleBusinessUrl?: string
   siteUrl?: string
   metaTitle?: string
   metaDescription?: string
@@ -48,7 +49,8 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: settings?.companyName || 'Boxx Automations',
       url: settings?.siteUrl,
     },
-    robots: { index: true, follow: true },
+    // Preview deployments must never be indexed; only the production deployment is.
+    robots: process.env.VERCEL_ENV === 'preview' ? { index: false, follow: false } : { index: true, follow: true },
   }
 }
 
@@ -79,7 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             url: settings?.siteUrl,
             email: settings?.email,
             telephone: PHONE_E164,
-            sameAs: [settings?.linkedinUrl].filter(Boolean),
+            sameAs: [settings?.linkedinUrl, settings?.googleBusinessUrl].filter(Boolean),
           }}
         />
         <SiteChrome webhookUrl={settings?.n8nLeadWebhookUrl || ''}>{children}</SiteChrome>

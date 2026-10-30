@@ -25,6 +25,8 @@ export const GUIDE_WEBHOOK_URL =
 
 export const CALENDLY_URL = 'https://calendly.com/kaleellawrenceboxx/discovery-call'
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/klawrenceboxx'
+export const COMPANY_LINKEDIN_URL = 'https://www.linkedin.com/company/boxx-automations/'
+export const INSTAGRAM_URL = 'https://www.instagram.com/kaleel.lawrence/'
 
 // Local profiles. Used as sameAs links in the Organization JSON-LD and the footer.
 export const GOOGLE_PROFILE_URL = 'https://share.google/GQszDOf1hrtUuLe5y'

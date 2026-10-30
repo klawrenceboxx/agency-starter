@@ -26,6 +26,13 @@ export const GUIDE_WEBHOOK_URL =
 export const CALENDLY_URL = 'https://calendly.com/kaleellawrenceboxx/discovery-call'
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/klawrenceboxx'
 
+// Local profiles. Used as sameAs links in the Organization JSON-LD and the footer.
+export const GOOGLE_PROFILE_URL = 'https://share.google/GQszDOf1hrtUuLe5y'
+// Google review link (the "Ask for reviews" link). /review uses it when Sanity's googleBusinessUrl is empty.
+export const GOOGLE_REVIEW_URL = 'https://g.page/r/CZ_WYO4FEv40EBM/review'
+export const CHAMBER_LISTING_URL =
+  'https://web.vaughanchamber.ca/atlas/directory/category/computer-consultants---i.t.,-web-design,-hosting-&-related-services/Boxx-Automation-8283'
+
 // Must match the phone number on the Google Business Profile.
 export const PHONE_DISPLAY = '(647) 632-1709'
 export const PHONE_E164 = '+16476321709'

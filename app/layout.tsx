@@ -4,7 +4,7 @@ import Script from 'next/script'
 import { client } from '@/sanity/client'
 import JsonLd from '@/components/JsonLd'
 import SiteChrome from '@/components/SiteChrome'
-import { PHONE_E164 } from '@/lib/site-config'
+import { CHAMBER_LISTING_URL, GOOGLE_PROFILE_URL, PHONE_E164 } from '@/lib/site-config'
 import './globals.css'
 
 const inter = Inter({
@@ -17,7 +17,6 @@ type SiteSettings = {
   companyName?: string
   email?: string
   linkedinUrl?: string
-  googleBusinessUrl?: string
   siteUrl?: string
   metaTitle?: string
   metaDescription?: string
@@ -81,7 +80,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             url: settings?.siteUrl,
             email: settings?.email,
             telephone: PHONE_E164,
-            sameAs: [settings?.linkedinUrl, settings?.googleBusinessUrl].filter(Boolean),
+            sameAs: [settings?.linkedinUrl, GOOGLE_PROFILE_URL, CHAMBER_LISTING_URL].filter(Boolean),
           }}
         />
         <SiteChrome webhookUrl={settings?.n8nLeadWebhookUrl || ''}>{children}</SiteChrome>

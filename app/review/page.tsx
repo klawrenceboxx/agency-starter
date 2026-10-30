@@ -1,5 +1,6 @@
 import { client } from '@/sanity/client'
 import ReviewForm from '@/components/ReviewForm'
+import { GOOGLE_REVIEW_URL } from '@/lib/site-config'
 
 export const metadata = {
   title: 'How did we do?',
@@ -9,10 +10,10 @@ export const metadata = {
 export const revalidate = 60
 
 export default async function ReviewPage() {
-  let googleReviewUrl = ''
+  let googleReviewUrl = GOOGLE_REVIEW_URL
   try {
     const s: { googleBusinessUrl?: string } | null = await client.fetch(`*[_type == "siteSettings"][0]{ googleBusinessUrl }`)
-    googleReviewUrl = s?.googleBusinessUrl || ''
+    googleReviewUrl = s?.googleBusinessUrl || GOOGLE_REVIEW_URL
   } catch {
     /* falls back to a thank-you screen */
   }

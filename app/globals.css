@@ -1492,43 +1492,93 @@ details .ans p {
 footer.site {
   background: var(--black-2);
   color: var(--on-dark-muted);
-  padding: 40px 0;
+  padding: 56px 0 28px;
   font-size: 14px;
-}
-footer.site .wrap {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-footer.site nav {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
 }
 footer.site a {
   color: var(--on-dark-muted);
   text-decoration: none;
+  transition: color 0.15s ease;
 }
 footer.site a:hover {
   color: #fff;
 }
-footer.site .footer-more {
-  align-items: flex-start;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+footer.site a:focus-visible {
+  outline: 2px solid #c9b3e0;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+footer.site .foot-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.1fr 1.5fr;
+  gap: 40px;
+  align-items: start;
+}
+footer.site .foot-grid nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+footer.site .foot-h {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+footer.site .foot-brand p {
+  margin: 10px 0 0;
+  line-height: 1.55;
+  max-width: 280px;
+}
+footer.site .foot-brand .foot-place {
+  margin-top: 6px;
+  opacity: 0.8;
+}
+footer.site .foot-name {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+footer.site .foot-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 44px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 13px;
 }
-footer.site .footer-more nav {
-  flex-direction: column;
-  gap: 8px;
-  min-width: 200px;
+footer.site .foot-bar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
 }
-footer.site .footer-more-h {
-  color: #fff;
-  font-weight: 600;
+footer.site .foot-bar .foot-badges {
+  margin-left: auto;
+}
+@media (max-width: 900px) {
+  footer.site .foot-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 28px;
+  }
+  footer.site .foot-brand {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 560px) {
+  footer.site {
+    padding-top: 44px;
+  }
+  footer.site .foot-grid {
+    grid-template-columns: 1fr;
+  }
+  footer.site .foot-bar .foot-badges {
+    margin-left: 0;
+  }
 }
 .local-reading {
   margin-top: 24px;

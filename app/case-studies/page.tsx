@@ -11,7 +11,11 @@ type CaseStudy = {
   publishedAt?: string
 }
 
-export const metadata = { title: 'Case Studies', alternates: { canonical: '/case-studies' } }
+export const metadata = {
+  title: 'Case Studies',
+  description: 'Projects from Boxx Automations: conversion-focused websites and automated email follow-up for small businesses in Vaughan and the GTA.',
+  alternates: { canonical: '/case-studies' },
+}
 
 export default async function CaseStudiesPage() {
   const caseStudies: CaseStudy[] = await client.fetch(`

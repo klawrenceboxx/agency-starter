@@ -8,6 +8,7 @@ export const FOOTER_SERVICE_LINKS: { href: string; label: string }[] = [
   { href: '/services/seo-vaughan', label: 'SEO in Vaughan' },
   { href: '/services/email-marketing-automation', label: 'Email marketing automation' },
   { href: '/case-studies', label: 'Case studies' },
+  { href: '/tools/missed-lead-calculator', label: 'Missed-lead cost calculator' },
 ]
 
 export const FOOTER_BLOG_LINKS: { href: string; label: string }[] = [

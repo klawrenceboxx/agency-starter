@@ -36,3 +36,8 @@ export const CHAMBER_LISTING_URL =
 // Must match the phone number on the Google Business Profile.
 export const PHONE_DISPLAY = '(647) 632-1709'
 export const PHONE_E164 = '+16476321709'
+
+// n8n workflow "BOXX - Calculator Lead" (n8n/workflows/6-boxx-calculator-lead.json).
+// The email box on the calculator page only shows once this env var is set in Vercel, so an
+// un-imported workflow never shows visitors a broken form.
+export const CALCULATOR_WEBHOOK_URL = process.env.NEXT_PUBLIC_CALCULATOR_WEBHOOK_URL || ''

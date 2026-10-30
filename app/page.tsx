@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import JsonLd from '@/components/JsonLd'
-import { CHAMBER_LISTING_URL, GOOGLE_PROFILE_URL, LINKEDIN_URL, PHONE_E164 } from '@/lib/site-config'
+import { CHAMBER_LISTING_URL, COMPANY_LINKEDIN_URL, GOOGLE_PROFILE_URL, INSTAGRAM_URL, LINKEDIN_URL, PHONE_E164 } from '@/lib/site-config'
 import HomeHero from '@/components/home/HomeHero'
 import ProjectShowcase from '@/components/home/ProjectShowcase'
 import ProblemSection from '@/components/home/ProblemSection'
@@ -32,7 +32,7 @@ export default function HomePage() {
           areaServed: ['Vaughan', 'Markham', 'Richmond Hill', 'Toronto', 'Greater Toronto Area'],
           founder: { '@type': 'Person', name: 'Kaleel Lawrence-Boxx' },
           knowsAbout: ['Website design', 'Conversion rate optimization', 'Email marketing automation', 'Local SEO'],
-          sameAs: [LINKEDIN_URL, GOOGLE_PROFILE_URL, CHAMBER_LISTING_URL],
+          sameAs: [LINKEDIN_URL, COMPANY_LINKEDIN_URL, INSTAGRAM_URL, GOOGLE_PROFILE_URL, CHAMBER_LISTING_URL],
         }}
       />
       <HomeHero />

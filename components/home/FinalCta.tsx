@@ -41,7 +41,17 @@ export default function FinalCta() {
       <div className="wrap">
         <h2 className="h2 dim-soft">Find out where your leads are getting lost.</h2>
         <p className="lead dim">Get a free audit and see what I&rsquo;d fix first.</p>
-        <button className="btn btn-primary fill-cta" onClick={openModal}>Get Your Free Audit</button>
+        <a
+          href="/audit"
+          className="btn btn-primary fill-cta"
+          onClick={(e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return
+            e.preventDefault()
+            openModal()
+          }}
+        >
+          Get Your Free Audit
+        </a>
       </div>
     </section>
   )

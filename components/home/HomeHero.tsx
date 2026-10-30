@@ -7,7 +7,7 @@ export default function HomeHero() {
   const { openModal } = useAuditModal();
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnRef = useRef<HTMLAnchorElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
 
@@ -403,13 +403,18 @@ export default function HomeHero() {
           </p>
 
           <div className="hero-actions">
-            <button
+            <a
               ref={btnRef}
+              href="/audit"
               className="btn btn-primary magnet"
-              onClick={openModal}
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                e.preventDefault();
+                openModal();
+              }}
             >
               Get Your Free Audit
-            </button>
+            </a>
 
             <p className="micro">
               Free. Takes 30 seconds. Your audit lands in your inbox.

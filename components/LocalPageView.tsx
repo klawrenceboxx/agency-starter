@@ -3,7 +3,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import AuditTrigger from '@/components/audit/AuditTrigger'
 import JsonLd from '@/components/JsonLd'
-import { getPage, type Section } from '@/lib/local-seo-content'
+import { getPage, getPost, type Section } from '@/lib/local-seo-content'
+import { SERVICE_TO_POSTS } from '@/lib/internal-links'
 
 export function localMetadata(slug: string): Metadata {
   const page = getPage(slug)
@@ -34,6 +35,7 @@ export default function LocalPageView({ slug }: { slug: string }) {
   if (!page) notFound()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://boxxautomations.space'
   const related = page.related.map((r) => getPage(r)).filter(Boolean)
+  const readings = (SERVICE_TO_POSTS[slug] || []).map((s) => getPost(s)).filter(Boolean)
 
   return (
     <>
@@ -79,6 +81,16 @@ export default function LocalPageView({ slug }: { slug: string }) {
                 </span>
               ))}
             </p>
+          )}
+          {readings.length > 0 && (
+            <div className="local-reading">
+              <h2 className="h2">Related reading</h2>
+              <ul>
+                {readings.map((p) => (
+                  <li key={p!.slug}><Link href={`/blog/${p!.slug}`}>{p!.h1}</Link></li>
+                ))}
+              </ul>
+            </div>
           )}
           <div className="process-foot"><AuditTrigger>Get Your Free Audit</AuditTrigger></div>
         </div>

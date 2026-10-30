@@ -11,7 +11,7 @@ type CaseStudy = {
   publishedAt?: string
 }
 
-export const metadata = { title: 'Case Studies' }
+export const metadata = { title: 'Case Studies', alternates: { canonical: '/case-studies' } }
 
 export default async function CaseStudiesPage() {
   const caseStudies: CaseStudy[] = await client.fetch(`

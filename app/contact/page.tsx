@@ -1,7 +1,7 @@
 import { CALENDLY_URL, LINKEDIN_URL, PHONE_DISPLAY, PHONE_E164 } from '@/lib/site-config'
 import styles from './contact.module.css'
 
-export const metadata = { title: 'Contact' }
+export const metadata = { title: 'Contact', alternates: { canonical: '/contact' } }
 
 function ContactIcon({ kind }: { kind: 'calendar' | 'phone' | 'linkedin' }) {
   return <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

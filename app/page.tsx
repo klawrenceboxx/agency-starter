@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import HomeHero from '@/components/home/HomeHero'
 import ProjectShowcase from '@/components/home/ProjectShowcase'
 import ProblemSection from '@/components/home/ProblemSection'
@@ -5,6 +6,10 @@ import ServicesCore from '@/components/ServicesCore'
 import FaqGuarantee from '@/components/home/FaqGuarantee'
 import ProcessStepsHome from '@/components/home/ProcessStepsHome'
 import FinalCta from '@/components/home/FinalCta'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 export default function HomePage() {
   return (

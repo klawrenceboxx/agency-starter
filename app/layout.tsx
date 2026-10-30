@@ -33,7 +33,9 @@ async function getSettings(): Promise<SiteSettings> {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings()
+  const siteUrl = (settings?.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://boxxautomations.space').replace(/\/$/, '')
   return {
+    metadataBase: new URL(siteUrl),
     title: {
       default: settings?.metaTitle || 'Boxx Automations — Websites and automated emails that convert',
       template: `%s | Boxx Automations`,

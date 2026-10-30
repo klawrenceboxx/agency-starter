@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: service.seoTitle || service.title,
     description: service.seoDescription || service.description?.slice(0, 155),
+    alternates: { canonical: `/services/${params.slug}` },
   }
 }
 

@@ -10,6 +10,9 @@ const KIND: Record<string, string> = {
   'abandoned-cart-emails': 'Email',
   'wix-vs-squarespace-vs-shopify-vs-wordpress': 'Comparison',
   'how-to-get-google-reviews': 'Reviews',
+  'klaviyo-pricing': 'Pricing',
+  'klaviyo-vs-mailchimp': 'Comparison',
+  'klaviyo-vs-omnisend': 'Comparison',
 }
 
 export const postKind = (slug: string) => KIND[slug] ?? 'Guide'

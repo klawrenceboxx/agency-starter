@@ -110,7 +110,7 @@ export default function BoxxAuditForm({
     <div className="boxx-audit-form" style={styles.page}>
       <div style={styles.shell}>
         <header style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-          <a className="logo" href="/" aria-label="Boxx Automations home"><span className="mark" aria-hidden="true"><i /><i /><i /><i /></span><b>BOXX AUTOMATIONS</b></a>
+          <a className="logo" href="/" aria-label="Boxx Automations home"><img className="mark" src="/boxx-logo.svg" alt="" width={34} height={38} /><b>BOXX AUTOMATIONS</b></a>
           <span style={{ marginLeft: 'auto', fontSize: 13, color: '#C8B6D2', whiteSpace: 'nowrap' }}>Step {step + 1} of 3</span>
         </header>
 

@@ -30,7 +30,8 @@ export default function Header() {
     <header className={`site${glass ? ' glass' : ''}`}>
       <div className="nav-shell">
         <Link className="logo" href="/" aria-label="Boxx Automations home">
-          <span className="mark" aria-hidden="true"><i /><i /><i /><i /></span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="mark" src="/boxx-logo.svg" alt="" width={34} height={38} />
           <b>BOXX AUTOMATIONS</b>
         </Link>
         <nav className={`main${open ? ' open' : ''}`} aria-label="Main">

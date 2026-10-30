@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="190 148 644 720" width="644" height="720"><title>Boxx Automations</title>
+  <defs>
+    <mask id="silhouette">
+      <polygon points="512,195 792,356.9 792,663.1 512,825 232,663.1 232,356.9"
+               fill="#fff" stroke="#fff" stroke-width="80" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+
+  <g mask="url(#silhouette)">
+    <!-- left face (base) -->
+    <rect x="0" y="0" width="1024" height="1024" fill="#8513D1"/>
+
+    <!-- top face (rounded lower seams) -->
+    <polygon points="100,264.6 512,502.4 924,264.6 924,0 100,0"
+             fill="#A93DF6" stroke="#A93DF6" stroke-width="30" stroke-linejoin="round"/>
+
+    <!-- right face (rounded inner corner) -->
+    <polygon points="532,531.5 900,319 900,950 532,950"
+             fill="#510B7F" stroke="#510B7F" stroke-width="40" stroke-linejoin="round"/>
+  </g>
+
+  <!-- X on left face -->
+  <g transform="translate(192,335) skewY(30)" stroke="#fff" stroke-width="52" stroke-linecap="round" fill="none">
+    <line x1="100" y1="105" x2="220" y2="245"/>
+    <line x1="220" y1="105" x2="100" y2="245"/>
+  </g>
+
+  <!-- eyes + mouth dot on right face -->
+  <g transform="translate(512,520) skewY(-30)" fill="#fff">
+    <rect x="82" y="95" width="52" height="130" rx="26"/>
+    <rect x="186" y="95" width="52" height="130" rx="26"/>
+    <circle cx="160" cy="275" r="24"/>
+  </g>
+
+  <!-- cyan node on top face -->
+  <ellipse cx="512" cy="330" rx="46" ry="26" fill="#6B0FA8"/>
+  <rect x="498" y="262" width="28" height="72" rx="14" fill="#22D3EE"/>
+  <circle cx="512" cy="232" r="34" fill="#22D3EE"/>
+</svg>

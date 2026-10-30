@@ -9,6 +9,7 @@ export const FOOTER_SERVICE_LINKS: { href: string; label: string }[] = [
   { href: '/services/email-marketing-automation', label: 'Email marketing automation' },
   { href: '/case-studies', label: 'Case studies' },
   { href: '/tools/missed-lead-calculator', label: 'Missed-lead cost calculator' },
+  { href: '/partners', label: 'Partners' },
 ]
 
 export const FOOTER_BLOG_LINKS: { href: string; label: string }[] = [
@@ -20,6 +21,7 @@ export const FOOTER_BLOG_LINKS: { href: string; label: string }[] = [
   { href: '/blog/abandoned-cart-emails', label: 'Abandoned cart emails' },
   { href: '/blog/wix-vs-squarespace-vs-shopify-vs-wordpress', label: 'Wix vs Squarespace vs Shopify vs WordPress' },
   { href: '/blog/how-to-get-google-reviews', label: 'How to get Google reviews' },
+  { href: '/blog/klaviyo-pricing', label: 'Klaviyo pricing' },
 ]
 
 // Service page slug -> blog post slugs shown as "Related reading".
@@ -28,7 +30,7 @@ export const SERVICE_TO_POSTS: Record<string, string[]> = {
   'web-design-markham': ['how-much-does-a-website-cost-in-canada', 'how-to-choose-a-web-designer', 'wix-vs-squarespace-vs-shopify-vs-wordpress'],
   'web-design-richmond-hill': ['how-much-does-a-website-cost-in-canada', 'how-to-choose-a-web-designer', 'website-conversion-checklist-small-business'],
   'seo-vaughan': ['how-much-does-seo-cost-in-canada', 'how-to-get-google-reviews', 'website-conversion-checklist-small-business'],
-  'email-marketing-automation': ['email-marketing-for-small-business', 'abandoned-cart-emails', 'website-conversion-checklist-small-business'],
+  'email-marketing-automation': ['klaviyo-pricing', 'email-marketing-for-small-business', 'abandoned-cart-emails'],
 }
 
 // Blog post slug -> service page slugs shown as "Related services".
@@ -41,4 +43,7 @@ export const POST_TO_SERVICES: Record<string, string[]> = {
   'abandoned-cart-emails': ['email-marketing-automation'],
   'wix-vs-squarespace-vs-shopify-vs-wordpress': ['web-design-markham', 'web-design-vaughan'],
   'how-to-get-google-reviews': ['seo-vaughan'],
+  'klaviyo-pricing': ['email-marketing-automation'],
+  'klaviyo-vs-mailchimp': ['email-marketing-automation'],
+  'klaviyo-vs-omnisend': ['email-marketing-automation'],
 }

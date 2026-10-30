@@ -7,6 +7,7 @@
 // Inline marks in any string: **bold** and [label](href).
 
 import { MORE_POSTS } from './blog-posts-more'
+import { KLAVIYO_POSTS } from './blog-posts-klaviyo'
 
 export type Table = { caption: string; head: string[]; rows: string[][]; note?: string }
 export type Block = { h: string; answer?: string; p?: string[]; items?: string[]; ordered?: boolean; table?: Table; after?: string[] }
@@ -662,6 +663,6 @@ const BASE_POSTS: Post[] = [
   },
 ]
 
-export const POSTS: Post[] = [...BASE_POSTS, ...MORE_POSTS]
+export const POSTS: Post[] = [...BASE_POSTS, ...MORE_POSTS, ...KLAVIYO_POSTS]
 
 export const getPost = (slug: string) => POSTS.find((p) => p.slug === slug)

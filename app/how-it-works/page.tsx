@@ -1,7 +1,7 @@
 import AuditTrigger from '@/components/audit/AuditTrigger'
 import { PHASES } from '@/lib/site-config'
 
-export const metadata = { title: 'How It Works' }
+export const metadata = { title: 'How It Works', alternates: { canonical: '/how-it-works' } }
 
 export default function HowItWorksPage() {
   return (

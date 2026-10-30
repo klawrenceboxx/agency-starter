@@ -6,6 +6,7 @@ import styles from './about.module.css'
 
 export const metadata = {
   title: 'About',
+  alternates: { canonical: '/about' },
   description: 'Meet Kaleel Lawrence-Boxx, engineer, developer, and founder of BOXX Automations. Discover the journey behind a founder-led approach to websites and automated follow-ups.',
 }
 

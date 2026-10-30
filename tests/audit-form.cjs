@@ -13,11 +13,13 @@ let modalOpen = true
 const context = { useAuditModal: () => ({ open: modalOpen, closeModal: () => { modalOpen = false } }) }
 const config = { CALENDLY_URL: 'https://calendly.com/kaleellawrenceboxx/discovery-call', LINKEDIN_URL: '#', SPOTS_OPEN: 2, TOTAL_SPOTS: 5 }
 // Bare /audit (the business-card QR code) carries no tags, so source stays "networking".
+const events = []
+const analytics = { track: (name, params) => events.push({ name, params }) }
 const attribution = { tagsFromUrl: () => ({}), attributionPayload: () => ({ resource: '', channel: '', dlv: '', utm_source: '', utm_medium: '', utm_campaign: '', utm_content: '', first_touch: '' }) }
 function load(file) {
   const code = babel.transformSync(fs.readFileSync(file, 'utf8'), { presets: ['@babel/preset-react'], plugins: ['@babel/plugin-transform-modules-commonjs'] }).code
   const mod = { exports: {} }
-  vm.runInNewContext(code, { React, module: mod, exports: mod.exports, require: name => name === 'react' ? React : name === './BoxxAuditForm' ? { default: load('components/audit/BoxxAuditForm.jsx'), __esModule: true } : name === 'next/link' ? (({children,...props}) => React.createElement('a', props, children)) : name.includes('AuditModalContext') ? context : name.includes('attribution') ? attribution : config, document, window, fetch: (...args) => global.fetch(...args), setTimeout, clearTimeout, Date })
+  vm.runInNewContext(code, { React, module: mod, exports: mod.exports, require: name => name === 'react' ? React : name === './BoxxAuditForm' ? { default: load('components/audit/BoxxAuditForm.jsx'), __esModule: true } : name === 'next/link' ? (({children,...props}) => React.createElement('a', props, children)) : name.includes('AuditModalContext') ? context : name.includes('attribution') ? attribution : name.includes('analytics') ? analytics : config, document, window, fetch: (...args) => global.fetch(...args), setTimeout, clearTimeout, Date })
   return mod.exports.default
 }
 const Audit = load('components/audit/AuditModal.jsx')
@@ -112,5 +114,8 @@ async function ready(service='My website',inline=true) { await start(service,inl
   const completedForm=document.querySelector('form');
   await act(async()=>{completedForm.requestSubmit();completedForm.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}))});
   check(standaloneCount===1&&document.querySelector('button[type="submit"]').disabled,'Successful submission stays locked until form unmounts');
+  const leadEvents=events.filter(e=>e.name==='generate_lead');
+  check(leadEvents.length>0&&leadEvents.every(e=>!JSON.stringify(e.params).match(/@|\+?\d{10}/)),'generate_lead fires on success and carries no email or phone');
+  check(events.some(e=>e.name==='audit_step_view'&&e.params.step_number===1)&&events.some(e=>e.name==='audit_step_view'&&e.params.step_number===3),'audit_step_view fires for steps 1 and 3');
   await act(async()=>root.unmount());console.log(`${checks} checks passed`)
 })().catch(e=>{console.error(e);process.exitCode=1})

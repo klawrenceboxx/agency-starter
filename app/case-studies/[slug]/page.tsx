@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: cs.seoTitle || cs.title,
     description: cs.seoDescription || cs.challenge?.slice(0, 155),
+    alternates: { canonical: `/case-studies/${params.slug}` },
   }
 }
 

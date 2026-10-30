@@ -6,6 +6,7 @@ import BoxxAuditForm from './BoxxAuditForm'
 import { useAuditModal } from './AuditModalContext'
 import { CALENDLY_URL, LINKEDIN_URL } from '@/lib/site-config'
 import { attributionPayload, tagsFromUrl } from '@/lib/attribution'
+import { track } from '@/lib/analytics'
 
 // Bare /audit is the QR code on printed business cards, so it stays "networking".
 // Any tagged link (email, PDF, guide page) records the real page and tags instead.
@@ -95,6 +96,7 @@ export default function AuditModal({ webhookUrl, inline = false }) {
       }
     }
     setSending(false)
+    track('generate_lead', { lead_type: 'free_audit', audit_path: path, budget: lead.budget || 'none', form_location: inline ? 'networking' : 'modal' })
     setStep('done')
   }
 

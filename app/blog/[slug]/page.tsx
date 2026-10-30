@@ -6,6 +6,8 @@ import AuditTrigger from '@/components/audit/AuditTrigger'
 import JsonLd from '@/components/JsonLd'
 import Rich, { plain } from '@/components/Rich'
 import { POSTS, getPost, type Block, type Post, type Table } from '@/lib/blog-posts'
+import { getPage } from '@/lib/local-seo-content'
+import { POST_TO_SERVICES } from '@/lib/internal-links'
 
 // Locked blog template: quick answer → proof line → main table → question H2s → field section
 // → FAQ → bridge CTA → read next → author box. Content lives in lib/blog-posts.ts.
@@ -173,6 +175,21 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
           {next && (
             <p className="post-next">
               Read next: <Link href={`/blog/${next.slug}`}>{next.h1}</Link>
+            </p>
+          )}
+
+          {(POST_TO_SERVICES[post.slug] || []).length > 0 && (
+            <p className="post-next">
+              Related services:{' '}
+              {(POST_TO_SERVICES[post.slug] || []).map((s, i) => {
+                const svc = getPage(s)
+                return svc ? (
+                  <span key={s}>
+                    {i > 0 && ' · '}
+                    <Link href={`/services/${s}`}>{svc.eyebrow}</Link>
+                  </span>
+                ) : null
+              })}
             </p>
           )}
 

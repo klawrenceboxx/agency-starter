@@ -7,6 +7,7 @@ import styles from './services.module.css'
 
 export const metadata = {
   title: 'Services',
+  alternates: { canonical: '/services' },
   description: 'Compare BOXX website conversion and email & SMS lead-nurturing packages. Explore the Complete Growth System and book a free strategy call.',
 }
 

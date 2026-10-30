@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "EarnIt Privacy Policy | Box Automations",
   description:
     "Privacy Policy for the EarnIt Android application, including information about data collection, permissions, analytics, crash reporting, feedback, and data retention.",
+  robots: { index: false, follow: false },
 };
 
 const supportEmail = "kaleellawrenceboxx@gmail.com";

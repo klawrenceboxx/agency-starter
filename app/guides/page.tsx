@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Free Guides',
   description:
     'Free copy-paste prompts from my Instagram videos. Build each system with Claude in a few minutes, step by step.',
-  alternates: { canonical: 'https://boxxautomations.space/guides' },
+  alternates: { canonical: '/guides' },
 }
 
 export default function GuidesIndex() {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { track } from '@/lib/analytics';
 
 const PURPLE = '#AE12F4';
 const SERVICES = [
@@ -44,6 +45,7 @@ export default function BoxxAuditForm({
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
   useEffect(() => { if (step > 0) headingRef.current?.focus(); }, [step]);
+  useEffect(() => { track('audit_step_view', { step_number: step + 1 }); }, [step]);
 
   function validateContact() {
     const errors = {};

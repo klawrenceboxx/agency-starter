@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
+  alternates: { canonical: '/privacy' },
   description: 'How Boxx Automations collects, uses, and protects personal information, and how to contact us about your privacy.',
 }
 

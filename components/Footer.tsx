@@ -50,6 +50,7 @@ export default function Footer() {
       <div className="wrap foot-bar">
         <span>&copy; {year} Boxx Automations</span>
         <nav aria-label="Legal">
+          <Link href="/press">Press</Link>
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms of Service</Link>
         </nav>

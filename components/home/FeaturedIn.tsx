@@ -1,11 +1,5 @@
-// Real press only. Add new features to the top of this list.
-const features = [
-  {
-    outlet: "PSEEDR",
-    title: "Which Part of Your Internal AI Tool Should You Still Own?",
-    url: "https://pseedr.com/enterprise/which-part-of-your-internal-ai-tool-should-you-still-own",
-  },
-] as const;
+import Link from "next/link";
+import { PRESS } from "@/lib/press";
 
 export default function FeaturedIn() {
   return (
@@ -15,7 +9,7 @@ export default function FeaturedIn() {
           Featured in
         </span>
         <ul className="featured-in__list">
-          {features.map((f) => (
+          {PRESS.map((f) => (
             <li key={f.url}>
               <a
                 href={f.url}
@@ -29,6 +23,9 @@ export default function FeaturedIn() {
             </li>
           ))}
         </ul>
+        <Link className="textlink" href="/press">
+          All press
+        </Link>
       </div>
     </section>
   );

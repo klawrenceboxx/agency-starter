@@ -820,6 +820,12 @@ section {
   color: var(--p);
 }
 
+.featured-in .textlink {
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
 /* AUTHORITY strip */
 .authority {
   padding: 40px 0;

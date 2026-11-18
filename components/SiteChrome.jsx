@@ -11,6 +11,7 @@ import AttributionCapture from './AttributionCapture'
 
 export default function SiteChrome({ children, webhookUrl }) {
   const networking = usePathname() === "/audit"
+  const mood = usePathname() === '/mood'
   return (
     <AuditModalProvider>
       <AttributionCapture />
@@ -21,8 +22,8 @@ export default function SiteChrome({ children, webhookUrl }) {
       </div> : children}</main>
       {!networking && <>
         <Footer />
-        <StickyMobileCta />
-        <Nudge />
+        {!mood && <StickyMobileCta />}
+        {!mood && <Nudge />}
         <AuditModal webhookUrl={webhookUrl} />
       </>}
     </AuditModalProvider>

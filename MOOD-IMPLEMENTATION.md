@@ -1,22 +1,26 @@
-# Mood landing page handoff
+# Mood to Motion
 
-Branch: feat/mood-landing. Not deployed.
+New landing page: /mood. Networking guide and shared guide components are unchanged.
 
-## Remaining inputs
-- Finished video or actual approved ASAN, VERITE, Yamaha R1 screenshots.
-- Convert supplied screenshots to public/mood/asan.webp, verite.webp, yamaha-r1.webp; preserve aspect ratio and update Image dimensions to match actual images.
-- Check mobile/desktop layout with actual images, both download HTTP responses and prompt copying before deployment.
+## Visuals
+Approved images are exact crops from the owner's Reel https://www.instagram.com/reel/Df3louINpt0/ at 4s (ASAN), 9.1s (VERITE), 13.3s (Yamaha R1).
+Native cropped size is 692x390; no generated artwork or enlargement was used.
 
 ## Delivery
-- Networking guide and its components/workflow are unchanged.
-- Existing n8n guide endpoint uses an allowlist and PDF-specific delivery; /api/subscribe silently succeeds when unconfigured. Neither is treated as verified kit delivery.
-- Direct downloads are supplied and ZIP structure checked. Browser/HTTP download checks remain pending.
-- Email form is fail-closed and hidden unless MOOD_DELIVERY_WEBHOOK_URL exists. A resource-specific workflow must deliver both download links and return {ok:true} only after a successful send. Test it using an owner-approved email address before enabling the form. Marketing consent is false; kit requests are not newsletter signups.
-- Existing GA, Clarity, attribution and site chrome remain intact. Download and request events use mood_download and mood_email_request; prompt copy uses the existing guide_prompt_copy event.
+Skill ZIP and standalone prompt are direct public downloads, tested in the browser. No signup required.
+The existing guide delivery workflow only accepts its configured PDF guides. It was not modified or repurposed.
+Email capture/delivery is disabled unless MOOD_DELIVERY_WEBHOOK_URL is configured. Its resource-specific workflow must return {ok:true} after an actual successful send. Email delivery has NOT been tested and must not be advertised as working.
+No newsletter subscription is created by kit requests. The existing networking consent and delivery behaviour is unchanged.
+
+## Analytics and layout
+Root GA/Clarity/attribution, header and footer are retained.
+Events: mood_download (asset), mood_prompt_copy, mood_email_request (only if configured).
+Existing audit popup/sticky audit CTA are suppressed only on /mood; a subtle audit link remains above the shared footer.
 
 ## Checks
-- npm run lint: passed.
-- npm test: passed all existing suites.
-- npx tsc --noEmit: passed.
-- npm run build: compiled/typechecked, then failed collecting page data because this fresh checkout lacks NEXT_PUBLIC_SANITY_PROJECT_ID. Use authorized project configuration for the final build; do not invent a Sanity project ID.
-- Networking guide, shared guide components, root layout/header/footer unchanged (git diff checked).
+npm run lint and npm test passed.
+Browser checked at desktop and 390px mobile; no horizontal overflow. Clipboard verified with all 2570 characters. Both downloads completed.
+Production build passes with the existing public Sanity/site settings; no secret values committed.
+
+ManyChat destination: https://boxxautomations.space/mood
+Optional attribution: ?resource=mood&channel=manychat&utm_source=instagram&utm_medium=dm&utm_campaign=mood-to-motion

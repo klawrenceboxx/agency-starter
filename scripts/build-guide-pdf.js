@@ -56,6 +56,7 @@ code, mark { background: #f1e3ff; color: #5a0a92; border-radius: 3px; padding: 0
 .stephead { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
 .num { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #9c16f4; display: grid; place-items: center; font-weight: 700; font-size: 13pt; flex-shrink: 0; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-size: 9.5pt; line-height: 1.6; background: #faf7fd; border: 1px solid #e7ddf2; border-radius: 12px; padding: 14px 16px; }
+pre.long { font-size: 9pt; line-height: 1.5; }
 .pbar { display: flex; justify-content: space-between; font-size: 8pt; letter-spacing: .12em; text-transform: uppercase; color: #5b5566; margin: 0 0 6px; }
 .check { margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; background: #e9f8f1; border: 1px solid #a8e2c8; break-inside: avoid; }
 .check b { color: #1fa971; }
@@ -73,13 +74,14 @@ a { color: #7a10c4; }
   <div>
     <p class="eyebrow">FREE GUIDE ${esc(g.guide_number)} · ${g.steps.length} PROMPTS · BUILT WITH ${esc(builtWith)}</p>
     <h1>${esc(g.title)}<span class="dot">.</span></h1>
-    <p class="promise">${esc(g.promise)} Copy each prompt into Claude and it builds the system with you.</p>
+    <p class="promise">${esc(g.promise)} ${esc(g.instructions?.intro || 'Copy each prompt into Claude and it builds the system with you.')}</p>
   </div>
   <div class="foot">Online version with copy buttons: <b>${esc(pageUrl.replace('https://', ''))}</b></div>
 </div>
 
 <section>
   <h2>What you'll need</h2>
+  ${g.downloads?.length ? `<ul>${g.downloads.map((d) => `<li><a href="${esc(SITE + d.href)}">${esc(d.label)}</a></li>`).join('')}</ul>` : ''}
   <div class="tools">
     ${g.tools.map((t) => `<div class="tool"><span class="label">${esc(t.job)}</span><b>${esc(t.name)}</b><p>${esc(t.role)}</p>${t.alternatives.length ? `<p>Or: ${esc(t.alternatives.join(', '))}</p>` : ''}</div>`).join('')}
   </div>
@@ -87,7 +89,7 @@ a { color: #7a10c4; }
 
 <section>
   <h2>Before you start</h2>
-  <p class="muted">Replace every <code>[BRACKET]</code> in Prompt 1 with your own details before you paste it. Leave one blank and Claude will ask you for it.</p>
+  <p class="muted">${g.instructions?.inputs ? brackets(g.instructions.inputs) : 'Replace every <code>[BRACKET]</code> in Prompt 1 with your own details before you paste it. Leave one blank and Claude will ask you for it.'}</p>
   <ul class="inputs">
     ${g.inputs_needed.map((s) => { const m = s.match(/^(\[[^\]]+\])\s*(?:\((?:e\.g\.\s*)?(.*)\))?$/); return `<li><code>${esc(m ? m[1] : s)}</code>${m && m[2] ? ` <span class="muted">e.g. ${esc(m[2])}</span>` : ''}</li>` }).join('')}
   </ul>
@@ -95,14 +97,14 @@ a { color: #7a10c4; }
 
 <section>
   <h2>How to use this</h2>
-  <p class="muted">Open the Claude app, start a new chat, and paste the prompts in order, one per message. After each one, check the "You'll know it worked" line before moving on.</p>
+  <p class="muted">${g.instructions?.steps ? esc(g.instructions.steps) : 'Open the Claude app, start a new chat, and paste the prompts in order, one per message. After each one, check the "You\'ll know it worked" line before moving on.'}</p>
 </section>
 
 ${g.steps.map((s) => `
 <section class="step">
   <div class="stephead"><div class="num">${esc(s.number)}</div><div><span class="label">${esc(s.phase)}</span><h3>${esc(s.title)}</h3></div></div>
   <div class="pbar"><span>Prompt ${Number(s.number)}</span><span>Copy everything in the box</span></div>
-  <pre>${brackets(s.prompt)}</pre>
+  <pre${s.prompt.length > 3000 ? ' class="long"' : ''}>${brackets(s.prompt)}</pre>
   <p class="check"><b>✓</b> ${esc(s.check)}</p>
 </section>`).join('')}
 

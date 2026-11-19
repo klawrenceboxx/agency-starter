@@ -199,6 +199,8 @@
 }
 .card:hover { border-color: #8650a7; transform: translateY(-2px); }
 .toolGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.downloads { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.downloads > a { max-width: 100%; padding: 14px 22px; white-space: normal; line-height: 1.4; text-align: center; }
 .job { font: 600 11px/1 var(--g-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--g-lav); }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: auto; padding-top: 6px; }
 .pill {
@@ -364,6 +366,7 @@
 .indexCard:hover { border-color: #8650a7; transform: translateY(-2px); }
 .indexCover { width: 100%; height: 100%; max-height: 220px; object-fit: cover; object-position: top; border-radius: 10px; }
 .indexBody { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+.indexBody:only-child { grid-column: 1 / -1; }
 .indexMeta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font: 600 11px/1 var(--g-mono); letter-spacing: 0.1em; color: var(--g-muted); }
 .open { margin-top: auto; color: var(--g-lav); font-weight: 600; }
 

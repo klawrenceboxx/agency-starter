@@ -85,7 +85,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
               <span className={styles.dot}>.</span>
             </h1>
             <p className={styles.lead}>
-              {g.promise} Copy each prompt into Claude and it builds the system with you.
+              {g.promise} {g.instructions?.intro || 'Copy each prompt into Claude and it builds the system with you.'}
             </p>
             <div className={styles.heroBtns}>
               <a href="#steps" className={styles.btnSecondary}>Get the prompts</a>
@@ -133,6 +133,13 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       <section className={styles.section}>
         <div className="wrap">
           <h2 className={styles.h2}>What you&rsquo;ll need</h2>
+          {!!g.downloads?.length && (
+            <div className={styles.downloads}>
+              {g.downloads.map((d) => (
+                <a key={d.href} href={d.href} download className={styles.btnSecondary}>{d.label}</a>
+              ))}
+            </div>
+          )}
           <div className={styles.toolGrid}>
             {g.tools.map((t) => (
               <div key={t.name} className={styles.card}>
@@ -167,8 +174,10 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         <div className="wrap">
           <h2 className={styles.h2}>Before you start</h2>
           <p className={styles.muted}>
-            Replace every <mark className={styles.markInline}>[BRACKET]</mark> in Prompt 1 with your own details before you paste it.
-            Leave one blank and Claude will ask you for it.
+            {g.instructions?.inputs || <>
+              Replace every <mark className={styles.markInline}>[BRACKET]</mark> in Prompt 1 with your own details before you paste it.
+              Leave one blank and Claude will ask you for it.
+            </>}
           </p>
           <ul className={styles.inputs}>
             {g.inputs_needed.map((s) => {
@@ -188,7 +197,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
       <section id="steps" className={`${styles.section} ${notes.length ? '' : styles.sectionLast}`}>
         <div className="wrap">
           <h2 className={styles.h2}>Copy. Paste. Build.</h2>
-          <p className={styles.muted}>Open the Claude app, start a new chat, and paste these in order.</p>
+          <p className={styles.muted}>{g.instructions?.steps || 'Open the Claude app, start a new chat, and paste these in order.'}</p>
           <ol className={styles.steps}>
             {g.steps.map((s) => (
               <li key={s.number} id={`step-${s.number}`} className={styles.step}>

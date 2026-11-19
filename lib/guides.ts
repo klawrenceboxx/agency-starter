@@ -1,6 +1,7 @@
 // Free guides from the BOXX Instagram funnel. One JSON file per guide in content/guides.
 // The JSON is the single source for the page, the PDF (scripts/build-guide-pdf.js) and the n8n delivery email.
 import networkingFollowUp from '@/content/guides/networking-follow-up.json'
+import addOneColour from '@/content/guides/add-one-colour-design-kit.json'
 
 export type GuideTool = {
   job: string
@@ -31,6 +32,8 @@ export type Guide = {
   cover: string
   published: string
   seo: { meta_title: string; meta_description: string; primary_search_phrase: string }
+  downloads?: { label: string; href: string }[]
+  instructions?: { intro: string; inputs: string; steps: string }
   tools: GuideTool[]
   inputs_needed: string[]
   steps: GuideStep[]
@@ -38,7 +41,7 @@ export type Guide = {
 }
 
 // Newest first.
-export const GUIDES: Guide[] = [networkingFollowUp as Guide]
+export const GUIDES: Guide[] = [addOneColour, networkingFollowUp]
 
 export function getGuide(slug: string) {
   return GUIDES.find((g) => g.slug === slug)

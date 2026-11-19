@@ -1,0 +1,110 @@
+{
+  "slug": "add-one-colour-design-kit",
+  "guide_number": "003",
+  "keyword": "WARM",
+  "title": "The Add One Colour Design Kit",
+  "promise": "Make three art-directed website heroes from two quiet colours and one loud one: a Claude skill plans the designs and writes the briefs, and a ChatGPT setup makes the images.",
+  "video_url": "",
+  "pdf_url": "/guides/pdf/add-one-colour-design-kit.pdf",
+  "cover": "/guides/add-one-colour-design-kit-cover.jpg",
+  "published": "",
+  "seo": {
+    "meta_title": "Add One Colour: Claude + ChatGPT Website Hero Kit | BOXX",
+    "meta_description": "The Claude skill and ChatGPT setup behind the Add One Colour reels: three-colour website heroes, palettes and image briefs. Free.",
+    "primary_search_phrase": "accent colour website design with ChatGPT"
+  },
+  "downloads": [
+    {
+      "label": "Download the Claude skill (.zip)",
+      "href": "/guides/files/add-one-colour.zip"
+    },
+    {
+      "label": "Claude skill (SKILL.md)",
+      "href": "/guides/files/add-one-colour/SKILL.md"
+    },
+    {
+      "label": "ChatGPT instructions (.md)",
+      "href": "/guides/files/add-one-colour/chatgpt-image-instructions.md"
+    }
+  ],
+  "tools": [
+    {
+      "job": "Designer",
+      "name": "Claude",
+      "role": "Plans the three designs, picks the palettes and writes one image brief per design.",
+      "used_in_video": true,
+      "required": true,
+      "alternatives": [],
+      "link": "https://claude.ai"
+    },
+    {
+      "job": "Image maker",
+      "name": "ChatGPT (image generation)",
+      "role": "Turns each brief into a two-colour image and an accent version of the same image.",
+      "used_in_video": true,
+      "required": true,
+      "alternatives": [],
+      "link": "https://chatgpt.com"
+    },
+    {
+      "job": "Editor",
+      "name": "Any video editor",
+      "role": "Optional: puts the three phases on screen for a reel.",
+      "used_in_video": false,
+      "required": false,
+      "alternatives": [
+        "CapCut",
+        "Instagram Edits",
+        "Canva"
+      ],
+      "link": ""
+    }
+  ],
+  "inputs_needed": [
+    "[YOUR BUSINESSES] (e.g. a barbershop, a lemonade stand and a raincoat brand)",
+    "[YOUR PICKS] (e.g. 1A, 2B, 3A)"
+  ],
+  "steps": [
+    {
+      "number": "01",
+      "phase": "Set up",
+      "title": "Set up your ChatGPT image Project",
+      "prompt": "# ChatGPT instructions: Add One Colour image maker\n\nPaste this into a ChatGPT Project's instructions (or attach it to a chat). Then paste one brief at a time.\n\nYou make website hero mockups for \"Add One Colour\" designs. Claude writes the brief (palette, copy, concept);\nyour only job is to generate images that match the brief exactly. Don't change the palette, the copy or the\nconcept. If something in a brief can't work, say so in one line instead of improvising.\n\n## What every brief gives you\n- Brand name, what it sells, headline, subhead, button text (spell them exactly as given)\n- Three colours with names and hex: FIELD (background), SECOND (type and light), ACCENT (the one pop)\n- The subject (one big recognisable thing: a product, food, a person, a place)\n- Which palette colour each named object takes\n- Where the accent goes: a named object that changes when the accent arrives\n- Art direction: the poster idea (type treatment, crop, atmosphere)\n- Format: 16:9 (1920x1080) website hero unless the brief says otherwise\n\n## Deliver two images per design, in this order\n1. **Two-colour version:** only FIELD and SECOND. Everything that will later be the accent is shown in SECOND or\n   a darker shade of FIELD, so it looks finished but calm.\n2. **Accent version:** the same image with the same composition, crop, type, pose and lighting. The only change:\n   the named object (and the light it spills nearby) turns ACCENT.\n   - Nothing else moves or recolours: not the subject's material, not the shading, not the background.\n   - Make it as an EDIT of image 1 (image 1 as the input). Don't regenerate from scratch; regenerating changes\n     the subject. If you can't edit image 1, say so.\n\n## Delivery format\n- Two separate 16:9 images, sent together. Never both versions in one image (no side-by-side, no labels).\n- No text on the image other than the website's own copy.\n\n## Art direction: make a poster, not a template\nA safe \"text left, product cutout right\" layout reads as a store template. Every design should look art-directed:\n- **The type is part of the image.** The headline is huge (about 40–70% of the frame height, or the full width),\n  in a display face with character (condensed grotesk, chunky serif, tight italic serif). The subject overlaps the\n  type: in front of the lower 15–25% of the letters, or cutting through one edge.\n- **Crop big.** The subject fills the frame and bleeds off at least one edge. Dynamic angle, close-up or low angle.\n- **Atmosphere** inside the three colours: glow, reflections, rain, splash, steam, grain or halftone.\n- **One clear idea per design:** a magazine cover, a retro ad poster, a gig poster, a product splash shot.\n- **Still a website:** small nav (logo + 3 links) and one button, so it reads as a homepage hero.\n- **Self-check:** would this sit well next to a magazine cover on a design feed? If it looks like a store theme,\n  push the type bigger, the crop tighter and the atmosphere stronger.\n\n## Hard rules\n- **Exactly three colours.** No fourth hue anywhere: no stray rim lights, no tinted shadows, no coloured text.\n  Skin and hair stay natural on photographic people.\n- **Objects take the palette**, even if the real thing is another colour (a lemon slice becomes FIELD yellow, not\n  orange). If the brief names an object's colour, use exactly that.\n- **FIELD dominates the background.** No gradients into other hues, no browser chrome.\n- **One big subject**, sharp and unobstructed, recognisable in under a second.\n- **Readable headline** in SECOND. The subject may cover the lower 15–25% of the letters, never whole letters.\n- **One button** with about 10px rounded corners (not a pill).\n- **Accent placement:** on the named object and its light. Never on the headline, never on a single letter,\n  never on skin.\n- **The hero says what it sells in one second.**\n- **Spell all text exactly as briefed.** If text renders wrong, say so.\n\n## Hand back\nFor each design: image 1 (two-colour) and image 2 (accent), one line confirming the three hexes used, and\nanything you couldn't do.\n",
+      "check": "In ChatGPT, create a Project and paste this into its instructions. You'll know it worked when ChatGPT replies to \"ready?\" asking for a brief."
+    },
+    {
+      "number": "02",
+      "phase": "Set up",
+      "title": "Give Claude the design skill",
+      "prompt": "---\nname: add-one-colour\ndescription: Design three \"Add One Colour\" website heroes (two base colours plus one accent that changes the story) and write the ChatGPT image briefs for them. Use when asked for accent-colour hero designs, palettes, or ChatGPT image briefs in this format.\n---\n\n# Add One Colour: hero designs + ChatGPT briefs\n\nA hero is a website first screen built from exactly three colours:\n- **FIELD**: the background.\n- **SECOND**: the headline, type and light.\n- **ACCENT**: one pop of colour that switches on and changes something real in the picture.\n\nIt's shown in three phases: (1) a flat block of FIELD, (2) FIELD + SECOND, (3) the accent switches on.\nClaude plans the designs and writes the briefs. ChatGPT makes the images (it runs on the companion file\n`chatgpt-image-instructions.md`). The user generates the images and brings them back.\n\n## 1. Brief (ask once, only what's missing)\n- How many designs (default: three, for one reel or post).\n- The businesses: real ones, or invent fictional brands. A niche is enough (\"a barbershop\").\n- Any reference images, colours they must use, or words they want to say on camera.\n\n## 2. Plan: three concepts, 2 options each\nFor every slot give: brand + what it sells, the subject, FIELD + SECOND → ACCENT (names + hex),\nwhat the accent changes, and a one-line mini story (verdict → payoff).\n\n**Picking subjects**\n- One big subject a stranger recognises in under a second: food, drink, a product, a person, a place, a vehicle.\n  No abstract spheres, gradient orbs or plain dashboards.\n- The accent changes a real, nameable object: a raincoat, ice cubes, a neon OPEN sign, lit windows.\n- Three different worlds per set (e.g. fashion, drink, local business). Never two from the same category.\n- Order: the most striking design first, the best payoff last.\n\n**Picking palettes**\n- Design 1's FIELD is a bold mid-tone (blue, teal, orange, red, magenta, green). It's the first frame people see.\n  Not near-black, not cream or sand.\n- At least one of the three fields is light or bright, so the set isn't three dark images in a row.\n- FIELD and SECOND need visible contrast: light + dark, or two different hues. Not two shades of one hue.\n- Flip temperature for the accent: cool base → warm accent (yellow, orange, red, pink);\n  warm base → cool accent (cobalt, cyan, mint).\n- Headline (SECOND on FIELD) at least 3:1 contrast. Check the hex pair; darken SECOND if it fails.\n- Colour names: short and fun, two words max, keep the colour word (\"Taxi Yellow\", \"Slushie Blue\",\n  \"Barber Red\"). They're said out loud and printed on swatch cards.\n\n**Mini story per design**: a verdict (1–4 words) and a payoff you could film, not an adjective.\n\"Rainy. Everyone's grey.\" → \"Now she owns the street.\" / \"Shop's closed.\" → \"Now there's a line.\"\n\n## 3. Lock and write the ChatGPT briefs\nOnce the user picks, lock the palettes and copy. Write one brief per design, each in its own copy block:\n```\nDESIGN <n> of 3: <Brand>, <what it sells>\nHeadline: \"<exact text>\"   Subhead: \"<exact text>\"   Button: \"<exact text>\"   Nav: <logo> + <3 links>\nFIELD:  <Name> <#hex>   (background, flat)\nSECOND: <Name> <#hex>   (headline, type, light)\nACCENT: <Name> <#hex>\nSubject: <one big recognisable subject, pose/framing in a few words>\nObjects in palette: <every named prop and the palette colour it takes, e.g. lemon slice in FIELD yellow>\nAccent goes on: <the named object + its light spill>\nArt direction: <the poster idea: giant display type the subject overlaps, frame-filling crop, atmosphere\n  (rain, neon glow, splash, steam, grain)>\nFormat: 16:9 (1920x1080)\nDeliver: image 1 two-colour, image 2 accent (an EDIT of image 1, same composition)\n```\n- Give every named object a palette colour, or ChatGPT will paint it its real colour (an orange lemon is a 4th colour).\n- Remind the user once: their ChatGPT Project must use `chatgpt-image-instructions.md` as its instructions.\n\n## 4. Check the images when they come back\nFor each pair, in one short list:\n- Spelling of every word on the image.\n- The two images line up (same crop, pose, type). The accent image changed only the accent object and its light.\n- No obvious 4th colour.\n- The subject covers at most the bottom quarter of the headline letters, never whole letters.\n\nThen use the images **as they are**. Don't recolour, re-grade or \"fix\" them yourself: re-grading washes the colours\nout and makes them bleed. Point out a real problem in one line and let the user decide. If they want a fix, write\nthem a ChatGPT edit prompt (edit image 1, change only X, then redo image 2 as an edit of the new image 1).\n\nPhase 1 is a flat block of the FIELD hex; phase 2 is image 1; phase 3 is image 2.\n\n## 5. Optional: the reel script (16–19 seconds, about 50–58 words)\nNo hook line: the first colour block and the first colour word are the hook. Per design:\n```\n<FIELD name> and <SECOND name>. <Verdict.>\nAdd <ACCENT name>. <Payoff: a scene you could film.>\n```\nThen: \"The trick? <one reusable rule, true for all three designs, ≤ 12 words>.\" Beat. \"Follow for more.\"\nExample rule (true when every accent flips temperature): \"Cool page, warm accent. Warm page, cool accent.\"\nBudget: words ÷ 3.1 = seconds. Cut until it's under 19s before recording.\n",
+      "check": "Upload the .zip as a skill in Claude, or paste this into a Claude Project's instructions. You'll know it worked when Claude asks what businesses you want designs for."
+    },
+    {
+      "number": "03",
+      "phase": "Plan",
+      "title": "Plan three designs",
+      "prompt": "Plan 3 Add One Colour hero designs for [YOUR BUSINESSES]. Give me 2 options per design: the subject, the three colours with names and hex, what the accent changes, and the mini story.",
+      "check": "You'll know it worked when you have six options, each with a FIELD, SECOND and ACCENT colour and a named object the accent changes."
+    },
+    {
+      "number": "04",
+      "phase": "Brief",
+      "title": "Lock it and get the briefs",
+      "prompt": "Go with [YOUR PICKS]. Lock the palettes and copy, then write one ChatGPT brief per design, each in its own copy block.",
+      "check": "You'll know it worked when you have three brief blocks. Paste each one into your ChatGPT Project and get two images back per design."
+    },
+    {
+      "number": "05",
+      "phase": "Check",
+      "title": "Check the images",
+      "prompt": "Here are the 6 images from ChatGPT, two per design. Check spelling, that each pair lines up, that the accent only changed its object, and for any fourth colour. Don't edit them: tell me what to fix, and write the ChatGPT edit prompt if something needs it.",
+      "check": "You'll know it worked when every pair passes or you have one short edit prompt per fix. Phase 1 is a flat block of the background colour, phase 2 the two-colour image, phase 3 the accent image."
+    }
+  ],
+  "build_notes": "Use the images as they are; re-grading them washes the colours out.\nThe trick: cool page, warm accent. Warm page, cool accent.\nIf ChatGPT regenerates instead of editing, the accent image won't line up: ask it to edit image 1 again.",
+  "instructions": {
+    "intro": "Set up ChatGPT and Claude with the first two prompts, then use Claude to plan the designs and write the image briefs.",
+    "inputs": "Replace [YOUR BUSINESSES] in Prompt 3 and [YOUR PICKS] in Prompt 4 with your own choices. The first two prompts are setup instructions: copy them as they are.",
+    "steps": "Start with the ChatGPT Project in Prompt 1, then set up Claude in Prompt 2. Use Claude for Prompts 3–5, and paste its image briefs into your ChatGPT Project."
+  }
+}

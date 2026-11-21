@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import JsonLd from '@/components/JsonLd'
 import { CHAMBER_LISTING_URL, COMPANY_LINKEDIN_URL, GOOGLE_PROFILE_URL, INSTAGRAM_URL, LINKEDIN_URL, PHONE_E164 } from '@/lib/site-config'
 import HomeHero from '@/components/home/HomeHero'
+import FeaturedIn from '@/components/home/FeaturedIn'
 import ProjectShowcase from '@/components/home/ProjectShowcase'
 import ProblemSection from '@/components/home/ProblemSection'
 import ServicesCore from '@/components/ServicesCore'
@@ -36,6 +37,7 @@ export default function HomePage() {
         }}
       />
       <HomeHero />
+      <FeaturedIn />
       <ProjectShowcase />
       <ProblemSection />
       <section className="tinted">

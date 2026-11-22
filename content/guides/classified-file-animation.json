@@ -1,0 +1,87 @@
+{
+  "slug": "classified-file-animation",
+  "guide_number": "004",
+  "keyword": "FILE",
+  "title": "The Classified File Animation",
+  "promise": "Turn any photo into a classified file that redacts itself: pages flip like a declassified dossier, and your subject is drawn out of the redaction bars. One Claude prompt, no editing software.",
+  "video_url": "https://www.instagram.com/reel/DgBWzrBNkvV/",
+  "pdf_url": "/guides/pdf/classified-file-animation.pdf",
+  "cover": "/guides/classified-file-animation-cover.jpg",
+  "published": "",
+  "seo": {
+    "meta_title": "Classified File Animation: Turn Any Photo Into a Redacted Dossier | BOXX",
+    "meta_description": "The Claude prompt behind the viral redacted-file animation. Upload a photo, get a looping classified dossier with your subject hidden in the redactions. Free.",
+    "primary_search_phrase": "redacted document animation from a photo"
+  },
+  "instructions": {
+    "intro": "Build the animation maker with Prompt 1, then use Prompts 2 and 3 to make your file and fine-tune it.",
+    "inputs": "Replace the words in [BRACKETS] with your own. Prompt 1 is the setup: copy it as it is.",
+    "steps": "Use all three prompts in the same Claude chat. Prompt 1 builds the tool; Prompt 2 makes your file; Prompt 3 only if the subject is too faint or too solid."
+  },
+  "tools": [
+    {
+      "job": "Builder",
+      "name": "Claude",
+      "role": "Builds the animation page, writes the dossier about your subject and maps your photo into the redaction bars.",
+      "used_in_video": true,
+      "required": true,
+      "alternatives": [],
+      "link": "https://claude.ai"
+    },
+    {
+      "job": "Cutout",
+      "name": "Background remover",
+      "role": "Gives Claude a photo of just your subject. On iPhone: long-press the subject in Photos and tap Copy.",
+      "used_in_video": true,
+      "required": true,
+      "alternatives": [
+        "iPhone Photos (lift subject)",
+        "remove.bg",
+        "Canva background remover"
+      ],
+      "link": "https://www.remove.bg"
+    },
+    {
+      "job": "Editor",
+      "name": "Any video editor",
+      "role": "Optional: adds your face, captions and music before you post.",
+      "used_in_video": false,
+      "required": false,
+      "alternatives": [
+        "Instagram Edits",
+        "CapCut"
+      ],
+      "link": ""
+    }
+  ],
+  "inputs_needed": [
+    "[YOUR PHOTO] (e.g. a cutout PNG of you, your dog or your product)",
+    "[SUBJECT NAME] (e.g. Lawrence-Boxx, Kaleel)",
+    "[CODENAME] (e.g. BOXX)",
+    "[WHAT THEY DO] (e.g. builds websites in Vaughan with Claude)"
+  ],
+  "steps": [
+    {
+      "number": "01",
+      "phase": "Build",
+      "title": "Build the classified file maker",
+      "prompt": "Build me a single HTML file that turns an uploaded photo into a \"classified file\" animation.\n\nInputs: an upload box for a PNG of the subject with a transparent background, and text fields for subject name, codename and file number. Then write 8 dossier sentences about my subject in the voice of an intelligence report: who they are, where they operate, what they do, a sighting, a recommendation. Pick 6 keywords from them to \"leak\".\n\nLook: a 1080×1920 canvas showing scanned declassified pages in stop-motion. A new page every 3 frames at 30fps, 32 pages per loop. Each page has a slight random offset, a tiny rotation, static scan speckle, a release header, page numbers and crossed-out SECRET stamps. Page types:\n- cover sheet with the codename and a TOP SECRET stamp\n- typewritten dossier pages (Courier, 34px lines)\n- graph-paper pages\n- a diagram page\n- a surveillance log with timestamps\n- an evidence page showing the photo as a 1-bit photocopy, paper-clipped, with a black bar over the eyes and a CONFIRMED stamp\n\nThe effect: map the subject into the redaction bars using its tones. Convert the photo to grayscale and histogram-equalize it inside the cutout. On text pages, scan each text line through the subject. Where the average darkness is above 0.7, draw one solid bar. Between 0.33 and 0.7, draw broken word-length bars with gaps so text peeks through. Lighter than that, leave the text. On graph and diagram pages, draw a halftone of black blocks on a 30px grid, sized by darkness. Shift the subject a few pixels per page like a re-scan. Leaked keywords are bold and underlined, so some peek through the bars.\n\nAdd a Record button that captures one loop to a video file with MediaRecorder.",
+      "check": "You'll know it worked when Claude gives you a page with an upload box, the name fields and a Record button. Open it in Claude's preview or download the HTML file and open it in Chrome."
+    },
+    {
+      "number": "02",
+      "phase": "Make",
+      "title": "Make your file",
+      "prompt": "Here's my photo: [YOUR PHOTO]. Subject: [SUBJECT NAME]. Codename: [CODENAME]. They [WHAT THEY DO]. Write the dossier about them, then load the photo into the page so I can see the animation.",
+      "check": "You'll know it worked when the pages flip and you can see your subject's shape in the black bars, darkest parts solid, lighter parts broken up with text peeking through."
+    },
+    {
+      "number": "03",
+      "phase": "Tune",
+      "title": "Fix faint or blobby subjects",
+      "prompt": "The subject looks [TOO FAINT / TOO SOLID]. Adjust the darkness thresholds so the hair and clothes stay solid but the face and skin break into word-length bars. Show me 3 pages side by side so I can compare.",
+      "check": "You'll know it worked when you can recognise the subject on a text page within a second. Then hit Record and post the video."
+    }
+  ],
+  "build_notes": "Use a photo with strong darks: hair, dark clothes or a dark product read best.\nThe stop-motion speed is a new page every 3 frames at 30fps. Faster looks frantic, slower loses the effect.\nOriginal animation (Kinetic Text Motion Studies) shared on X, creator unknown. If it's yours, tell me and I'll credit you here."
+}

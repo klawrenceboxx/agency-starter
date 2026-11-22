@@ -2,7 +2,7 @@
   "name": "BOXX - Guide Delivery",
   "nodes": [
     {
-      "id": "22178ebb-ea41-4981-b087-aac1958d0577",
+      "id": "8519933d-9509-49b2-947e-ba176e7adb2d",
       "position": [
         0,
         200
@@ -10,7 +10,7 @@
       "name": "Guide form webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "webhookId": "82162ea2-a4f3-472f-ac28-8ad7ee3b785b",
+      "webhookId": "1ac0513a-5e35-47cc-9b3e-f67aaa463c4f",
       "parameters": {
         "httpMethod": "POST",
         "path": "boxx-guide",
@@ -21,7 +21,7 @@
       }
     },
     {
-      "id": "f5f9202f-420e-42f2-a639-76ef36823f30",
+      "id": "a6f0f802-6c37-4922-a15f-ecfab780447b",
       "position": [
         260,
         200
@@ -31,11 +31,11 @@
       "typeVersion": 2,
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// ====== BOXX GUIDE DELIVERY CONFIG (secrets live in n8n Credentials, not here) ======\n// Same sheet, sender and unsubscribe group as the other BOXX workflows.\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group. Unsubscribes here also stop the weekly email.\n  resendWindowMinutes: 10, // Same email + same guide inside this window: no second send.\n  // Generated from content/guides/*.json by n8n/build-guide-workflow.js\n  guides: {\n    \"add-one-colour-design-kit\": {\n      \"number\": \"003\",\n      \"title\": \"The Add One Colour Design Kit\",\n      \"promise\": \"Make three art-directed website heroes from two quiet colours and one loud one: a Claude skill plans the designs and writes the briefs, and a ChatGPT setup makes the images.\",\n      \"prompts\": 5,\n      \"builtWith\": \"CLAUDE + CHATGPT\",\n      \"pdfPath\": \"/guides/pdf/add-one-colour-design-kit.pdf\",\n      \"cover\": \"/guides/add-one-colour-design-kit-cover.jpg\"\n    },\n    \"networking-follow-up\": {\n      \"number\": \"002\",\n      \"title\": \"The Networking Follow-Up System\",\n      \"promise\": \"Turn a stack of business cards into personal follow-up emails and LinkedIn messages in about 5 minutes.\",\n      \"prompts\": 3,\n      \"builtWith\": \"CLAUDE + GMAIL\",\n      \"pdfPath\": \"/guides/pdf/networking-follow-up.pdf\",\n      \"cover\": \"/guides/networking-follow-up-cover.jpg\"\n    }\n  },\n} }]"
+        "jsCode": "// ====== BOXX GUIDE DELIVERY CONFIG (secrets live in n8n Credentials, not here) ======\n// Same sheet, sender and unsubscribe group as the other BOXX workflows.\nreturn [{ json: {\n  sheetId: '16s4qGSyevCuW_aZjPkbQDoDForhP7V-DzIqXQihAG6g',\n  siteUrl: 'https://boxxautomations.space',\n  fromEmail: 'hello@boxxautomations.space',\n  fromName: 'Kaleel at BOXX',\n  replyTo: 'hello@boxxautomations.space',\n  mailingAddress: '54 Cannes Ave, Vaughan, ON, Canada',\n  asmGroupId: 42909, // SendGrid unsubscribe group. Unsubscribes here also stop the weekly email.\n  resendWindowMinutes: 10, // Same email + same guide inside this window: no second send.\n  // Generated from content/guides/*.json by n8n/build-guide-workflow.js\n  guides: {\n    \"add-one-colour-design-kit\": {\n      \"number\": \"003\",\n      \"title\": \"The Add One Colour Design Kit\",\n      \"promise\": \"Make three art-directed website heroes from two quiet colours and one loud one: a Claude skill plans the designs and writes the briefs, and a ChatGPT setup makes the images.\",\n      \"prompts\": 5,\n      \"builtWith\": \"CLAUDE + CHATGPT\",\n      \"pdfPath\": \"/guides/pdf/add-one-colour-design-kit.pdf\",\n      \"cover\": \"/guides/add-one-colour-design-kit-cover.jpg\"\n    },\n    \"classified-file-animation\": {\n      \"number\": \"004\",\n      \"title\": \"The Classified File Animation\",\n      \"promise\": \"Turn any photo into a classified file that redacts itself: pages flip like a declassified dossier, and your subject is drawn out of the redaction bars. One Claude prompt, no editing software.\",\n      \"prompts\": 3,\n      \"builtWith\": \"CLAUDE + BACKGROUND REMOVER\",\n      \"pdfPath\": \"/guides/pdf/classified-file-animation.pdf\",\n      \"cover\": \"/guides/classified-file-animation-cover.jpg\"\n    },\n    \"networking-follow-up\": {\n      \"number\": \"002\",\n      \"title\": \"The Networking Follow-Up System\",\n      \"promise\": \"Turn a stack of business cards into personal follow-up emails and LinkedIn messages in about 5 minutes.\",\n      \"prompts\": 3,\n      \"builtWith\": \"CLAUDE + GMAIL\",\n      \"pdfPath\": \"/guides/pdf/networking-follow-up.pdf\",\n      \"cover\": \"/guides/networking-follow-up-cover.jpg\"\n    }\n  },\n} }]"
       }
     },
     {
-      "id": "07c6b34a-6d45-4703-b445-9eb9f120a8e5",
+      "id": "66c1226f-6fa2-47ed-8706-881e4d8b111c",
       "position": [
         520,
         200
@@ -49,7 +49,7 @@
       }
     },
     {
-      "id": "560e06e0-b28a-4d50-b059-4f52078ad627",
+      "id": "362788cc-5ec5-43bb-9c23-a2081ea43b61",
       "position": [
         780,
         200
@@ -67,7 +67,7 @@
           },
           "conditions": [
             {
-              "id": "760a98f4-0447-43b8-98e7-82164838b364",
+              "id": "8b7b2fc7-0726-48ce-94c1-e8430806c8a0",
               "leftValue": "={{ $json.ok }}",
               "rightValue": true,
               "operator": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "a796c6cf-b5fa-4e57-8031-b2c837148de9",
+      "id": "9f6ca11a-d7bd-461f-a47d-b958f10e2daf",
       "position": [
         1040,
         400
@@ -96,7 +96,7 @@
       }
     },
     {
-      "id": "1759a260-00e0-46d1-8039-d1eab60c5091",
+      "id": "08b419b1-7b29-4928-893a-e35307eb0d17",
       "position": [
         1300,
         400
@@ -138,7 +138,7 @@
       }
     },
     {
-      "id": "8925605a-2724-4697-bc5a-0ef46cf1579a",
+      "id": "802140d8-b59a-4b85-b79f-1d872c5cade8",
       "position": [
         1560,
         400
@@ -163,7 +163,7 @@
       }
     },
     {
-      "id": "4b749ee8-2465-4c72-9642-1858ff66717d",
+      "id": "4c1d802a-ebae-4ed9-99c3-515e027d506a",
       "position": [
         1040,
         200
@@ -203,7 +203,7 @@
       }
     },
     {
-      "id": "6f346dd2-87c2-4f34-b6f5-10a633065474",
+      "id": "070a6e35-2773-4199-aab2-5014d195ffc9",
       "position": [
         1300,
         200
@@ -217,7 +217,7 @@
       }
     },
     {
-      "id": "1fe6ef57-64be-460f-8fd3-d8cb7c8a9eb0",
+      "id": "44456e3d-892d-4282-aaba-e646270f7900",
       "position": [
         1560,
         200
@@ -231,7 +231,7 @@
       }
     },
     {
-      "id": "55acb225-7825-4c6d-97ac-f4527ffebc68",
+      "id": "40119c63-1ce1-45ff-8561-525681a19dce",
       "position": [
         1820,
         200
@@ -275,7 +275,7 @@
       }
     },
     {
-      "id": "57deaf07-8458-4be4-9236-71bacc2c1c0d",
+      "id": "7d2ad28a-c8ea-4639-b7b7-3ae819fbb008",
       "position": [
         2080,
         200
@@ -300,7 +300,7 @@
       }
     },
     {
-      "id": "cfd7ff70-f8bc-41b8-90db-ef54e2d2d426",
+      "id": "ae1c806d-cf32-431e-87d9-6efd122fa418",
       "position": [
         2340,
         200
@@ -318,7 +318,7 @@
           },
           "conditions": [
             {
-              "id": "3faa5674-4eba-4960-a823-083e07fabc52",
+              "id": "2efb18ec-5e44-4c5a-bdd7-49b62a647622",
               "leftValue": "={{ $('Decide').first().json.send }}",
               "rightValue": true,
               "operator": {
@@ -333,7 +333,7 @@
       }
     },
     {
-      "id": "3fa45c48-6a9d-4932-8d75-3b1cdba2ab73",
+      "id": "4ac2a091-d05f-4193-a525-3183865f61b8",
       "position": [
         2600,
         200
@@ -347,7 +347,7 @@
       }
     },
     {
-      "id": "7773ec37-7932-46ea-9cd4-4ad622e3f0a5",
+      "id": "9ec238ad-d363-4a99-a601-4e0a22fce0ed",
       "position": [
         2860,
         200
@@ -383,7 +383,7 @@
       }
     },
     {
-      "id": "805c0e27-4bce-4a5d-96db-0086b955f894",
+      "id": "9af09bad-acb5-4d26-9645-8c8ea676248d",
       "position": [
         3120,
         0
@@ -397,7 +397,7 @@
       }
     },
     {
-      "id": "6fe5f154-b140-42cc-8daa-d54e6c5cae18",
+      "id": "3ea14911-edc8-4c61-a95f-78623225488a",
       "position": [
         3380,
         0
@@ -439,7 +439,7 @@
       }
     },
     {
-      "id": "952511df-2a26-4574-98ef-fa20745d6e13",
+      "id": "3ff69730-5481-4a8e-8a78-5c5a5e81fcea",
       "position": [
         3120,
         400
@@ -453,7 +453,7 @@
       }
     },
     {
-      "id": "c96af7df-d51d-492b-8698-b602505f392d",
+      "id": "4c142ab2-18c1-4230-8a2f-293b9ef1a191",
       "position": [
         3380,
         400
@@ -495,7 +495,7 @@
       }
     },
     {
-      "id": "cb3512dc-81b6-45d8-9f30-63698975d753",
+      "id": "6e6d84dd-657d-4952-bfbf-01f71c1aba45",
       "position": [
         0,
         0

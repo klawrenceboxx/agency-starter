@@ -2,6 +2,7 @@
 // The JSON is the single source for the page, the PDF (scripts/build-guide-pdf.js) and the n8n delivery email.
 import networkingFollowUp from '@/content/guides/networking-follow-up.json'
 import addOneColour from '@/content/guides/add-one-colour-design-kit.json'
+import classifiedFile from '@/content/guides/classified-file-animation.json'
 
 export type GuideTool = {
   job: string
@@ -41,7 +42,7 @@ export type Guide = {
 }
 
 // Newest first.
-export const GUIDES: Guide[] = [addOneColour, networkingFollowUp]
+export const GUIDES: Guide[] = [classifiedFile, addOneColour, networkingFollowUp]
 
 export function getGuide(slug: string) {
   return GUIDES.find((g) => g.slug === slug)

@@ -2,7 +2,7 @@
   "name": "BOXX - Guide Delivery",
   "nodes": [
     {
-      "id": "8519933d-9509-49b2-947e-ba176e7adb2d",
+      "id": "83a8f4de-547b-487f-9e07-1bb9d196a010",
       "position": [
         0,
         200
@@ -10,7 +10,7 @@
       "name": "Guide form webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "webhookId": "1ac0513a-5e35-47cc-9b3e-f67aaa463c4f",
+      "webhookId": "cde554a7-5e1a-465d-bce9-b941adb52a49",
       "parameters": {
         "httpMethod": "POST",
         "path": "boxx-guide",
@@ -21,7 +21,7 @@
       }
     },
     {
-      "id": "a6f0f802-6c37-4922-a15f-ecfab780447b",
+      "id": "a384b4d4-e3c6-4d4b-9c97-b428e5614622",
       "position": [
         260,
         200
@@ -35,7 +35,7 @@
       }
     },
     {
-      "id": "66c1226f-6fa2-47ed-8706-881e4d8b111c",
+      "id": "6a271534-5c61-403d-85a1-17b230723411",
       "position": [
         520,
         200
@@ -49,7 +49,7 @@
       }
     },
     {
-      "id": "362788cc-5ec5-43bb-9c23-a2081ea43b61",
+      "id": "ad31cc67-1df4-4002-8c24-6f1c3ea17a50",
       "position": [
         780,
         200
@@ -67,7 +67,7 @@
           },
           "conditions": [
             {
-              "id": "8b7b2fc7-0726-48ce-94c1-e8430806c8a0",
+              "id": "1590e503-dc73-4be0-8c10-50d893ce0370",
               "leftValue": "={{ $json.ok }}",
               "rightValue": true,
               "operator": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "9f6ca11a-d7bd-461f-a47d-b958f10e2daf",
+      "id": "7cd4a52e-ac14-4864-9231-0770309a8824",
       "position": [
         1040,
         400
@@ -96,7 +96,7 @@
       }
     },
     {
-      "id": "08b419b1-7b29-4928-893a-e35307eb0d17",
+      "id": "7938bdeb-642a-4355-90c5-11cf73838aaf",
       "position": [
         1300,
         400
@@ -138,7 +138,7 @@
       }
     },
     {
-      "id": "802140d8-b59a-4b85-b79f-1d872c5cade8",
+      "id": "3f73c4d8-836a-468d-a96b-e268779360c4",
       "position": [
         1560,
         400
@@ -163,7 +163,7 @@
       }
     },
     {
-      "id": "4c1d802a-ebae-4ed9-99c3-515e027d506a",
+      "id": "fc939f86-79d9-46f8-aa24-6e0566aa665d",
       "position": [
         1040,
         200
@@ -203,7 +203,7 @@
       }
     },
     {
-      "id": "070a6e35-2773-4199-aab2-5014d195ffc9",
+      "id": "809b05ff-8f09-460d-96e5-b0ec191e5bf9",
       "position": [
         1300,
         200
@@ -217,7 +217,7 @@
       }
     },
     {
-      "id": "44456e3d-892d-4282-aaba-e646270f7900",
+      "id": "ba674b3d-8d33-4e99-9934-bb96e067b714",
       "position": [
         1560,
         200
@@ -231,7 +231,7 @@
       }
     },
     {
-      "id": "40119c63-1ce1-45ff-8561-525681a19dce",
+      "id": "00e6eee2-efeb-4801-a2ef-0d0ab8c9d410",
       "position": [
         1820,
         200
@@ -275,7 +275,7 @@
       }
     },
     {
-      "id": "7d2ad28a-c8ea-4639-b7b7-3ae819fbb008",
+      "id": "a744e9b4-3d72-487a-8459-dbebdf4a5461",
       "position": [
         2080,
         200
@@ -300,7 +300,7 @@
       }
     },
     {
-      "id": "ae1c806d-cf32-431e-87d9-6efd122fa418",
+      "id": "313423fa-1bef-4381-9dbf-77b157b02510",
       "position": [
         2340,
         200
@@ -318,7 +318,7 @@
           },
           "conditions": [
             {
-              "id": "2efb18ec-5e44-4c5a-bdd7-49b62a647622",
+              "id": "62867f62-ea73-4c97-8f3a-a095c389bf8a",
               "leftValue": "={{ $('Decide').first().json.send }}",
               "rightValue": true,
               "operator": {
@@ -333,7 +333,7 @@
       }
     },
     {
-      "id": "4ac2a091-d05f-4193-a525-3183865f61b8",
+      "id": "42796259-2bf1-48f6-afe0-c7e294de0f04",
       "position": [
         2600,
         200
@@ -347,7 +347,7 @@
       }
     },
     {
-      "id": "9ec238ad-d363-4a99-a601-4e0a22fce0ed",
+      "id": "6d193807-d4da-4d77-a990-586d9b6b435f",
       "position": [
         2860,
         200
@@ -383,7 +383,7 @@
       }
     },
     {
-      "id": "9af09bad-acb5-4d26-9645-8c8ea676248d",
+      "id": "5e737405-4718-4fad-938b-7c57e79c69be",
       "position": [
         3120,
         0
@@ -397,7 +397,7 @@
       }
     },
     {
-      "id": "3ea14911-edc8-4c61-a95f-78623225488a",
+      "id": "85a15627-992e-40d2-8ee1-e50403c1fcc5",
       "position": [
         3380,
         0
@@ -439,7 +439,7 @@
       }
     },
     {
-      "id": "3ff69730-5481-4a8e-8a78-5c5a5e81fcea",
+      "id": "6bbc106f-053e-46e8-8c2d-2203eb54d725",
       "position": [
         3120,
         400
@@ -453,7 +453,7 @@
       }
     },
     {
-      "id": "4c142ab2-18c1-4230-8a2f-293b9ef1a191",
+      "id": "f2caad99-6447-4aa6-a882-22f3a56c87ca",
       "position": [
         3380,
         400
@@ -495,7 +495,7 @@
       }
     },
     {
-      "id": "6e6d84dd-657d-4952-bfbf-01f71c1aba45",
+      "id": "2e639307-43a0-49d2-9b4b-37ed7bab6e1a",
       "position": [
         0,
         0

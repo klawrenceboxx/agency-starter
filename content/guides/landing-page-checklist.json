@@ -1,0 +1,710 @@
+{
+  "slug": "landing-page-checklist",
+  "guide_number": "005",
+  "keyword": "LEAK",
+  "kind": "checklist",
+  "title": "The Landing Page Checklist",
+  "promise": "Score your landing page in two minutes with my 10-point Leak Report, then fix it with the full 11-phase, 77-item conversion framework I use on every build.",
+  "meta_label": "11 PHASES · 77 ITEMS",
+  "video_url": "",
+  "pdf_url": "/guides/pdf/landing-page-checklist.pdf",
+  "cover": "/guides/landing-page-checklist-cover.jpg",
+  "published": "",
+  "seo": {
+    "meta_title": "Landing Page Checklist: 77-Point Conversion Framework | BOXX",
+    "meta_description": "Score your landing page with a free 10-point leak checklist, then fix it with the 11-phase, 77-item website conversion framework. Free, no signup.",
+    "primary_search_phrase": "landing page checklist"
+  },
+  "downloads": [
+    {
+      "label": "Download the full framework (PDF)",
+      "href": "/guides/pdf/landing-page-checklist.pdf"
+    },
+    {
+      "label": "Download the Leak Report (printable)",
+      "href": "/guides/files/website-leak-report.pdf"
+    }
+  ],
+  "tools": [],
+  "inputs_needed": [],
+  "steps": [],
+  "checklist": {
+    "leak": [
+      {
+        "title": "Primary goal & action",
+        "good": "One main action (call, book, quote, buy) is obvious within 5 seconds, repeated after key sections."
+      },
+      {
+        "title": "Value proposition",
+        "good": "Headline says what they do, who for, and the outcome, in plain 6th-grade language."
+      },
+      {
+        "title": "Differentiation & specifics",
+        "good": "Claims are specific and defensible. A competitor could not reuse the headline unchanged."
+      },
+      {
+        "title": "Proof & trust",
+        "good": "Real testimonials with context, results, credentials, work examples, visible contact details."
+      },
+      {
+        "title": "Objections & risk",
+        "good": "Price, timing, effort and risk answered near the decision point. Clear guarantee or process."
+      },
+      {
+        "title": "Structure & navigation",
+        "good": "Pages have one purpose. Visitors find key info fast. Order: relevance, explanation, proof, next step."
+      },
+      {
+        "title": "Copy & CTA wording",
+        "good": "Scannable headings that carry meaning. Buttons say what happens next. No jargon."
+      },
+      {
+        "title": "Layout, mobile & speed",
+        "good": "Clear visual hierarchy, one prominent CTA, usable on a phone, loads fast, readable contrast."
+      },
+      {
+        "title": "Forms & booking friction",
+        "good": "Short forms, clear labels, expectations set, no dead links or placeholder buttons. Booking works end to end."
+      },
+      {
+        "title": "Lead capture & follow-up",
+        "good": "Value exchange for visitors not ready to buy, instant confirmation, a nurture sequence, tracked conversions."
+      }
+    ],
+    "bands": [
+      {
+        "min": 16,
+        "label": "Solid",
+        "text": "Your page is doing its job. Use the framework below to find the next gains."
+      },
+      {
+        "min": 10,
+        "label": "Leaking leads",
+        "text": "People are interested but slipping away. Fix your lowest scores first."
+      },
+      {
+        "min": 0,
+        "label": "Losing most visitors",
+        "text": "Most visitors leave without acting. Start with checks 1, 2 and 4."
+      }
+    ],
+    "phases": [
+      {
+        "number": 0,
+        "name": "Research & Strategy",
+        "deliverable": "Strategy brief",
+        "items": [
+          {
+            "id": "0.1",
+            "title": "Define the business objective",
+            "desc": "What the business wants the website to accomplish e.g., generate qualified leads, sell products, book appointments, build awareness.",
+            "audit": "Is the website connected to a measurable business goal?",
+            "build": "Write down the primary business outcome before designing the website."
+          },
+          {
+            "id": "0.2",
+            "title": "Define the primary conversion",
+            "desc": "Identify the most important action you want the visitor to take e.g., requesting a quote, booking a consultation, purchasing a product, or starting a trial.",
+            "audit": "Are there multiple competing actions without a clear priority?",
+            "build": "Choose one primary conversion and design the page around supporting that action."
+          },
+          {
+            "id": "0.3",
+            "title": "Define the primary audience",
+            "desc": "Who is the website intended to serve. Understand their circumstance, needs, level of knowledge, and reason for visiting.",
+            "audit": "Does the messaging seem to target everyone instead of a specific audience?",
+            "build": "Create an audience profile (persona) based on actual customer information, not just assumptions."
+          },
+          {
+            "id": "0.4",
+            "title": "Identify problems and desired outcomes",
+            "desc": "What is customer trying to solve and achieve. real-world outcome (moving towards).",
+            "audit": "Does the website address the visitor’s problem?",
+            "build": "Document the customer’s current situation, desired outcome, and why the outcome matters."
+          },
+          {
+            "id": "0.5",
+            "title": "Identify objections and perceived risks",
+            "desc": "Price, trust, complexity, timing, effort, result uncertainty. Collect evidence to support business claims: testimonials, case studies, certifications, project examples, demonstrations & results.",
+            "audit": "Are important customer concerns left unanswered? Does the site make claims without evidence to support?",
+            "build": "List likely objections and address the relevant ones through copy, proof, process explanations, or appropriate guarantees."
+          },
+          {
+            "id": "0.6",
+            "title": "Understand alternatives and competitors",
+            "desc": "Who might visitors compare the business against: competitors, alternative solutions or doing nothing.",
+            "audit": "Does the website communicate why someone might choose this one over another?",
+            "build": "Research competing offers, positioning, pricing, and customer expectations."
+          },
+          {
+            "id": "0.7",
+            "title": "Define the conversion hypothesis",
+            "desc": "Create a testable explanation for why the website may not be converting effectively. Monitor what you observed from what you believe & things to change.",
+            "audit": "Are recommendations based on evidence or personal design preference?",
+            "build": "Document the observations, hypothesis, proposed change, and how to measure results."
+          }
+        ]
+      },
+      {
+        "number": 1,
+        "name": "Offer & Positioning",
+        "deliverable": "Positioning + offer sheet",
+        "items": [
+          {
+            "id": "1.1",
+            "title": "Clear value proposition",
+            "desc": "Explain what the business offers, who it serves and the value it provides.",
+            "audit": "Can a visitor understand the offer quickly.",
+            "build": "Write a clear value proposition at a 6th grade reading level."
+          },
+          {
+            "id": "1.2",
+            "title": "Outcome relevance",
+            "desc": "Connect the product or service to what the customer cares about. Feature explanations should emphasize how they relate to customer concerns when appropriate. Don’t make the customer think, but they should be able to imagine their dream outcome life.",
+            "audit": "Does the website list features w/o explaining why they matter?",
+            "build": "Translate relevant features into customer benefits, outcomes, meaningful improvements."
+          },
+          {
+            "id": "1.3",
+            "title": "Meaningful differentiation",
+            "desc": "Explain what makes the business different: specialization, methodology, experience, service, or a specific offer.",
+            "audit": "Could a competitor use the same headline without changing its meaning?",
+            "build": "Identify genuine differences that matter to the customer."
+          },
+          {
+            "id": "1.4",
+            "title": "Specific claims",
+            "desc": "Use specificity to help customers understand the offer. Defensible claims.",
+            "audit": "Are phrases unsupported?",
+            "build": "Replace empty superlatives with concrete descriptions, evidence, or verifiable details (puffery is acceptable)."
+          },
+          {
+            "id": "1.5",
+            "title": "Authority and expertise",
+            "desc": "Does it exist? Can be shown through work, credentials, methods, or demonstrated results.",
+            "audit": "Does the website give visitors enough information to assess the business’s expertise?",
+            "build": "Present genuine credentials and relevant examples without overstating qualifications."
+          },
+          {
+            "id": "1.6",
+            "title": "Risk reduction",
+            "desc": "Identify and mitigate reasonable concerns about moving forward. Create clear expectations, transparent policies, trials, or guarantees where appropriate.",
+            "audit": "What risks might prevent a visitor from taking action?",
+            "build": "Address those concerns with honest and operationally sustainable measures."
+          },
+          {
+            "id": "1.7",
+            "title": "Genuine scarcity",
+            "desc": "Use scarcity or urgency only when it reflects a real limitation, like limited capacity, available spots, or a genuine deadline.",
+            "audit": "Are countdowns or urgency claims genuine and relevant?",
+            "build": "Communicate real constraints without manufacturing pressure."
+          },
+          {
+            "id": "1.8",
+            "title": "Shared identity",
+            "desc": "Use authentic common ground when it helps a visitor connect with the business. Include local knowledge, industry specialization, or shared customer context.",
+            "audit": "Does the business communicate relevant familiarity with its audience?",
+            "build": "Include genuine connections where they support trust or relevance."
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "name": "Information Architecture",
+        "deliverable": "Sitemap + page hierarchy",
+        "items": [
+          {
+            "id": "2.1",
+            "title": "Define page purpose",
+            "desc": "Every page should accomplish something e.g., educate, generate leads, showcase work, facilitate purchase.",
+            "audit": "Does each page have a clear purpose?",
+            "build": "Define the primary goal and intended audience for each page before designing it."
+          },
+          {
+            "id": "2.2",
+            "title": "Build information hierarchy",
+            "desc": "Organize and group information based on what deserves attention first, second and later. Highest viewership will exist at the top of pages.",
+            "audit": "Is critical information easy to find, logically grouped and prioritized?",
+            "build": "Rank content according to the visitor’s needs and group related information into clear sections."
+          },
+          {
+            "id": "2.3",
+            "title": "Match content to the decision process",
+            "desc": "Present information in the sequence visitors need to evaluate the offer and take action.",
+            "audit": "Does the website answer the visitor questions in a helpful order?",
+            "build": "Structure the journey from relevance → explanation → evidence → objections → next step."
+          },
+          {
+            "id": "2.4",
+            "title": "Navigation supports real tasks",
+            "desc": "Should help visitors find important destinations easily.",
+            "audit": "Can visitors locate key pages and information?",
+            "build": "Design navigation around actual visitor tasks, using clear labels and sensible grouping."
+          },
+          {
+            "id": "2.5",
+            "title": "Create a sitemap before visual design",
+            "desc": "A sitemap outlines the website’s pages and relationships. Helps establish structure before spending time on high-fidelity design.",
+            "audit": "Was the website designed without a clear understanding of its page structure?",
+            "build": "Create a sitemap and page plan before moving into detailed UI design when the project requires it."
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "name": "Copy & Messaging",
+        "deliverable": "Final page copy",
+        "items": [
+          {
+            "id": "3.1",
+            "title": "Write for the intended audience",
+            "desc": "Use language that the target audience uses.",
+            "audit": "Is copy filled with unnecessary jargon or vague language?",
+            "build": "Write using the audience's terminology and simplify anything that doesn't add value. If it doesn’t move the story forward cut it."
+          },
+          {
+            "id": "3.2",
+            "title": "Make headings do real work",
+            "desc": "Should communicate content and help visitors more easily navigate the page. Shouldn’t just sound interesting.",
+            "audit": "Can visitors understand the major points by scanning the headings?",
+            "build": "Write headings that explain the section’s actual message or benefit."
+          },
+          {
+            "id": "3.3",
+            "title": "Connect features to outcomes",
+            "desc": "Explain how features help the customer. Connect the dots for them.",
+            "audit": "Does the copy describe the product function without explaining its value?",
+            "build": "Pair important features with relevant benefits, use cases, or outcomes."
+          },
+          {
+            "id": "3.4",
+            "title": "Address major objections near the decision",
+            "desc": "Add relevant reassurance where visitors will need it. They don’t need to exist solely in FAQ section.",
+            "audit": "Are important questions answered only after the visitor is expected to act?",
+            "build": "Address objections near the sections where those concerns naturally arise. What is the customer thinking at this important moment, and what do we need to say to arrest that feeling."
+          },
+          {
+            "id": "3.5",
+            "title": "Use proof instead of unsupported superlatives",
+            "desc": "Use evidence not just exaggerated descriptions.",
+            "audit": "Are important claims supported by relevant evidence?",
+            "build": "Use testimonials, examples, demonstrations, or verifiable information that supports the claim."
+          },
+          {
+            "id": "3.6",
+            "title": "Make the next step understandable",
+            "desc": "Tell the visitors what they can expect when they click a CTA. Action should communicate its purpose and what happens after when necessary.",
+            "audit": "Is it unclear what clicking a button will do?",
+            "build": "Use descriptive CTA text and supporting microcopy when appropriate."
+          },
+          {
+            "id": "3.7",
+            "title": "Use concise, scannable copy",
+            "desc": "Structure information, so customers can easily scan and find key points.",
+            "audit": "Are important ideas hidden inside long, dense paragraphs?",
+            "build": "Use headings, short paragraphs, lists, and emphasis where they improve readability."
+          },
+          {
+            "id": "3.8",
+            "title": "Match reading complexity to the audience",
+            "desc": "Language level used should fit target audience.",
+            "audit": "Is the copy unnecessarily difficult for the target audience?",
+            "build": "Use the simplest language that preserves accuracy and meaning (6th grade reading level)."
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "name": "Attention & Layout",
+        "deliverable": "Wireframe",
+        "items": [
+          {
+            "id": "4.1",
+            "title": "Establish visual hierarchy",
+            "desc": "Relative importance should be clear through size, position, contrast, spacing, and grouping.",
+            "audit": "Do important and unimportant elements compete equally for attention?",
+            "build": "Establish a clear hierarchy for headlines, supporting content, proof, and CTAs."
+          },
+          {
+            "id": "4.2",
+            "title": "Make the primary action prominent",
+            "desc": "",
+            "audit": "Is the primary CTA difficult to locate or indistinguishable from secondary actions?",
+            "build": "Give the primary CTA appropriate visual prominence through placement, contrast, and context."
+          },
+          {
+            "id": "4.3",
+            "title": "Minimize competing actions",
+            "desc": "Reduce competition between different actions on the page.",
+            "audit": "Are multiple unrelated CTAs presented with equal emphasis?",
+            "build": "Choose a primary action and make secondary actions visually and strategically subordinate when appropriate."
+          },
+          {
+            "id": "4.4",
+            "title": "Support scanning",
+            "desc": "Scanning patterns differ by content, device and individual behaviour.",
+            "audit": "Can visitors identify the major message, proof and next step without excessive effort?",
+            "build": "Use headings, sections, whitespace, and visual hierarchy to support scanning."
+          },
+          {
+            "id": "4.5",
+            "title": "Use visuals to communicate",
+            "desc": "Use images, diagrams, screenshots, demonstrations, diagrams, or videos when they help explain or provide evidence.",
+            "audit": "Are visuals just decorative when they could also communicate something useful?",
+            "build": "Select visuals based on the information they convey, not just for aesthetic."
+          },
+          {
+            "id": "4.6",
+            "title": "Humanize when personal trust matters",
+            "desc": "Show people, real work, or business environment when personal connection or expertise is relevant to the decision.",
+            "audit": "Would relevant human or real-world evidence help visitors assess the business?",
+            "build": "Use appropriate founder photos, team images, project examples, or demonstrations when they add value."
+          },
+          {
+            "id": "4.7",
+            "title": "Design mobile intentionally",
+            "desc": "Create a dedicated experience for mobile.",
+            "audit": "Are navigation, text, forms, buttons, and content hierarchy usable on a phone?",
+            "build": "Design and test responsive layouts across relevant screen sizes."
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "name": "Trust & Persuasion",
+        "deliverable": "Proof plan",
+        "items": [
+          {
+            "id": "5.1",
+            "title": "Support important claims",
+            "desc": "Evidence.",
+            "audit": "Are consequential claims difficult to verify?",
+            "build": "Add relevant case studies, references, demonstrations, or other credible evidence."
+          },
+          {
+            "id": "5.2",
+            "title": "Use relevant social proof",
+            "desc": "Show experiences from customers similar to intended audience, or whose experience address relevant concerns.",
+            "audit": "Is the proof generic or unrelated to the visitor’s decision?",
+            "build": "Choose genuine testimonials & case studies that show relevant value."
+          },
+          {
+            "id": "5.3",
+            "title": "Make testimonials informative",
+            "desc": "Choose testimonials that provide useful context instead of just praise.",
+            "audit": "Do testimonials explain what the customer valued or what problem was addressed?",
+            "build": "Include context such as the customer’s situation, experience, or specific outcome. Use names, photos, and numbers only when authentic and appropriate."
+          },
+          {
+            "id": "5.4",
+            "title": "Show the real business",
+            "desc": "Make it reasonably easy for visitors to understand who runs the business and how to contact it.",
+            "audit": "Are important legitimacy signals missing?",
+            "build": "Provide appropriate contact details, business information, people, policies, and relevant work examples."
+          },
+          {
+            "id": "5.5",
+            "title": "Use reciprocity ethically",
+            "desc": "Provide genuine value before asking for larger commitments: Useful audit, checklist, educational resource, or demonstration.",
+            "audit": "Does the lead magnet provide meaningful value beyond collecting emails?",
+            "build": "Create a resource that helps the visitor solve part of their problem while demonstrating your expertise."
+          },
+          {
+            "id": "5.6",
+            "title": "Use commitment progressively",
+            "desc": "Let visitors begin with a smaller, relevant action before making a larger commitment.",
+            "audit": "Is the first requested action unnecessarily demanding?",
+            "build": "Consider suitable entry points such as a useful resource, consultation, or small assessment. Do not assume a smaller action is always better."
+          },
+          {
+            "id": "5.7",
+            "title": "Be transparent about persuasion",
+            "desc": "Don’t mislead visitors or hide important conditions.",
+            "audit": "Are fake countdowns, fabricated testimonials, or deceptive defaults being used?",
+            "build": "Communicate urgency, incentives, and limitations honestly."
+          },
+          {
+            "id": "5.8",
+            "title": "Reduce uncertainty at the point of action",
+            "desc": "Address questions that may come up right before a visitor commits.",
+            "audit": "Does the visitor know what will happen, how long it will take, or what is expected?",
+            "build": "Use relevant microcopy, process details, pricing info, or privacy explanations to clarify the next step."
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "name": "UI & Experience",
+        "deliverable": "Design tokens + components",
+        "items": [
+          {
+            "id": "6.1",
+            "title": "Define typography hierarchy",
+            "desc": "Create a type system for display text, headings, body text, labels, and supporting information.",
+            "audit": "Are font sizes, weights, and styles inconsistent or hard to distinguish?",
+            "build": "Define type roles and type scales. Prioritize readability and hierarchy."
+          },
+          {
+            "id": "6.2",
+            "title": "Use a semantic color system",
+            "desc": "Assign colors based on purpose, like primary actions, secondary actions, success, warnings, and errors.",
+            "audit": "Are colors used consistently or without a clear meaning?",
+            "build": "Create a color system with defined roles, appropriate contrast and consistent usage."
+          },
+          {
+            "id": "6.3",
+            "title": "Create consistent spacing",
+            "desc": "Spacing to establish relationships, grouping and visual rhythm 8pt system.",
+            "audit": "Does spacing appear random or make sections difficult to understand?",
+            "build": "Define spacing tokens or a consistent spacing system, and adapt it when needed."
+          },
+          {
+            "id": "6.4",
+            "title": "Make interactive elements recognizable",
+            "desc": "Help users understand what they can click, edit, select, or interact with. Interactive states should communicate what is happening.",
+            "audit": "Are buttons, links, form fields, and disabled states visually ambiguous?",
+            "build": "Create consistent interaction patterns, labels, hover/focus states, and feedback."
+          },
+          {
+            "id": "6.5",
+            "title": "Use component consistency",
+            "desc": "",
+            "audit": "Do similar buttons, cards, forms or messages have inconsistent designs or behaviors?",
+            "build": "Create reusable components and design tokens to support consistency and efficient implementation."
+          },
+          {
+            "id": "6.6",
+            "title": "Accessible contrast and text",
+            "desc": "Make content readable and interfaces usable for people with different visual needs.",
+            "audit": "Do text and interactive elements meet relevant accessibility requirements?",
+            "build": "Follow applicable WCAG guidance for contrast, text, and semantic structure."
+          },
+          {
+            "id": "6.7",
+            "title": "Keyboard and assistive technology",
+            "desc": "Make sure essential interactions can be completed using appropriate input methods, keyboard navigation and assistive technologies.",
+            "audit": "Can users navigate and complete important tasks without relying exclusively on a mouse?",
+            "build": "Use semantic HTML, labels, focus states, logical order, and accessible names."
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "name": "Conversion Mechanics",
+        "deliverable": "CTA funnel",
+        "items": [
+          {
+            "id": "7.1",
+            "title": "Define one primary conversion path",
+            "desc": "The main action that a page is designed to support. Secondary actions can remain available when they have a legitimate purpose.",
+            "audit": "Is the primary conversion path obvious, logical, and easy to complete?",
+            "build": "Map the conversion journey from CTA → action → confirmation."
+          },
+          {
+            "id": "7.2",
+            "title": "Repeat the CTA when context justifies it",
+            "desc": "Allow customers to act after they have received enough information to make a decision.",
+            "audit": "Do visitors have to scroll or return to the top to take action?",
+            "build": "Place relevant CTA opportunities after meaningful sections or decision points."
+          },
+          {
+            "id": "7.3",
+            "title": "Ask for only necessary information",
+            "desc": "Limit forms to information that is useful for the immediate next step or a clearly justified follow-up process.",
+            "audit": "Are visitors asked for unnecessary information?",
+            "build": "Remove, postpone, or make optional fields that are not essential."
+          },
+          {
+            "id": "7.4",
+            "title": "Use clear labels, validations and feedback",
+            "desc": "Help visitors understand what each field requires and recover from mistakes.",
+            "audit": "Are field labels ambiguous, or are errors discovered only after submission?",
+            "build": "Use clear labels, inline validation, helpful error messages, and clear success states."
+          },
+          {
+            "id": "7.5",
+            "title": "Set expectations before commitment",
+            "desc": "Include relevant information about the action, including timing, cost, follow-up, or the process involved.",
+            "audit": "Could visitors feel surprised by what happens after clicking the CTA?",
+            "build": "Set appropriate expectations before the visitor commits."
+          },
+          {
+            "id": "7.6",
+            "title": "Protect the conversion path",
+            "desc": "Prevent unnecessary distractions or technical issues from interfering with high-intent tasks.",
+            "audit": "Are pop-ups, confusing navigation, broken links, or unexpected interruptions disrupting important actions?",
+            "build": "Remove or manage distractions that do not support the visitor’s current task."
+          },
+          {
+            "id": "7.7",
+            "title": "Respect privacy and consent",
+            "desc": "Communicate relevant data practices.",
+            "audit": "Is it clear what information is being collected and how it will be used?",
+            "build": "Implement appropriate privacy disclosures, consent mechanisms, and secure data handling based on business and applicable requirements."
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "name": "Lead Capture & Nurture",
+        "deliverable": "Nurture sequences + lead routing",
+        "items": [
+          {
+            "id": "8.1",
+            "title": "Create a meaningful value exchange",
+            "desc": "Give visitors a strong reason to share their contact information.",
+            "audit": "Does the lead magnet offer meaningful value relative to the information requested?",
+            "build": "Create a resource that directly relates to the visitor’s problem and demonstrates your expertise."
+          },
+          {
+            "id": "8.2",
+            "title": "Deliver the promised asset immediately",
+            "desc": "Available through reliable and clear delivery process.",
+            "audit": "Does the visitor know how to access the checklist, guide, or other resource?",
+            "build": "Configure confirmation and delivery emails, download access, and appropriate fallback instructions."
+          },
+          {
+            "id": "8.3",
+            "title": "Capture the right context",
+            "desc": "Collect info that helps you provide more relevant follow-up without unnecessarily increasing form friction.",
+            "audit": "Is the business missing important context, or collecting useless info?",
+            "build": "Request useful details such as business type, website URL, or project needs when justified."
+          },
+          {
+            "id": "8.4",
+            "title": "Use a coherent nurture sequence",
+            "desc": "Create a series of messages that builds on the visitor’s initial interest.",
+            "audit": "Are emails random, repetitive, or focused only on selling?",
+            "build": "Organize emails around education, common problems, objections, proof, process and appropriate next steps."
+          },
+          {
+            "id": "8.5",
+            "title": "Use personalized follow-up",
+            "desc": "Personalize when it genuinely enhances visitor experience.",
+            "audit": "Could a personalized review or explanation add meaningful value?",
+            "build": "Consider individualized loom videos, website observations, or relevant recommendations where the effort is sustainable."
+          },
+          {
+            "id": "8.6",
+            "title": "Prevent lost or mishandled leads",
+            "desc": "Ensure failures can be detected.",
+            "audit": "Are forms, emails, CRM records, and notifications working reliably?",
+            "build": "Implement appropriate routing, error handling, logging, and notifications for important lead workflows."
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "name": "Technical Foundation",
+        "deliverable": "QA checklist",
+        "items": [
+          {
+            "id": "9.1",
+            "title": "Verify performance",
+            "desc": "Measure website load speed and technicals.",
+            "audit": "Are there loading delays, responsiveness issues, or layout shifts?",
+            "build": "Measure performance and address significant bottlenecks based on evidence and relevant user needs."
+          },
+          {
+            "id": "9.2",
+            "title": "Test every conversion path",
+            "desc": "Test start to finish important actions.",
+            "audit": "Have forms, bookings, payments, downloads, and emails been tested in realistic conditions?",
+            "build": "Perform end-to-end tests before launch and after meaningful changes."
+          },
+          {
+            "id": "9.3",
+            "title": "Test relevant devices and browsers",
+            "desc": "",
+            "audit": "Has the website only been tested on one computer or browser?",
+            "build": "Test desktop and mobile devices, browsers, screen sizes, and relevant interaction methods."
+          },
+          {
+            "id": "9.4",
+            "title": "Implement basic search health",
+            "desc": "SEO.",
+            "audit": "Are titles, crawlability, indexing, and important SEO fundamentals been addressed?",
+            "build": "Implement relevant on-page SEO, appropriate metadata, crawlable content, and search monitoring."
+          },
+          {
+            "id": "9.5",
+            "title": "Handle errors and edge cases",
+            "desc": "Design for network failures, invalid submissions, or service interruptions.",
+            "audit": "Do users receive useful feedback when an action fails?",
+            "build": "Implement loading, error, retry, and fallback states for important functionality."
+          },
+          {
+            "id": "9.6",
+            "title": "Maintain the site",
+            "desc": "Treat the site as an ongoing system.",
+            "audit": "Is there an owner for content updates, forms, dependencies, analytics, and maintenance?",
+            "build": "Establish a maintenance process and clarify responsibilities for keeping the website operational."
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "name": "Measurement & Optimization",
+        "deliverable": "Analytics plan",
+        "items": [
+          {
+            "id": "10.1",
+            "title": "Track the primary conversion",
+            "desc": "Measure if visitors are completing the most important action.",
+            "audit": "Is there a reliable way to measure if the primary conversion occurred?",
+            "build": "Implement relevant conversion event and tracking process."
+          },
+          {
+            "id": "10.2",
+            "title": "Track meaningful funnel steps",
+            "desc": "Measure important stages of conversion process to see where visitors might be dropping off.",
+            "audit": "Can you see where users abandon a meaningful task?",
+            "build": "Track relevant steps such as CTA clicks, form starts, submissions, bookings, or purchases."
+          },
+          {
+            "id": "10.3",
+            "title": "Use qualitative behavior data carefully",
+            "desc": "Use observations from usability tests, visitor feedback, recordings, or other qualitative sources to develop hypotheses.",
+            "audit": "Are design decisions based on opinions or aggregate metrics?",
+            "build": "Gather qualitative evidence where appropriate and use it to investigate potential friction."
+          },
+          {
+            "id": "10.4",
+            "title": "Document observations and hypotheses",
+            "desc": "Keep a record of what you observed, your hypothesis on what is happening and what you changed.",
+            "audit": "Are website changes made without a clear reason or expected outcome?",
+            "build": "Document the observation, hypothesis, proposed change, expected effect, and results."
+          },
+          {
+            "id": "10.5",
+            "title": "Prioritize likely impact",
+            "desc": "Focus effort on problems that will have the most meaningful impact on customer experience or business outcome first.",
+            "audit": "Is the team spending disproportionate time on minor visuals instead of major issues?",
+            "build": "Prioritize based on potential impact, confidence in the evidence, and implementation effort."
+          },
+          {
+            "id": "10.6",
+            "title": "Experiment when volume justifies it",
+            "desc": "Use controlled experiments when website traffic is there and meaningful hypotheses exist.",
+            "audit": "Are experiments being run without adequate data or a clear question?",
+            "build": "Use A/B testing where feasible. When traffic is limited, consider usability testing, qualitative feedback, and careful before-and-after measurement."
+          },
+          {
+            "id": "10.7",
+            "title": "Avoid false certainty",
+            "desc": "Understand that metrics and individual observations have limitations.",
+            "audit": "Are sweeping conclusions being drawn from one metric or small sample?",
+            "build": "Consider context, sample size, segmentation, tracking quality, and other explanations before deciding what the result means."
+          },
+          {
+            "id": "10.8",
+            "title": "Feed learning back into the system",
+            "desc": "Use real projects to improve checklist, processes, and design decisions.",
+            "audit": "Is the checklist treated as fixed despite contradictory evidence or new learning?",
+            "build": "Update principles, examples, priorities, and industry-specific guidance as you gain experience."
+          }
+        ]
+      }
+    ]
+  }
+}

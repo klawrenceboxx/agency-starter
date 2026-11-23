@@ -391,3 +391,104 @@
   .card, .indexCard { transition: none; }
   .card:hover, .indexCard:hover { transform: none; }
 }
+
+/* Checklist guides (guide 005): Leak Report scorer + 11-phase framework */
+.leak { margin-top: 28px; }
+.leakList { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.leakRow {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  background: var(--g-card);
+  border: 1px solid var(--g-line);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.leakNum { font: 700 15px/1 var(--g-mono); color: var(--g-lav); }
+.leakText .h3 { font-size: 18px; }
+.leakText .muted { font-size: 15px; margin-top: 4px; }
+.leakBtns { display: flex; gap: 8px; }
+.scoreBtn {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid #78518e;
+  background: var(--g-bg);
+  color: #fff;
+  font: 700 17px/1 var(--g-mono);
+  cursor: pointer;
+  transition: background 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scoreBtn:hover { background: var(--g-card-2); }
+.scoreOn, .scoreOn:hover { background: var(--g-p); border-color: var(--g-p); }
+.leakKey { font: 600 12px/1.5 var(--g-mono); color: var(--g-muted); margin: 14px 0 0; letter-spacing: 0.04em; }
+.result {
+  position: sticky;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: #241233f2;
+  border: 1px solid #8650a7;
+  backdrop-filter: blur(8px);
+}
+.resultScore { font: 800 46px/1 var(--g-mono); white-space: nowrap; }
+.resultScore small { font-size: 18px; color: var(--g-muted); margin-left: 4px; }
+.resultBand { font-weight: 800; font-size: 20px; margin: 0 0 4px; }
+.resultFix { margin: 8px 0 0; font-weight: 600; line-height: 1.5; }
+.linkBtn {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-top: 8px;
+  color: var(--g-lav);
+  font: 600 14px/1.4 inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.progressRow { display: flex; align-items: center; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+.progressBar { flex: 1 1 240px; height: 10px; border-radius: 5px; background: var(--g-card-2); overflow: hidden; }
+.progressBar span { display: block; height: 100%; background: var(--g-p); transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.progressText { font: 700 14px/1 var(--g-mono); color: var(--g-muted); }
+.progressRow .linkBtn { margin-top: 0; }
+.phases { display: grid; gap: 12px; margin-top: 20px; }
+.phaseCard { background: var(--g-card); border: 1px solid var(--g-line); border-radius: 16px; overflow: hidden; }
+.phaseCard[open] { border-color: #78518e; }
+.phaseSum { display: flex; align-items: center; gap: 16px; padding: 18px 20px; cursor: pointer; list-style: none; }
+.phaseSum::-webkit-details-marker { display: none; }
+.phaseSum:hover { background: var(--g-card-2); }
+.phaseTitle { flex: 1; min-width: 0; }
+.phaseTitle .h3 { display: block; }
+.phaseCount { font: 700 14px/1 var(--g-mono); color: var(--g-muted); padding: 8px 10px; border: 1px solid var(--g-line); border-radius: 8px; }
+.phaseDone { color: #3fd69a; border-color: #3fd69a; }
+.items { list-style: none; margin: 0; padding: 4px 20px 20px; display: grid; gap: 10px; }
+.item { background: var(--g-bg); border: 1px solid var(--g-line); border-radius: 12px; padding: 16px 18px; }
+.itemDone { opacity: 0.6; }
+.itemDone .itemTitle { text-decoration: line-through; text-decoration-color: var(--g-lav); }
+.itemHead { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.itemHead input { width: 20px; height: 20px; margin-top: 1px; accent-color: var(--g-p); flex-shrink: 0; cursor: pointer; }
+.itemId { font: 700 13px/1.6 var(--g-mono); color: var(--g-lav); min-width: 34px; }
+.itemTitle { font-weight: 700; font-size: 17px; line-height: 1.4; }
+.itemDesc { color: var(--g-muted); font-size: 15px; line-height: 1.55; margin: 8px 0 0 66px; }
+.ab { margin: 12px 0 0 66px; display: grid; gap: 8px; }
+.ab div { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
+.ab dt { font: 700 11px/1.6 var(--g-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--g-lav); }
+.ab dd { margin: 0; font-size: 15px; line-height: 1.55; }
+@media (max-width: 560px) {
+  .leakRow { grid-template-columns: 1fr; gap: 10px; }
+  .leakNum { display: none; }
+  .leakBtns button { flex: 1; }
+  .result { gap: 16px; padding: 16px; }
+  .resultScore { font-size: 36px; }
+  .phaseSum { padding: 14px; gap: 12px; }
+  .phaseSum .num { width: 40px; height: 40px; font-size: 14px; }
+  .items { padding: 4px 12px 14px; }
+  .itemDesc, .ab { margin-left: 0; }
+  .ab div { grid-template-columns: 1fr; gap: 2px; }
+}

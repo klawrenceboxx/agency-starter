@@ -23,6 +23,7 @@ for (const f of fs.readdirSync(guideDir).filter((f) => f.endsWith('.json'))) {
     title: g.title,
     promise: g.promise,
     prompts: g.steps.length,
+    label: g.meta_label || '',
     builtWith: g.tools.filter((t) => t.used_in_video).slice(0, 2).map((t) => t.name.replace(/\s*\(.*\)\s*/, '').toUpperCase()).join(' + '),
     pdfPath: g.pdf_url,
     cover: g.cover || '',
@@ -208,7 +209,7 @@ const html = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
  + '<tr><td style="font:800 32px/1.1 Inter,Arial,Helvetica,sans-serif;letter-spacing:-0.5px;padding:0 0 12px">' + esc(g.title) + '<span style="color:#9c16f4">.</span></td></tr>'
  + '<tr><td style="font:400 16px/1.6 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce;padding:0 0 24px">Thanks for grabbing the guide. Here&#39;s the PDF you asked for.<br><span style="font-size:13px;color:#8d7f9c">Tip: add ' + esc(cfg.fromEmail) + ' to your contacts so the next one lands in your inbox.</span></td></tr>'
  + '<tr><td style="background:#1b102b;border:1px solid #493058;border-radius:16px;padding:20px">'
- +   '<div style="font:700 10px/1.4 Menlo,Consolas,monospace;letter-spacing:1.5px;color:#d3a0ff;padding:0 0 10px">FREE GUIDE · ' + g.prompts + ' PROMPTS · BUILT WITH ' + esc(g.builtWith) + '</div>'
+ +   '<div style="font:700 10px/1.4 Menlo,Consolas,monospace;letter-spacing:1.5px;color:#d3a0ff;padding:0 0 10px">FREE GUIDE · ' + (g.label ? esc(g.label) : g.prompts + ' PROMPTS · BUILT WITH ' + esc(g.builtWith)) + '</div>'
  +   '<div style="font:700 20px/1.3 Inter,Arial,Helvetica,sans-serif;padding:0 0 8px">' + esc(g.title) + '</div>'
  +   '<div style="font:400 15px/1.55 Inter,Arial,Helvetica,sans-serif;color:#c3b8ce">' + esc(g.promise) + '</div>'
  + '</td></tr>'

@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import AuditTrigger from '@/components/audit/AuditTrigger'
 import CopyPrompt from '@/components/guides/CopyPrompt'
 import GuidePdfForm from '@/components/guides/GuidePdfForm'
+import ChecklistGuidePage from '@/components/guides/ChecklistGuidePage'
 import { GUIDES, builtWith, getGuide, splitInput } from '@/lib/guides'
 import styles from '../guides.module.css'
 
@@ -35,6 +36,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 export default function GuidePage({ params }: { params: { slug: string } }) {
   const g = getGuide(params.slug)
   if (!g) notFound()
+  if (g.kind === 'checklist' && g.checklist) return <ChecklistGuidePage g={{ ...g, checklist: g.checklist }} />
 
   const n = g.steps.length
   const others = GUIDES.filter((o) => o.slug !== g.slug).slice(0, 2)

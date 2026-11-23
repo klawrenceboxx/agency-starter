@@ -3,6 +3,7 @@
 import networkingFollowUp from '@/content/guides/networking-follow-up.json'
 import addOneColour from '@/content/guides/add-one-colour-design-kit.json'
 import classifiedFile from '@/content/guides/classified-file-animation.json'
+import landingPageChecklist from '@/content/guides/landing-page-checklist.json'
 
 export type GuideTool = {
   job: string
@@ -22,6 +23,14 @@ export type GuideStep = {
   check: string
 }
 
+export type ChecklistItem = { id: string; title: string; desc: string; audit: string; build: string }
+export type ChecklistPhase = { number: number; name: string; deliverable: string; items: ChecklistItem[] }
+export type GuideChecklist = {
+  leak: { title: string; good: string }[]
+  bands: { min: number; label: string; text: string }[]
+  phases: ChecklistPhase[]
+}
+
 export type Guide = {
   slug: string
   guide_number: string
@@ -39,10 +48,14 @@ export type Guide = {
   inputs_needed: string[]
   steps: GuideStep[]
   build_notes?: string
+  // 'checklist' guides render an interactive checklist instead of prompts (guide 005).
+  kind?: 'prompts' | 'checklist'
+  meta_label?: string
+  checklist?: GuideChecklist
 }
 
 // Newest first.
-export const GUIDES: Guide[] = [classifiedFile, addOneColour, networkingFollowUp]
+export const GUIDES: Guide[] = [landingPageChecklist as Guide, classifiedFile, addOneColour, networkingFollowUp]
 
 export function getGuide(slug: string) {
   return GUIDES.find((g) => g.slug === slug)
@@ -61,4 +74,9 @@ export function builtWith(g: Guide) {
 export function splitInput(s: string) {
   const m = s.match(/^(\[[^\]]+\])\s*(?:\((?:e\.g\.\s*)?(.*)\))?$/)
   return m ? { label: m[1], example: m[2] || '' } : { label: s, example: '' }
+}
+
+// Index / email label: "3 PROMPTS" for prompt guides, the guide's own label for checklists.
+export function metaLabel(g: Guide) {
+  return g.meta_label || `${g.steps.length} PROMPTS`
 }

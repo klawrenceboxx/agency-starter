@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import AuditTrigger from '@/components/audit/AuditTrigger'
-import { GUIDES } from '@/lib/guides'
+import { GUIDES, metaLabel } from '@/lib/guides'
 import styles from './guides.module.css'
 
 export const metadata: Metadata = {
   title: 'Free Guides',
   description:
-    'Free copy-paste prompts from my Instagram videos. Build each system with Claude in a few minutes, step by step.',
+    'Free copy-paste prompts and checklists from my Instagram videos. Build each system with Claude, step by step.',
   alternates: { canonical: '/guides' },
 }
 
@@ -39,7 +39,7 @@ export default function GuidesIndex() {
                   <div className={styles.indexBody}>
                     <div className={styles.indexMeta}>
                       <span>GUIDE {g.guide_number}</span>
-                      <span>{g.steps.length} PROMPTS</span>
+                      <span>{metaLabel(g)}</span>
                       <span className={styles.pill}>{g.keyword}</span>
                     </div>
                     <h2 className={styles.h3}>{g.title}</h2>

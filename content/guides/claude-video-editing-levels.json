@@ -1,0 +1,86 @@
+{
+  "slug": "claude-video-editing-levels",
+  "guide_number": "006",
+  "keyword": "LEVELS",
+  "title": "The 3 Levels of Claude Video Editing",
+  "promise": "Upload a raw phone video to Claude and get it back with the gaps cut, captions and on-screen text added, and edited in the style of a creator you like.",
+  "video_url": "",
+  "pdf_url": "/guides/pdf/claude-video-editing-levels.pdf",
+  "cover": "/guides/claude-video-editing-levels-cover.jpg",
+  "published": "",
+  "seo": {
+    "meta_title": "Edit Videos With Claude: Cut Gaps, Add Captions, Copy a Style | BOXX",
+    "meta_description": "3 copy-paste prompts to edit talking-head videos with Claude: cut the silences, add captions and on-screen text, and copy a creator's editing style.",
+    "primary_search_phrase": "edit videos with Claude"
+  },
+  "instructions": {
+    "intro": "Open a fresh Claude chat, attach your raw video and paste Prompt 1. I use Opus 5.5 on medium effort.",
+    "inputs": "Nothing to fill in. Attach your video to Prompt 1, and any memes to Prompt 2 when you want them.",
+    "steps": "Run Prompts 1 and 2 in the same chat. Prompt 3 is a one-time setup that needs Claude in Chrome. For every new video: new chat, attach the video and your lessons.md, paste Prompt 1."
+  },
+  "tools": [
+    {
+      "job": "Editor",
+      "name": "Claude",
+      "role": "Writes and runs the code that cuts and edits your video. Code execution must be on (it is by default on Free, Pro and Max).",
+      "used_in_video": true,
+      "required": true,
+      "alternatives": [],
+      "link": "https://claude.ai"
+    },
+    {
+      "job": "Cutting",
+      "name": "FFmpeg",
+      "role": "Free tool that finds and cuts the silences, then renders the video. Claude sets it up for you.",
+      "used_in_video": true,
+      "required": true,
+      "alternatives": [],
+      "link": "https://ffmpeg.org"
+    },
+    {
+      "job": "Captions",
+      "name": "sherpa-onnx",
+      "role": "Free speech-to-text that gives Claude the exact time of every word. Claude installs it for you.",
+      "used_in_video": true,
+      "required": true,
+      "alternatives": [],
+      "link": "https://github.com/k2-fsa/sherpa-onnx"
+    },
+    {
+      "job": "Style",
+      "name": "Claude in Chrome",
+      "role": "Lets Claude open a creator's videos and study their editing style. Only needed for Prompt 3. Paid plan, Chrome on a computer.",
+      "used_in_video": true,
+      "required": false,
+      "alternatives": [
+        "Upload 2-3 of the creator's videos to the chat instead"
+      ],
+      "link": "https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome"
+    }
+  ],
+  "inputs_needed": [],
+  "steps": [
+    {
+      "number": "01",
+      "phase": "Level 1",
+      "title": "Set up and cut the gaps",
+      "prompt": "I'm editing a talking-head video for Instagram (vertical, 9:16). We'll do this in 3 prompts:\n1. Set up and cut the gaps (this one)\n2. Add layers: captions, highlighted words, text on screen, memes\n3. Copy a creator's editing style and save it as a skill\n\nSet up: in your code environment, check for FFmpeg and Python, and install sherpa-onnx with pip. Download a Whisper speech model for sherpa-onnx from its GitHub releases (base.en is enough). If anything is blocked, tell me in one line and keep going with what works.\n\nLessons: if I attached a lessons.md, read it first and follow every rule in it. If not, create one. Whenever I tell you something I don't like, add it to lessons.md as a short rule. When it changes, give me the updated lessons.md to download.\n\nCut the gaps: transcribe my attached video with a time for every word. Cut every pause longer than 0.3 seconds. If I repeat a line, keep my last take. Leave 0.1 seconds before and after each word so nothing clips. Don't crop or zoom. Give me the cut video and the length before and after.\n\nKeep your replies short. End every reply with one bold line that starts with \"NEXT:\" and tells me exactly what to do.",
+      "check": "You'll know it worked when Claude gives you a shorter video with no dead air and tells you how many seconds it cut."
+    },
+    {
+      "number": "02",
+      "phase": "Level 2",
+      "title": "Add layers",
+      "prompt": "Now add layers to the cut video. First, give me a short storyboard: a table with the time, the line I'm saying and what appears on screen. Wait for my OK before you render.\n\nThen build it with FFmpeg and Python:\n- Captions: 2-4 words at a time, timed to my words, bold white with a dark outline, under my chin.\n- Highlighted words: the key word in each line, in one bright colour that suits my video.\n- Text on screen: a short label on the exact word when I name a step, a tool or a number.\n- Never cover my face, and keep my framing still.\n- If I attach images or memes, show each one on the exact word I say about it, for about 1 second, with a quick pop in.\n\nRender a 1080x1920 MP4 and send it to me. When I give you notes, fix them and add each one to lessons.md.",
+      "check": "You'll know it worked when the captions land on the same words you say, and each label or meme pops in on its word."
+    },
+    {
+      "number": "03",
+      "phase": "Level 3",
+      "title": "Copy a creator's editing style",
+      "prompt": "Use Claude in Chrome to study the editing style of the creator below. Open their page or links and look at at least 3 of their videos. Write down:\n- captions: font, size, colours, position and how many words at a time\n- how text and images come in and go out\n- how often the shot changes, and any zooms\n- sound effects and music volume\n- how they open the first 2 seconds and how they end\nIf you can't see something from the page, say so and I'll upload one of their videos.\n\nThen turn it into a skill for editing my talking-head videos. Use exact numbers (fonts, sizes, colours, timings), name it after the style, not the creator, and tell it to read lessons.md before every edit. Give me the skill and tell me how to save it to my account. Then apply it to my current video.\n\nCreator links:",
+      "check": "You'll know it worked when you have a saved skill, and your video now looks like the creator's: same caption style, same pace."
+    }
+  ],
+  "build_notes": "I use Opus 5.5 on medium effort.\nI ask for a storyboard before any rendering. Changes are cheaper to catch there, so it saves tokens.\nI keep one folder for all my Instagram videos and save each new skill and lessons.md there. In a new chat, make sure Claude has the skill and lessons.md.\nI record with the Elegant Teleprompter app and keep the tripod still. Let Claude do the layers, not camera moves."
+}

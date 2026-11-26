@@ -4,6 +4,7 @@ import networkingFollowUp from '@/content/guides/networking-follow-up.json'
 import addOneColour from '@/content/guides/add-one-colour-design-kit.json'
 import classifiedFile from '@/content/guides/classified-file-animation.json'
 import landingPageChecklist from '@/content/guides/landing-page-checklist.json'
+import claudeVideoEditingLevels from '@/content/guides/claude-video-editing-levels.json'
 
 export type GuideTool = {
   job: string
@@ -55,7 +56,7 @@ export type Guide = {
 }
 
 // Newest first.
-export const GUIDES: Guide[] = [landingPageChecklist as Guide, classifiedFile, addOneColour, networkingFollowUp]
+export const GUIDES: Guide[] = [claudeVideoEditingLevels as Guide, landingPageChecklist as Guide, classifiedFile, addOneColour, networkingFollowUp]
 
 export function getGuide(slug: string) {
   return GUIDES.find((g) => g.slug === slug)
